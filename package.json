@@ -27,7 +27,7 @@
     "glue": "5.0.0",
     "govuk-frontend": "1.2.0",
     "h2o2": "^8.1.2",
-    "hapi": "17.6.0 ",
+    "hapi": "17.6.4 ",
     "hapi-alive": "2.0.0",
     "hapi-auth-basic": "5.0.0",
     "hapi-auth-cookie": "9.0.0",
