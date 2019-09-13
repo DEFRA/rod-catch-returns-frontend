@@ -35,6 +35,7 @@ module.exports = class SmallCatchesApi extends EntityApi {
         }),
         reportingExclude: c.reportingExclude,
         released: c.released,
+        noMonthRecorded: c.noMonthRecorded,
         activity: {
           id: EntityApi.keyFromLink(activity),
           days: activity.days,
@@ -47,21 +48,23 @@ module.exports = class SmallCatchesApi extends EntityApi {
     })
   }
 
-  async add (request, submissionId, activityId, month, counts, released) {
+  async add (request, submissionId, activityId, month, counts, released, noMonthRecorded) {
     return super.add(request, {
       submission: submissionId,
       activity: activityId,
       month: monthUtils.find.keyFromNum(month),
       released: released,
-      counts: counts
+      counts: counts,
+      noMonthRecorded: noMonthRecorded
     })
   }
 
-  async change (request, catchId, activityId, month, counts, released) {
+  async change (request, catchId, activityId, month, counts, released, noMonthRecorded) {
     const result = await super.change(request, catchId, {
       month: monthUtils.find.keyFromNum(month),
       released: released,
-      counts: counts
+      counts: counts,
+      noMonthRecorded: noMonthRecorded
     })
 
     // Return early with errors

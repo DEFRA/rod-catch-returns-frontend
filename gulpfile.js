@@ -25,7 +25,7 @@ const clean = () => {
 }
 
 const copyAssets = () => {
-  return gulp.src('node_modules/govuk-frontend/assets/{images/**/*.*,fonts/**/*.*}')
+  return gulp.src('node_modules/govuk-frontend/govuk/assets/{images/**/*.*,fonts/**/*.*}')
     .pipe(gulp.dest(paths.public))
 }
 
@@ -36,7 +36,7 @@ const copyAdditionalImages = () => {
 
 const copyJs = () => {
   return merge(
-    gulp.src('node_modules/govuk-frontend/all.js'),
+    gulp.src('node_modules/govuk-frontend/govuk/all.js'),
     gulp.src('src/assets/javascript/**/*.*')
   ).pipe(minify({ noSource: true })).pipe(gulp.dest(paths.public + '/javascript'))
 }

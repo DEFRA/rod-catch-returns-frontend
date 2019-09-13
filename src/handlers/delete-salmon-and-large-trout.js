@@ -5,6 +5,7 @@
  */
 const DeleteCatchHandler = require('./delete-catch')
 const SubmissionsApi = require('../api/submissions')
+const ActivitiesApi = require('../api/activities')
 const CatchesApi = require('../api/catches')
 const ResponseError = require('./response-error')
 
@@ -13,6 +14,7 @@ const { printWeight, testLocked } = require('./common')
 
 const submissionsApi = new SubmissionsApi()
 const catchesApi = new CatchesApi()
+const activitiesApi = new ActivitiesApi()
 const isAllowedParam = require('./common').isAllowedParam
 
 module.exports = class DeleteRiverHandler extends DeleteCatchHandler {
@@ -36,10 +38,11 @@ module.exports = class DeleteRiverHandler extends DeleteCatchHandler {
       throw new ResponseError.Error('Unauthorized access to large catch', ResponseError.status.UNAUTHORIZED)
     }
 
-    const submission = await submissionsApi.getFromLink(request, largeCatch._links.submission.href)
+    const submission = await submissionsApi.getById(request, cache.submissionId)
+    const activities = await activitiesApi.getFromLink(request, submission._links.activities.href)
 
     // Check they are not messing about with somebody else's submission
-    if (cache.submissionId !== submission.id) {
+    if (!activities.map(a => a._links.self.href).includes(largeCatch._links.activityEntity.href)) {
       throw new ResponseError.Error('Unauthorized access to large catch', ResponseError.status.UNAUTHORIZED)
     }
 
@@ -75,7 +78,6 @@ module.exports = class DeleteRiverHandler extends DeleteCatchHandler {
     const cache = await request.cache().get()
     await catchesApi.deleteById(request, cache.delete)
     delete cache.delete
-    await DeleteCatchHandler.recalculateExclusion(request, cache)
     await request.cache().set(cache)
     return h.redirect('/summary')
   }

@@ -100,7 +100,7 @@ module.exports = async (request) => {
           // Push the array index of the count payload to ignore
           apiIgnore.push(apiCounts.length - 1)
 
-          errors.push({ 'SmallCatch': 'SMALL_CATCH_' + m.name.toUpperCase() + '_COUNT_INVALID' })
+          errors.push({ SmallCatch: 'SMALL_CATCH_' + m.name.toUpperCase() + '_COUNT_INVALID' })
         }
       }
     }
@@ -125,7 +125,8 @@ module.exports = async (request) => {
       activityId,
       monthForApi,
       apiCounts,
-      subNumber(payload.released)
+      subNumber(payload.released),
+      Object.keys(payload).includes('noMonthRecorded')
     )
   } else {
     result = await smallCatchesApi.add(request,
@@ -133,7 +134,8 @@ module.exports = async (request) => {
       activityId,
       monthForApi,
       apiCounts,
-      subNumber(payload.released)
+      subNumber(payload.released),
+      Object.keys(payload).includes('noMonthRecorded')
     )
   }
 

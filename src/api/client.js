@@ -4,9 +4,10 @@
  * This module is responsible for the API rest interface and is data agnostic.
  */
 const Url = require('url')
-const Hoek = require('hoek')
+const Hoek = require('@hapi/hoek')
 const ResponseError = require('../handlers/response-error')
 const ETagRequest = require('request-etag')
+const Fs = require('fs')
 
 const Request = new ETagRequest({
   length: function () {
@@ -124,6 +125,12 @@ const internals = {
           // Bad requests may be API validation errors
           if (body && Object.keys(body).includes('errors')) {
             resolve(body)
+          // Age weight key upload specific errors
+          } else if (body && (Object.keys(JSON.parse(body)).includes('generalErrors') ||
+                              Object.keys(JSON.parse(body)).includes('headerErrors') ||
+                              Object.keys(JSON.parse(body)).includes('errorsByRow') ||
+                              Object.keys(JSON.parse(body)).includes('errorsByColumnAndRowNumber'))) {
+            resolve({ statusCode: response.statusCode, statusMessage: JSON.parse(body) })
           } else {
             reject(new ResponseError.Error(response.statusMessage, response.statusCode))
           }
@@ -149,6 +156,24 @@ module.exports = {
 
   requestFromLink: async (auth, link) => {
     return internals.makeRequest(auth, link, internals.method.GET, null, true, false)
+  },
+
+  /**
+   * The file uploader - accepts a file path and (at this point) assumes a .CSV file
+   * @param auth
+   * @param path
+   * @param query
+   * @param filePath
+   * @returns {Promise<*|Promise<void>>}
+   */
+  requestFileUpload: async (auth, path, query, filePath) => {
+    return internals.makeRequest(
+      auth,
+      internals.createRequest(path, query),
+      internals.method.POST,
+      Fs.createReadStream(filePath),
+      true,
+      true)
   },
 
   method: internals.method

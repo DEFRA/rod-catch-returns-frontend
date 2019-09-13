@@ -91,6 +91,9 @@ GA_TAG_MANAGER=GTM-AAAAAAA
 # Catch return entry point on GOV.UK
 CATCH_RETURNS_GOV_UK=https://www.gov.uk/catch-return
 
+# Max file upload size - 1Mb
+MAX_FILE_UPLOAD_BYTES=1000000
+
 ```
 ## To Run
 ```

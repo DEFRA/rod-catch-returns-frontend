@@ -1,0 +1,30 @@
+
+
+table.exclusion-cb tr td:last-child {
+  padding-top: 2px;
+  padding-bottom: 2px;
+
+  div {
+    padding-left: 10px;
+    float: right;
+  }
+}
+
+@media screen and (max-width: 43em) {
+  table.exclusion-cb tr td:last-child {
+    padding-top: 1px;
+    padding-bottom: 1px;
+  }
+}
+
+@media screen and (max-width: 37em) {
+  table.exclusion-cb tr td:last-child {
+    padding-top: 10px;
+    padding-bottom: 10px;
+
+     input {
+      position: relative;
+      padding-bottom: 20px;
+    }
+  }
+}

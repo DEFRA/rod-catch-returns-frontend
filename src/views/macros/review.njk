@@ -2,11 +2,14 @@
 {% from "checkboxes/macro.njk" import govukCheckboxes %}
 
 {% macro renderCheck(id, name, checked) %}
-<div class="rcr-tab-checkboxes__item no-print-area">
-    <input class="rcr-tab-checkboxes__input" type="checkbox" id="exclude-{{ id }}" name="{{ name }}" value="{{ id }}" {% if checked %}checked="checked"{% endif %} disabled=true>
-    <label for="exclude-{{ id }}" class="rcr-tab-checkboxes__label"></label>
+<div class="govuk-checkboxes govuk-checkboxes--small no-print-area">
+    <div class="govuk-checkboxes__item">
+        <input class="govuk-checkboxes__input" type="checkbox" id="exclude-{{ id }}" name="{{ name }}" value="{{ id }}" disabled=true {% if checked %}checked="checked"{% endif %}>
+        <label class="govuk-label govuk-checkboxes__label" for="exclude-{{ id }}"></label>
+    </div>
 </div>
 {% endmacro %}
+
 
 {% macro review(activities, catches, smallCatches, locked, year, fmt, reportingExclude, foundInternal) %}
     {%
@@ -27,7 +30,7 @@
             { text: "Weight" },
             { text: "Method" },
             { text: "Released" },
-            { text: "Ex.", format: "numeric", classes: "no-print-area" }
+            { text: "Ex.", classes: "no-print-area", format: "numeric" }
         ] %}
     {% else %}
         {% set largeCatchHeader = [
@@ -49,7 +52,7 @@
             { text: "Bait", format: "numeric" },
             { text: "Unknown", format: "numeric" },
             { text: "Released", format: "numeric" },
-            { text: "Ex.", classes: "no-print-area" }
+            { text: "Ex.", classes: "no-print-area", format: "numeric" }
         ] %}
     {% else %}
         {% if foundInternal %}
@@ -92,7 +95,7 @@
             {% for fish in catches %}
                 {% if fmt %}
                     {{ salmonAndLargeTroutItems.push([
-                        { text: fish.dateCaught, attributes: { 'data-label': largeCatchHeader[0].text} },
+                        { text: fish.dateCaught + ('*' if fish.onlyMonthRecorded or fish.noDateRecorded else ''), attributes: { 'data-label': largeCatchHeader[0].text} },
                         { text: fish.activity.river.name, attributes: { 'data-label': largeCatchHeader[1].text} },
                         { text: fish.species.name, attributes: { 'data-label': largeCatchHeader[2].text} },
                         { text: fish.weight, attributes: { 'data-label': largeCatchHeader[3].text} },
@@ -117,7 +120,7 @@
             {% for catch in smallCatches %}
                 {% if fmt %}
                     {{ smallCatchItems.push([
-                        { text: catch.month, attributes: { 'data-label': smallCatchHeader[0].text} },
+                        { text: catch.month + ('*' if catch.noMonthRecorded else ''), attributes: { 'data-label': smallCatchHeader[0].text} },
                         { text: catch.river, attributes: { 'data-label': smallCatchHeader[1].text} },
                         { text: catch.fly or 0, format: "numeric", attributes: { 'data-label': smallCatchHeader[2].text} },
                         { text: catch.spinner or 0, format: "numeric", attributes: { 'data-label': smallCatchHeader[3].text} },
@@ -168,7 +171,7 @@
         {% if smallCatchItems.length %}
             {{ govukTable({
                 caption: "Small adult sea trout (1lb and under) catches",
-                classes: "rcr-responsive-summary-table govuk-!-margin-bottom-9",
+                classes: "rcr-responsive-summary-table govuk-!-margin-bottom-9 exclusion-cb" if fmt else "rcr-responsive-summary-table govuk-!-margin-bottom-9",
                 captionClasses: "govuk-heading-m",
                 firstCellIsHeader: false,
                 head: smallCatchHeader,
@@ -179,7 +182,7 @@
         {% if salmonAndLargeTroutItems.length %}
             {{ govukTable({
                 caption: "Salmon and large adult sea trout",
-                classes: "rcr-responsive-summary-table govuk-!-margin-bottom-9",
+                classes: "rcr-responsive-summary-table govuk-!-margin-bottom-9 exclusion-cb" if fmt else "rcr-responsive-summary-table govuk-!-margin-bottom-9",
                 captionClasses: "govuk-heading-m",
                 firstCellIsHeader: false,
                 head: largeCatchHeader,

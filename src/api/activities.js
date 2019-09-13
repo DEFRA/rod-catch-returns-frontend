@@ -21,7 +21,8 @@ module.exports = class ActivitiesApi extends EntityApi {
           id: EntityApi.keyFromLink(river),
           name: river.name,
           internal: river.internal
-        }
+        },
+        _links: a._links
       }
     })
   }

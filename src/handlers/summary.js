@@ -25,10 +25,10 @@ module.exports = class SummaryHandler extends BaseHandler {
    */
   async doGet (request, h) {
     // Clean the cache
-    const cache = await SummaryHandler.clearCacheErrorsAndPayload(request)
+    const cache = await this.clearCacheErrorsAndPayload(request)
 
     // Find or create a submission object
-    let submission = await submissionsApi.getById(request, cache.submissionId)
+    const submission = await submissionsApi.getById(request, cache.submissionId)
 
     // Test if the submission is locked and if so redirect to the review screen
     if (await testLocked(request, cache, submission)) {

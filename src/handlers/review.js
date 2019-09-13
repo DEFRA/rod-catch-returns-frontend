@@ -29,7 +29,7 @@ module.exports = class ReviewHandler extends BaseHandler {
     cache.back = request.path
     await request.cache().set(cache)
 
-    let submission = await submissionsApi.getById(request, cache.submissionId)
+    const submission = await submissionsApi.getById(request, cache.submissionId)
 
     const { activities, catches, smallCatches, foundInternal } = await displayData(request, submission)
 

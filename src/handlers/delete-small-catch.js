@@ -5,11 +5,13 @@
  */
 const DeleteCatchHandler = require('./delete-catch')
 const SubmissionsApi = require('../api/submissions')
+const ActivitiesApi = require('../api/activities')
 const SmallCatchesApi = require('../api/small-catches')
 const ResponseError = require('./response-error')
 
 const { testLocked, monthHelper } = require('./common')
 const submissionsApi = new SubmissionsApi()
+const activitiesApi = new ActivitiesApi()
 const smallCatchesApi = new SmallCatchesApi()
 const isAllowedParam = require('./common').isAllowedParam
 
@@ -25,7 +27,6 @@ module.exports = class DeleteRiverHandler extends DeleteCatchHandler {
     if (!isAllowedParam(request.params.id)) {
       throw new ResponseError.Error('Unknown activity', ResponseError.status.UNAUTHORIZED)
     }
-
     const cache = await request.cache().get()
     const smallCatch = await smallCatchesApi.getById(request, `smallCatches/${request.params.id}`)
 
@@ -34,10 +35,11 @@ module.exports = class DeleteRiverHandler extends DeleteCatchHandler {
       throw new ResponseError.Error('Unauthorized access to small catch', ResponseError.status.UNAUTHORIZED)
     }
 
-    const submission = await submissionsApi.getFromLink(request, smallCatch._links.submission.href)
+    const submission = await submissionsApi.getById(request, cache.submissionId)
+    const activities = await activitiesApi.getFromLink(request, submission._links.activities.href)
 
     // Check they are not messing about with somebody else's submission
-    if (cache.submissionId !== submission.id) {
+    if (!activities.map(a => a._links.self.href).includes(smallCatch._links.activityEntity.href)) {
       throw new ResponseError.Error('Unauthorized access to small catch', ResponseError.status.UNAUTHORIZED)
     }
 
@@ -72,7 +74,6 @@ module.exports = class DeleteRiverHandler extends DeleteCatchHandler {
     const cache = await request.cache().get()
     await smallCatchesApi.deleteById(request, cache.delete)
     delete cache.delete
-    await DeleteCatchHandler.recalculateExclusion(request, cache)
     await request.cache().set(cache)
     return h.redirect('/summary')
   }
