@@ -10,6 +10,7 @@
 const Client = require('./client')
 const Crypto = require('../lib/crypto')
 const { URL } = require('url')
+const dotProp = require('dot-prop')
 
 module.exports = class EntityApi {
   constructor (path, mapper = async (request, e) => {
@@ -80,6 +81,20 @@ module.exports = class EntityApi {
       result.id = EntityApi.keyFromLink(result)
       return result
     }
+  }
+
+  /*
+   * Get a concatenated list of entities which are the children of all parentObjects. The data for the entities is retrieved by processing the href
+   * that must be present at jsonHrefPath on each parentObject
+   */
+  async getAllChildren (request, parentObjects, jsonHrefPath) {
+    let results = []
+    if (parentObjects && parentObjects.length) {
+      const uris = parentObjects.map(p => dotProp.get(p, jsonHrefPath))
+      const jobs = uris.map(uri => this.getFromLink(request, uri))
+      results = await Promise.all(jobs)
+    }
+    return [].concat.apply([], results)
   }
 
   // Get a single entity by its id.

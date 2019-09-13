@@ -13,7 +13,7 @@ const activitiesApi = new ActivitiesApi()
 module.exports = async (request) => {
   const payload = request.payload
 
-  let errors = []
+  const errors = []
 
   payload.daysFishedOther = checkNumber('daysFishedOther', payload.daysFishedOther, errors)
   payload.daysFishedWithMandatoryRelease = checkNumber('daysFishedWithMandatoryRelease', payload.daysFishedWithMandatoryRelease, errors)

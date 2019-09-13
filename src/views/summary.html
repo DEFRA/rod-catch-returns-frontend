@@ -28,9 +28,11 @@
 {% endmacro %}
 
 {% macro renderCheck(id, name, checked) %}
-<div class="rcr-tab-checkboxes__item">
-    <input class="rcr-tab-checkboxes__input" type="checkbox" id="exclude-{{ id }}" name="{{ name }}" value="{{ id }}" disabled="true" {% if checked %}checked="checked"{% endif %}>
-    <label for="exclude-{{ id }}" class="rcr-tab-checkboxes__label"></label>
+<div class="govuk-checkboxes govuk-checkboxes--small">
+    <div class="govuk-checkboxes__item">
+        <input class="govuk-checkboxes__input" type="checkbox" id="exclude-{{ id }}" name="{{ name }}" value="{{ id }}" {% if checked %}checked="checked"{% endif %}>
+        <label class="govuk-label govuk-checkboxes__label" for="exclude-{{ id }}"></label>
+    </div>
 </div>
 {% endmacro %}
 
@@ -81,7 +83,7 @@
     {% for fish in catches %}
         {% if fmt %}
             {{ salmonAndLargeTroutItems.push([
-                { text: fish.dateCaught, attributes: { 'data-label': largeCatchHeader[0].text} },
+                { text: fish.dateCaught + ('*' if fish.onlyMonthRecorded or fish.noDateRecorded else ''), attributes: { 'data-label': largeCatchHeader[0].text} },
                 { text: fish.activity.river.name, attributes: { 'data-label': largeCatchHeader[1].text} },
                 { text: fish.species.name, attributes: { 'data-label': largeCatchHeader[2].text} },
                 { text: fish.weight, attributes: { 'data-label': largeCatchHeader[3].text} },
@@ -114,7 +116,7 @@
         { text: "Unknown", format: "numeric" },
         { text: "Released", format: "numeric" },
         { text: "Actions", format: "numeric" },
-        { text: "Ex.", format: "numeric" }
+        { text: "Ex.", format: "numeric"  }
     ] %}
 {% else %}
     {% if foundInternal %}
@@ -145,7 +147,7 @@
     {% for catch in smallCatches %}
         {% if fmt %}
             {{ smallCatchItems.push([
-                { text: catch.month, attributes: { 'data-label': smallCatchHeader[0].text} },
+                { text: catch.month + ('*' if catch.noMonthRecorded else ''), attributes: { 'data-label': smallCatchHeader[0].text} },
                 { text: catch.river, attributes: { 'data-label': smallCatchHeader[1].text} },
                 { text: catch.fly or 0, format: "numeric", attributes: { 'data-label': smallCatchHeader[2].text} },
                 { text: catch.spinner or 0, format: "numeric", attributes: { 'data-label': smallCatchHeader[3].text} },
@@ -216,7 +218,7 @@
                 <span class="govuk-caption-m govuk-!-margin-bottom-5">Skip this section if you did not catch any small adult sea trout</span>
 
                 {{ govukTable({
-                    classes: "rcr-responsive-summary-table",
+                    classes: "rcr-responsive-summary-table exclusion-cb" if fmt else "rcr-responsive-summary-table",
                     captionClasses: "govuk-heading-m",
                     firstCellIsHeader: false,
                     attributes: { id: "small" },
@@ -236,7 +238,7 @@
                 <span class="govuk-caption-m govuk-!-margin-bottom-5">Skip this section if you did not catch any salmon or large adult sea trout</span>
 
                 {{ govukTable({
-                    classes: "rcr-responsive-summary-table",
+                    classes: "rcr-responsive-summary-table exclusion-cb" if fmt else "rcr-responsive-summary-table",
                     captionClasses: "govuk-heading-m",
                     firstCellIsHeader: false,
                     attributes: { id: "large" },
@@ -256,7 +258,7 @@
             {% if activities.length %}
                 {% if fmt %}
                     {{ govukCheckboxes({
-                          idPrefix: "exclude",
+                          idPrefix: "exclude-1",
                           name: "exclude",
                           classes: "disable-if-js-disable",
                           items: [{
@@ -275,7 +277,7 @@
             {{ govukButton({
                 name: "continue",
                 text: "Review catch return",
-                classes: "govuk-button-adjacent",
+                classes: "govuk-!-margin-right-1",
                 disabled: activities.length === 0
             }) }}
 
@@ -283,7 +285,7 @@
                 {{ govukButton({
                     name: "save",
                     text: "Save and return later",
-                    classes: "govuk-button-secondary govuk-button-adjacent",
+                    classes: "govuk-button--secondary",
                     attributes: { onclick: "var e=this;setTimeout(function(){e.disabled=true;},0);return true;" }
                 }) }}
             {% endif %}

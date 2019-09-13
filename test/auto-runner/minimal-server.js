@@ -4,8 +4,7 @@
 
 const Nunjucks = require('nunjucks')
 const Uuid = require('uuid')
-const Glue = require('glue')
-const { logger } = require('defra-logging-facade')
+const Glue = require('@hapi/glue')
 const Crypto = require('crypto')
 
 require('dotenv').config()
@@ -19,10 +18,15 @@ const manifest = {
   server: {
     cache: [
       {
-        engine: require('catbox-redis'),
-        host: process.env.REDIS_HOSTNAME,
-        port: process.env.REDIS_PORT,
-        partition: 'session-cache'
+        name: 'server-cache',
+        provider: {
+          constructor: require('@hapi/catbox-redis'),
+          options: {
+            host: process.env.REDIS_HOSTNAME,
+            port: process.env.REDIS_PORT,
+            partition: 'server-cache'
+          }
+        }
       }
     ],
     routes: { security: { noOpen: false } }
@@ -30,13 +34,13 @@ const manifest = {
   register: {
     plugins: [
       {
-        plugin: require('hapi-auth-cookie')
+        plugin: require('@hapi/cookie')
       },
       {
-        plugin: require('vision')
+        plugin: require('@hapi/vision')
       },
       {
-        plugin: require('h2o2')
+        plugin: require('@hapi/h2o2')
       }
     ]
   }
@@ -50,8 +54,9 @@ module.exports = async () => {
 
   // Point the server plugin cache to an application cache to hold authenticated session data
   server.app.cache = server.cache({
+    cache: 'server-cache',
     segment: 'sessions',
-    expiresIn: process.env.SESSION_TTL_MS || 20000
+    expiresIn: process.env.SESSION_TTL_MS
   })
 
   server.views({
@@ -73,8 +78,8 @@ module.exports = async () => {
     path: [
       'src/views',
       'src/views/macros',
-      'node_modules/govuk-frontend/',
-      'node_modules/govuk-frontend/components/'
+      'node_modules/govuk-frontend/govuk/',
+      'node_modules/govuk-frontend/govuk/components/'
     ],
     context: () => {
       return {

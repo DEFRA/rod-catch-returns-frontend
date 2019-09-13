@@ -26,7 +26,7 @@ module.exports = class YearHandler extends BaseHandler {
       // Select the year
       years.push({ value: now.year() - 1, text: (now.year() - 1).toString() })
       years.push({ value: now.year(), text: (now.year()).toString() })
-      let cache = await request.cache().get()
+      const cache = await request.cache().get()
       return this.readCacheAndDisplayView(request, h, {
         years,
         details: {
@@ -34,7 +34,7 @@ module.exports = class YearHandler extends BaseHandler {
           postcode: cache.postcode
         } })
     } else {
-      let cache = await request.cache().get()
+      const cache = await request.cache().get()
       cache.year = now.year()
       await request.cache().set(cache)
       return h.redirect('/did-you-fish')
@@ -51,11 +51,11 @@ module.exports = class YearHandler extends BaseHandler {
   async doPost (request, h, errors) {
     // Save the year
     if (!errors) {
-      let cache = await request.cache().get()
+      const cache = await request.cache().get()
       cache.year = request.payload.year.toString()
       await request.cache().set(cache)
     }
 
-    return YearHandler.writeCacheAndRedirect(request, h, errors, '/did-you-fish', '/select-year')
+    return this.writeCacheAndRedirect(request, h, errors, '/did-you-fish', '/select-year')
   }
 }

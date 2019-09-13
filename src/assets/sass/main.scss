@@ -3,10 +3,9 @@ $govuk-assets-path: '/public/';
 $govuk-images-path: '#{$govuk-assets-path}images/';
 $govuk-fonts-path: '#{$govuk-assets-path}fonts/';
 
-@import 'node_modules/govuk-frontend/all';
+@import 'node_modules/govuk-frontend/govuk/all';
 
 // Import overriding styles
 @import 'src/assets/sass/defra/catch-returns';
 @import 'src/assets/sass/defra/responsive-tables';
-@import 'src/assets/sass/defra/checkboxes-rcr';
-@import 'src/assets/sass/defra/button-rcr';
+@import 'src/assets/sass/defra/exclusion-checkboxes';

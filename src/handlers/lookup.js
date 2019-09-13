@@ -29,7 +29,7 @@ module.exports = class SaveHandler extends BaseHandler {
       throw new ResponseError.Error('Bad submission request', ResponseError.status.NOT_FOUND)
     }
 
-    let cache = await request.cache().get()
+    const cache = await request.cache().get()
     cache.contactId = submission.contactId
     cache.year = submission.season
     cache.submissionId = request.query.submissionId

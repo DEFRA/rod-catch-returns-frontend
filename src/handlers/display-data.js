@@ -23,7 +23,7 @@ module.exports = async (request, submission) => {
   activities.map(a => { a.count = 0 })
 
   // Process the catches for the summary view
-  const catches = (await catchesApi.getFromLink(request, submission._links.catches.href))
+  const catches = (await catchesApi.getAllChildren(request, activities, '_links.catches.href'))
     .sort(catchesApi.sort)
     .map(c => {
       c.dateCaught = Moment(c.dateCaught).format('DD/MM')
@@ -37,7 +37,7 @@ module.exports = async (request, submission) => {
   let foundInternal = false
 
   // Process the small catches flattening the counts
-  const smallCatches = (await smallCatchesApi.getFromLink(request, submission._links.smallCatches.href))
+  const smallCatches = (await smallCatchesApi.getAllChildren(request, activities, '_links.smallCatches.href'))
     .sort(smallCatchesApi.sort)
     .map(c => {
       c.month = monthHelper.find.textFromNum(c.month)

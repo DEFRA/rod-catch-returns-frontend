@@ -9,6 +9,7 @@
 {% from "error-message/macro.njk" import govukErrorMessage %}
 {% from "navigation.njk" import navigationHeaderBlock %}
 {% from "label/macro.njk" import govukLabel %}
+{% from "checkboxes/macro.njk" import govukCheckboxes %}
 
 {% block header %}
     {% if fmt %}
@@ -270,7 +271,7 @@
                         </span>
                 {% endif %}
 
-                    <div class="govuk-date-input">
+                    <div class="govuk-date-input--inline">
 
                         <div class="govuk-date-input__item">
                             {{ govukInput({
@@ -313,6 +314,21 @@
                             </div>
                         </div>
                     </div>
+
+                    {% if fmt %}
+                        <div class="rcr-default-date">
+                            <div class="govuk-checkboxes govuk-checkboxes--small">
+                                <div class="govuk-checkboxes__item">
+                                    <input class="govuk-checkboxes__input" type="checkbox" id="no_date" name="noDateRecorded" value="{{ payload.noDateRecorded }}" {% if payload.noDateRecorded %}checked="checked"{% endif %}>
+                                    <label class="govuk-label govuk-checkboxes__label" for="no_date">No date recorded</label>
+                                </div>
+                                <div class="govuk-checkboxes__item">
+                                    <input class="govuk-checkboxes__input" type="checkbox" id="only_month" name="onlyMonthRecorded" value="{{ payload.onlyMonthRecorded }}" {% if payload.onlyMonthRecorded %}checked="checked"{% endif %}>
+                                    <label class="govuk-label govuk-checkboxes__label" for="only_month">Only month recorded</label>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
 
                 {% if dateErrorMessage %}
                 </div>
@@ -404,7 +420,7 @@
                 {{ govukButton({
                     name: "continue",
                     text: "Save",
-                    classes: "govuk-button-adjacent",
+                    classes: "govuk-!-margin-right-1",
                     attributes: { onclick: "var e=this;setTimeout(function(){e.disabled=true;},0);return true;" }
                 }) }}
 
@@ -412,7 +428,7 @@
                     {{ govukButton({
                         name: "add",
                         text: "Save and add another",
-                        classes: "govuk-button-secondary govuk-button-adjacent",
+                        classes: "govuk-button--secondary",
                         attributes: { onclick: "var e=this;setTimeout(function(){e.disabled=true;},0);return true;" }
                     }) }}
                 {% endif %}

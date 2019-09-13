@@ -1,0 +1,62 @@
+{% extends "layout.html" %}
+
+{% from "navigation.njk" import navigationHeaderBlock %}
+
+{% from "button/macro.njk" import govukButton %}
+{% from "details/macro.njk" import govukDetails %}
+{% from "error-summary/macro.njk" import govukErrorSummary %}
+{% from "table/macro.njk" import govukTable %}
+
+{% block header %}
+  {% if fmt %}
+    {{ navigationHeaderBlock('age-weight-key') }}
+  {% else %}
+    {{ super() }}
+  {% endif %}
+{% endblock %}
+
+{% set errorRows = [] %}
+{% for error in errorItems %}
+  {{ errorRows.push(
+    [
+      {
+        text: loop.index
+      },
+      {
+        text: error.message
+      }
+    ]
+  ) }}
+{% endfor %}
+
+{% block pageTitle %}Errors found in '{{ filename }}' - GOV.UK{% endblock %}
+
+{% block content %}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <h1 class="govuk-heading-l">Errors found in '{{ filename }}'</h1>
+    <label class='govuk-label'>Before uploading the age weight key again, correct all the errors in your file.</label>
+
+    {{ govukDetails({
+      summaryText: "Your CSV file needs to look like this example",
+      html: "<img src='/public/images/csv-example.png' alt='a screenshot of an example .csv opened in Microsoft Excel'>"
+    }) }}
+
+    {{ govukTable({
+      firstCellIsHeader: true,
+      head: [
+        {
+          text: "Number"
+        },
+        {
+          text: "Error"
+        }
+      ],
+      rows: errorRows
+    }) }}
+
+    <a id="age-weight-key" class="govuk-link govuk-body-m" href="/age-weight-key">Upload the age weight key again</a>
+
+  </div>
+</div>
+{% endblock %}
