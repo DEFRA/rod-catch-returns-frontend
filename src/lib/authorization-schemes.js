@@ -4,7 +4,7 @@
  * This file contains the handlers for the authorization strategies used by hapi
  */
 
-const Joi = require('joi')
+const Joi = require('@hapi/joi')
 const Client = require('../api/client')
 const LicenceApi = require('../api/licence')
 
@@ -16,7 +16,7 @@ const licenceSchema = Joi.object().keys({
 
 // Joi schema to validate an active directory login payload
 const activeDirectorySchema = Joi.object().keys({
-  user: Joi.string().email({ minDomainAtoms: 2 }).required(),
+  user: Joi.string().email({ minDomainSegments: 2 }).required(),
   password: Joi.string().required()
 })
 

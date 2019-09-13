@@ -86,7 +86,9 @@ module.exports = async (request) => {
       payload.type,
       mass,
       payload.method,
-      released
+      released,
+      Object.keys(payload).includes('onlyMonthRecorded'),
+      Object.keys(payload).includes('noDateRecorded')
     )
   } else {
     result = await catchesApi.add(request,
@@ -96,7 +98,9 @@ module.exports = async (request) => {
       payload.type,
       mass,
       payload.method,
-      released
+      released,
+      Object.keys(payload).includes('onlyMonthRecorded'),
+      Object.keys(payload).includes('noDateRecorded')
     )
   }
 

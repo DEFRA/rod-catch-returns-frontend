@@ -13,6 +13,7 @@ module.exports = class CachedEntityApi extends EntityApi {
     this._cache = null
     this._cacheTtlMilliseconds = 1000 * 60 * 60
   }
+
   // List all entities - used for reference data. This returns data from the a cache
   async list (request) {
     if (!this._cache) {

@@ -12,34 +12,43 @@ const CryptoError = require('../lib/crypto').cryptoError
 const ResponseError = require('./response-error')
 
 module.exports = class BaseHandler {
-  constructor ([viewpath, validator]) {
+  constructor ([viewpath, validator, context]) {
     this.path = viewpath
     this.validator = validator
-    this.handler = async (request, h) => {
-      try {
-        let errors
-        if (request.method.toUpperCase() === 'GET') {
-          return await this.doGet(request, h)
-        } else {
-          if (this.validator) {
-            errors = await this.validator(request, h)
-          }
-          return await this.doPost(request, h, errors)
-        }
-      } catch (err) {
-        // Crypto error
-        if (err instanceof CryptoError) {
-          logger.error(err)
-          return h.redirect('/')
-        }
+    this.context = context || 'defaultContext'
+    this.handler = this.handler.bind(this)
+  }
 
-        // Response error
-        if (err instanceof ResponseError.Error) {
-          logger.debug(err)
-          return h.redirect(`/error/${err.statusCode}`)
-        } else {
-          throw err
+  /**
+   * This is the high level handler function
+   * @param request
+   * @param h
+   * @returns {Promise<*>}
+   */
+  async handler (request, h) {
+    try {
+      let errors
+      if (request.method.toUpperCase() === 'GET') {
+        return this.doGet(request, h)
+      } else {
+        if (this.validator) {
+          errors = await this.validator(request, h)
         }
+        return this.doPost(request, h, errors)
+      }
+    } catch (err) {
+      // Crypto error
+      if (err instanceof CryptoError) {
+        logger.error(err)
+        return h.redirect('/')
+      }
+
+      // Response error
+      if (err instanceof ResponseError.Error) {
+        logger.debug(err)
+        return h.redirect(`/error/${err.statusCode}`)
+      } else {
+        throw err
       }
     }
   }
@@ -49,20 +58,20 @@ module.exports = class BaseHandler {
    * cache and redirect to the errorPath. Otherwise remove the errors and payload
    * object from the cache and rewrite the cache
    */
-  static async writeCacheAndRedirect (request, h, errors, successPath, errorPath, c) {
+  async writeCacheAndRedirect (request, h, errors, successPath, errorPath, c) {
+    const cache = c || await request.cache().get()
+
     if (errors) {
       // Write the errors into the cache
-      let cache = c || await request.cache().get()
-      cache.errors = errors
-      cache.payload = request.payload
+      cache[this.context] = cache[this.context] || {}
+      cache[this.context].errors = errors
+      cache[this.context].payload = request.payload
       await request.cache().set(cache)
       return h.redirect(errorPath)
     }
-    let cache = c || await request.cache().get()
-    if (cache.errors || cache.payload) {
-      delete cache.errors
-      delete cache.payload
-    }
+
+    if (cache[this.context]) delete cache[this.context]
+
     await request.cache().set(cache)
     return h.redirect(successPath)
   }
@@ -80,11 +89,14 @@ module.exports = class BaseHandler {
       throw new Error('Page object must be an object')
     }
 
-    let cache = await request.cache().get()
-    if (cache.payload || cache.errors) {
-      pageObj = Object.assign(pageObj, { payload: cache.payload, errors: cache.errors })
+    const cache = await request.cache().get()
+    if (cache[this.context] && (cache[this.context].payload || cache[this.context].errors)) {
+      pageObj = Object.assign(pageObj, {
+        payload: cache[this.context].payload,
+        errors: cache[this.context].errors
+      })
     }
-    // Tell the page if we are fmt
+
     return h.view(this.path, Object.assign(pageObj, { fmt: process.env.CONTEXT === 'FMT' }))
   }
 
@@ -92,12 +104,10 @@ module.exports = class BaseHandler {
    * Allow handlers to clear the cache for a
    * canceled activity
    */
-  static async clearCacheErrorsAndPayload (request) {
-    let cache = await request.cache().get()
-    if (cache.errors || cache.payload || cache.add) {
-      delete cache.errors
-      delete cache.payload
-      delete cache.add
+  async clearCacheErrorsAndPayload (request) {
+    const cache = await request.cache().get()
+    if (cache[this.context]) {
+      delete cache[this.context]
       await request.cache().set(cache)
     }
     return cache

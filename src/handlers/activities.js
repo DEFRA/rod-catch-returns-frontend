@@ -30,7 +30,7 @@ module.exports = class ActivitiesHandler extends BaseHandler {
     }
 
     const cache = await request.cache().get()
-    let submission = await submissionsApi.getById(request, cache.submissionId)
+    const submission = await submissionsApi.getById(request, cache.submissionId)
     const activities = await activitiesApi.getFromLink(request, submission._links.activities.href)
     const rivers = (await riversApi.list(request))
       .filter(r => process.env.CONTEXT === 'FMT' ? true : !r.internal).sort(riversApi.sort)
@@ -108,7 +108,7 @@ module.exports = class ActivitiesHandler extends BaseHandler {
    * @returns {Promise<*>}
    */
   async doPost (request, h, errors) {
-    return ActivitiesHandler.writeCacheAndRedirect(request, h, errors, '/summary',
+    return this.writeCacheAndRedirect(request, h, errors, '/summary',
       `/activities/${encodeURIComponent(request.params.id)}`)
   }
 }

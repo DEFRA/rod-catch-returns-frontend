@@ -82,6 +82,6 @@ module.exports = class DidYouFishHandler extends BaseHandler {
       }
     }
 
-    return DidYouFishHandler.writeCacheAndRedirect(request, h, errors, '/summary', this.path)
+    return this.writeCacheAndRedirect(request, h, errors, '/summary', this.path)
   }
 }

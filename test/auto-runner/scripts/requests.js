@@ -7,12 +7,15 @@
 
 const LICENCE = String('B7A718')
 const POSTCODE = String('WA48HT')
-const YEAR = require('moment')().year()
 
-const THISMONTH = require('moment')().month() + 1
-const NEXTMONTH = require('moment')().add(1, 'months').month() + 1
-const YESTERDAY = require('moment')().subtract(1, 'days')
-const TOMORROW = require('moment')().add(1, 'days')
+const moment = require('moment')
+
+const YEAR = moment().year()
+const THISMONTH = moment().month() + 1
+const NEXTMONTH = moment().add(1, 'months').month() + 1
+
+const YESTERDAY = moment().subtract(1, 'days')
+const TOMORROW = moment().add(1, 'days')
 
 const FMTUSER = String('admin1@example.com')
 const FMTPASS = String('admin')
@@ -98,7 +101,7 @@ module.exports = {
     { method: 'GET', path: '/small-catches/add', status: 200 },
     { method: 'POST',
       path: '/small-catches/add',
-      payload: { river: 'rivers/11', month:  THISMONTH.toString(), fly: '', spinner: '2', bait: '', released: '1' },
+      payload: { river: 'rivers/11', month: THISMONTH.toString(), fly: '', spinner: '2', bait: '', released: '1' },
       status: 302,
       redirect: '/summary' },
     { method: 'GET', path: '/summary', status: 200 }
@@ -136,7 +139,7 @@ module.exports = {
     { method: 'GET', path: '/small-catches/add', status: 200 },
     { method: 'POST',
       path: '/small-catches/add',
-      payload: { river: 'rivers/11', month:  NEXTMONTH.toString(), fly: '-2', spinner: '0', bait: '0', released: '22', add: 'add' },
+      payload: { river: 'rivers/11', month: NEXTMONTH.toString(), fly: '-2', spinner: '0', bait: '0', released: '22', add: 'add' },
       status: 302,
       redirect: '/small-catches/add' },
     { method: 'GET', path: '/small-catches/add', status: 200 }
@@ -149,7 +152,7 @@ module.exports = {
       payload: {
         river: 'rivers/190',
         day: YESTERDAY.date().toString(),
-        month: YESTERDAY.month().toString(),
+        month: (YESTERDAY.month() + 1).toString(),
         type: 'species/1',
         system: 'IMPERIAL',
         pounds: '1',
@@ -169,7 +172,7 @@ module.exports = {
       payload: {
         river: 'rivers/11',
         day: YESTERDAY.date().toString(),
-        month: YESTERDAY.month().toString(),
+        month: (YESTERDAY.month() + 1).toString(),
         type: 'species/1',
         system: 'IMPERIAL',
         pounds: '1',
@@ -189,7 +192,7 @@ module.exports = {
       payload: {
         river: 'rivers/190',
         day: YESTERDAY.date().toString(),
-        month: YESTERDAY.month().toString(),
+        month: (YESTERDAY.month() + 1).toString(),
         type: 'species/2',
         system: 'IMPERIAL',
         pounds: '1',
@@ -209,7 +212,7 @@ module.exports = {
       payload: {
         river: 'rivers/190',
         day: YESTERDAY.date().toString(),
-        month: YESTERDAY.month().toString(),
+        month: (YESTERDAY.month() + 1).toString(),
         type: 'species/2',
         system: 'IMPERIAL',
         pounds: '1',
@@ -257,7 +260,7 @@ module.exports = {
       payload: {
         river: 'rivers/190',
         day: TOMORROW.date().toString(),
-        month: TOMORROW.month().toString(),
+        month: (TOMORROW.month() + 1).toString(),
         type: 'species/1',
         system: 'METRIC',
         pounds: '',
@@ -307,7 +310,7 @@ module.exports = {
     { method: 'GET', path: '/review', status: 200 }
   ],
   fmtSignOut: [
-    { method: 'GET', path: '/logout', status: 302, redirect: '/',  },
+    { method: 'GET', path: '/logout', status: 302, redirect: '/' },
     { method: 'GET', path: '/', status: 302, redirect: '/login' },
     { method: 'GET', path: '/login', status: 200 }
   ],
@@ -324,7 +327,7 @@ module.exports = {
       payload: {
         river: 'rivers/190',
         day: YESTERDAY.date().toString(),
-        month: YESTERDAY.month().toString(),
+        month: (YESTERDAY.month() + 1).toString(),
         type: 'species/1',
         system: 'IMPERIAL',
         pounds: '1',
@@ -343,12 +346,12 @@ module.exports = {
       status: 302,
       redirect: '/summary' },
     { method: 'GET', path: '/summary', status: 200 },
-    { method: 'POST', path: '/exclusions', status: 200, payload: { 'exclude-smallCatches/3': 'true'  } },
-    { method: 'POST', path: '/exclusions', status: 200, payload: { 'exclude-catches/3': 'true'  } },
-    { method: 'POST', path: '/exclusions', status: 200, payload: { 'exclude-smallCatches/3': 'false'  } },
-    { method: 'POST', path: '/exclusions', status: 200, payload: { 'exclude-catches/3': 'false'  } },
-    { method: 'POST', path: '/exclusions', status: 200, payload: { 'exclude-1': 'true'  } },
-    { method: 'POST', path: '/exclusions', status: 200, payload: { 'exclude-1': 'false'  } },
+    { method: 'POST', path: '/exclusions', status: 200, payload: { 'exclude-smallCatches/3': 'true' } },
+    { method: 'POST', path: '/exclusions', status: 200, payload: { 'exclude-catches/3': 'true' } },
+    { method: 'POST', path: '/exclusions', status: 200, payload: { 'exclude-smallCatches/3': 'false' } },
+    { method: 'POST', path: '/exclusions', status: 200, payload: { 'exclude-catches/3': 'false' } },
+    { method: 'POST', path: '/exclusions', status: 200, payload: { 'exclude-1': 'true' } },
+    { method: 'POST', path: '/exclusions', status: 200, payload: { 'exclude-1': 'false' } },
     { method: 'GET', path: '/review', status: 200 },
     { method: 'POST', path: '/review', payload: { continue: '' }, status: 302, redirect: '/confirmation' },
     { method: 'GET', path: '/confirmation', status: 200 }

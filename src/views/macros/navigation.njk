@@ -1,6 +1,6 @@
 {% from "header/macro.njk" import govukHeader %}
 
-{% macro navigationHeaderBlock() %}
+{% macro navigationHeaderBlock(page) %}
     {{ govukHeader({
         serviceUrl: "/",
         homepageUrl: "https://www.gov.uk/",
@@ -8,13 +8,19 @@
         serviceName: "Report your salmon or sea trout catch",
         navigation: [
             {
-              href: "#",
+              href: "/licence" if page === "licence" else "/back",
               text: "Catch returns",
-              active: true
+              active: not page or page === "licence"
             },
             {
               href: "/reports",
-              text: "Reports"
+              text: "Reports",
+              active: page === "reports"
+            },
+            {
+              href: "/age-weight-key",
+              text: "Age weight key",
+              active: page === "age-weight-key"
             },
             {
               href: "/logout",

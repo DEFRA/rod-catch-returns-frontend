@@ -11,7 +11,7 @@ module.exports = {
    * @returns {Array}
    */
   apiErrors: (result) => {
-    let errors = []
+    const errors = []
     result.errors.forEach(e => {
       const apiErr = {}
       apiErr[e.entity] = e.message
@@ -79,7 +79,7 @@ module.exports = {
     if (!num || !num.trim()) {
       return 0
     } else if (isNaN(num)) {
-      let err = {}
+      const err = {}
       err[label] = 'NOT_A_NUMBER'
       errors.push(err)
       return num

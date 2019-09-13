@@ -5,12 +5,15 @@
  */
 module.exports = {
   sessionCookie: {
-    password: process.env.COOKIE_PW,
-    cookie: 'sid',
+    cookie: {
+      name: 'sid',
+      password: process.env.COOKIE_PW,
+      isSecure: process.env.HTTPS === 'true',
+      clearInvalid: true
+    },
+
     redirectTo: process.env.CONTEXT === 'ANGLER' ? '/licence-auth' : '/login',
     appendNext: process.env.CONTEXT === 'FMT',
-    isSecure: process.env.HTTPS === 'true',
-    clearInvalid: true,
     /**
      * validation function called on every request
      * When the cache-entry expires the user has to re-authenticate

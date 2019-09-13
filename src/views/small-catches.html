@@ -229,7 +229,7 @@
                         </span>
                 {% endif %}
 
-                <div class="govuk-date-input">
+                <div class="govuk-date-input--inline">
                     <div class="govuk-date-input__item">
                         {{ govukInput({
                             id: "month",
@@ -255,6 +255,17 @@
                         </div>
                     </div>
                 </div>
+
+                {% if fmt %}
+                    <div class="rcr-default-date--single">
+                        <div class="govuk-checkboxes govuk-checkboxes--small">
+                            <div class="govuk-checkboxes__item">
+                                <input class="govuk-checkboxes__input" type="checkbox" id="no_month_recorded" name="noMonthRecorded" value="{{ payload.noMonthRecorded }}" {% if payload.noMonthRecorded %}checked="checked"{% endif %}>
+                                <label class="govuk-label govuk-checkboxes__label" for="no_month_recorded">No month recorded</label>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
 
                 {% if monthsErrorMessage %}
                 </div>
@@ -346,7 +357,7 @@
                 {{ govukButton({
                     name: "continue",
                     text: "Save",
-                    classes: "govuk-button-adjacent",
+                    classes: "govuk-!-margin-right-1",
                     attributes: { onclick: "var e=this;setTimeout(function(){e.disabled=true;},0);return true;" }
                 }) }}
 
@@ -354,7 +365,7 @@
                     {{ govukButton({
                         name: "add",
                         text: "Save and add another",
-                        classes: "govuk-button-secondary govuk-button-adjacent",
+                        classes: "govuk-button--secondary",
                         attributes: { onclick: "var e=this;setTimeout(function(){e.disabled=true;},0);return true;" }
                     }) }}
                 {% endif %}

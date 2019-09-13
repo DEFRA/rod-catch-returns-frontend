@@ -1,0 +1,188 @@
+{% extends "layout.html" %}
+
+{% from "navigation.njk" import navigationHeaderBlock %}
+
+{% from "button/macro.njk" import govukButton %}
+{% from "details/macro.njk" import govukDetails %}
+{% from "error-summary/macro.njk" import govukErrorSummary %}
+{% from "fieldset/macro.njk" import govukFieldset %}
+{% from "file-upload/macro.njk" import govukFileUpload %}
+{% from "input/macro.njk" import govukInput %}
+{% from "radios/macro.njk" import govukRadios %}
+
+{% block header %}
+  {% if fmt %}
+    {{ navigationHeaderBlock('age-weight-key') }}
+  {% else %}
+    {{ super() }}
+  {% endif %}
+{% endblock %}
+
+{% set gateItems = [] %}
+{% for g in gates %}
+  {{ gateItems.push({
+    text: g.name,
+    value: g.id,
+    checked: g.id === gate
+
+  }) }}
+{% endfor %}
+
+{% set errorList = [] %}
+{% set gateErrorMessage = null %}
+{% set yearErrorMessage = null %}
+{% set fileErrorMessage = null %}
+
+{% if errors %}
+  {% for error in errors %}
+    {% if error.type === 'NO_GATE_SELECTED' %}
+      {% set gateErrorMessage = { text: "Select an age weight key" } %}
+      {{ errorList.push({
+        text: "Select an age weight key",
+        href: "#gate"
+      }) }}
+    {% endif %}
+
+    {% if error.type === 'NO_YEAR_ENTERED' %}
+      {% set yearErrorMessage = { text: "Enter a year" } %}
+      {{ errorList.push({
+        text: "Enter a year",
+        href: "#year"
+      }) }}
+    {% endif %}
+
+    {% if error.type === 'NOT_A_REAL_YEAR' %}
+      {% set yearErrorMessage = { text: "Enter a real year" } %}
+      {{ errorList.push({
+        text: "Enter a real year",
+        href: "#year"
+      }) }}
+    {% endif %}
+
+    {% if error.type === 'YEAR_OUT_OF_RANGE' %}
+      {% set yearErrorMessage = { text: "Enter year between " + years[0] + " and " + years[1] } %}
+      {{ errorList.push({
+        text: "Enter year between " + years[0] + " and " + years[1],
+        href: "#year"
+      }) }}
+    {% endif %}
+
+    {% if error.type === 'NO_FILE_SELECTED' %}
+      {% set fileErrorMessage = { text: "Select a file" } %}
+      {{ errorList.push({
+        text: "Select a file",
+        href: "#upload"
+      }) }}
+    {% endif %}
+
+    {% if error.type === 'BAD_FILE_TYPE' %}
+      {% set fileErrorMessage = { text: "The selected file must be a CSV" } %}
+      {{ errorList.push({
+        text: "The selected file must be a CSV",
+        href: "#upload"
+      }) }}
+    {% endif %}
+
+    {% if error.type === 'FILE_TOO_LARGE' %}
+      {% set fileErrorMessage = { text: "The selected file must be smaller than 1MB" } %}
+      {{ errorList.push({
+        text: "The selected file must be smaller than 1MB",
+        href: "#upload"
+      }) }}
+    {% endif %}
+
+    {% if error.type === 'FILE_EMPTY' %}
+      {% set fileErrorMessage = { text: "The selected file is empty" } %}
+      {{ errorList.push({
+        text: "The selected file is empty",
+        href: "#upload"
+      }) }}
+    {% endif %}
+
+    {% if error.type === 'BAD_FILE' %}
+      {% set fileErrorMessage = { html: "<span>The selected file must match the required template</span><br><a href='/age-weight-key-error-breakdown'>View all the files errors</a>" } %}
+      {{ errorList.push({
+        text: "The selected file must match the required template",
+        href: "#upload"
+      }) }}
+    {% endif %}
+
+  {% endfor %}
+{% endif %}
+
+{% block pageTitle %}Upload a Salmon age weight key - GOV.UK{% endblock %}
+{% block content %}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-l">Upload a Salmon age weight key</h1>
+    <form method="post" enctype="multipart/form-data">
+      {% if errors %}
+        {{ govukErrorSummary({
+          titleText: "There is a problem",
+          errorList: errorList
+        }) }}
+      {% endif %}
+
+      {% call govukFieldset({ }) %}
+
+        {{ govukRadios({
+          classes: "govuk-radios--inline",
+          idPrefix: "gate",
+          name: "gate",
+          fieldset: {
+            legend: {
+              text: "Which age weight key would you like to upload?",
+              classes: "govuk-!-font-weight-bold"
+            }
+          },
+          items: gateItems,
+          errorMessage: gateErrorMessage
+        }) }}
+
+        <label class='govuk-label govuk-!-font-weight-bold'>Which year does the age weight key apply to?</label>
+        <span class='govuk-hint'>For example, 2017</span>
+
+        {{ govukInput({
+          idPrefix: "year",
+          name: "year",
+          label: {
+            text: "Year"
+          },
+          classes: "govuk-input--width-4",
+          value: year,
+          errorMessage: yearErrorMessage
+        }) }}
+
+        {{ govukFileUpload({
+          id: "upload",
+          name: "upload",
+          label: {
+            text: "Select your file",
+            classes: "govuk-!-font-weight-bold"
+          },
+          hint: {
+            text: "Save your file in comma seperated value format (CSV)"
+          },
+          attributes: {
+            accept: ".csv"
+          },
+          errorMessage: fileErrorMessage
+        }) }}
+
+        {{ govukDetails({
+          summaryText: "Your CSV file needs to look like this example",
+          html: "<img src='/public/images/csv-example.png' alt='a screenshot of an example .csv opened in Microsoft Excel'>"
+        }) }}
+
+        {{ govukButton({
+          name: "submit",
+          text: "Upload"
+        }) }}
+
+      {% endcall %}
+      {{ extra() }}
+    </form>
+    <a id="licence" class="govuk-link govuk-body-m" href="/age-weight-key-cancel">Cancel</a>
+  </div>
+</div>
+{% endblock %}

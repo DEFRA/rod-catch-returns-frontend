@@ -6,7 +6,7 @@
 module.exports = async (request) => {
   const payload = request.payload
 
-  let errors = []
+  const errors = []
 
   if (!payload.dyf) {
     errors.push({ dyf: 'EMPTY' })

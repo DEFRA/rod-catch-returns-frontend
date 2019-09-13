@@ -1,0 +1,39 @@
+{% extends "layout.html" %}
+​
+{% from "navigation.njk" import navigationHeaderBlock %}
+{% from "panel/macro.njk" import govukPanel %}
+​
+{% block header %}
+  {% if fmt %}
+    {{ navigationHeaderBlock('age-weight-key') }}
+  {% else %}
+    {{ super() }}
+  {% endif %}
+{% endblock %}
+​
+{% block pageTitle %}Your age weight key upload has completed - GOV.UK{% endblock %}
+​
+{% block content %}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    {{ govukPanel({
+      titleText: "Upload complete",
+      html: "<strong>" + ageWeightKey.filename + "</strong><div class='govuk-!-padding-bottom-4'></div><strong>" + ageWeightKey.gate + ", " + ageWeightKey.year + "</strong>",
+      classes: "govuk-!-margin-bottom-6"
+    }) }}
+    ​
+    <p class=" govuk-body-m">Thank you for uploading '{{ ageWeightKey.filename }}' on {{ now }}</p>
+    ​
+    <h2 class="govuk-heading-m">What happens next?</h2>
+    <p class="govuk-body-m">The uploaded data will be used in <a id="reports" class="govuk-link govuk-body-m" href="/reports">reports</a> to help monitor, assess, and manage fish stocks.</p>
+    ​
+    <div class="govuk-!-padding-bottom-4"></div>
+    ​
+    <a id="age-weight-key" class="govuk-link govuk-body-m" href="/age-weight-key">Upload another age weight key</a>
+
+    {{ extra() }}
+    ​
+    <div class="govuk-!-padding-bottom-4"></div>
+  </div>
+</div>
+{% endblock %}

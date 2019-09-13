@@ -21,7 +21,7 @@ const activitiesApi = new ActivitiesApi()
 const methodsApi = new MethodsApi()
 
 // Calculate calendar months
-const months = [ ...Array(12).keys() ].map(m => {
+const months = [...Array(12).keys()].map(m => {
   const mth = Moment({ month: m }).format('MMMM')
   return {
     value: mth.toUpperCase(),
@@ -74,7 +74,7 @@ module.exports = class SmallCatchHandler extends BaseHandler {
           // Filter to single river and filter the allowed months
           rivers = rivers.filter(r => r.id === cache.add.river)
         }
-        const smallCatches = await smallCatchesApi.getFromLink(request, submission._links.smallCatches.href)
+        const smallCatches = await smallCatchesApi.getAllChildren(request, activities, '_links.smallCatches.href')
         const activity = activities.find(a => a.river.id === rivers[0].id)
         const monthsSelected = smallCatches.filter(s => s.activity.id === activity.id).map(m => m.month)
         monthsFiltered = months.filter(m => !monthsSelected.includes(m.value))
@@ -97,18 +97,14 @@ module.exports = class SmallCatchHandler extends BaseHandler {
     } else {
       // Modify an existing catch
       let smallCatch = await smallCatchesApi.getById(request, `smallCatches/${request.params.id}`)
-
       if (!smallCatch) {
         throw new ResponseError.Error('Unauthorized access to small catch', ResponseError.status.UNAUTHORIZED)
       }
-
-      const smallCatchSubmission = await submissionsApi.getFromLink(request, smallCatch._links.submission.href)
-      smallCatch = await smallCatchesApi.doMap(request, smallCatch)
-
       // Check they are not messing about with somebody else's activity
-      if (smallCatchSubmission.id !== submission.id) {
+      if (!activities.map(a => a._links.self.href).includes(smallCatch._links.activityEntity.href)) {
         throw new ResponseError.Error('Unauthorized access to large catch', ResponseError.status.UNAUTHORIZED)
       }
+      smallCatch = await smallCatchesApi.doMap(request, smallCatch)
 
       // Write the catch id onto the cache
       cache.smallCatch = { id: smallCatch.id }
@@ -117,7 +113,8 @@ module.exports = class SmallCatchHandler extends BaseHandler {
       const payload = {
         river: smallCatch.activity.river.id,
         released: smallCatch.released,
-        month: smallCatch.month
+        month: smallCatch.month,
+        noMonthRecorded: smallCatch.noMonthRecorded
       }
 
       smallCatch.counts.forEach(t => {
@@ -165,7 +162,7 @@ module.exports = class SmallCatchHandler extends BaseHandler {
       delete cache.add
     }
 
-    return SmallCatchHandler.writeCacheAndRedirect(request, h, errors, next,
+    return this.writeCacheAndRedirect(request, h, errors, next,
       `/small-catches/${encodeURIComponent(request.params.id)}`, cache)
   }
 }

@@ -30,6 +30,8 @@ module.exports = class CatchesApi extends EntityApi {
         released: c.released,
         mass: c.mass,
         reportingExclude: c.reportingExclude,
+        onlyMonthRecorded: c.onlyMonthRecorded,
+        noDateRecorded: c.noDateRecorded,
         activity: {
           id: EntityApi.keyFromLink(activity),
           days: activity.days,
@@ -50,7 +52,8 @@ module.exports = class CatchesApi extends EntityApi {
     })
   }
 
-  async add (request, submissionId, activityId, dateCaught, speciesId, mass, methodId, released) {
+  async add (request, submissionId, activityId, dateCaught, speciesId, mass, methodId, released,
+    onlyMonthRecorded, noDateRecorded) {
     return super.add(request, {
       submission: submissionId,
       activity: activityId,
@@ -58,17 +61,22 @@ module.exports = class CatchesApi extends EntityApi {
       species: speciesId,
       mass: mass,
       method: methodId,
-      released: released
+      released: released,
+      onlyMonthRecorded: onlyMonthRecorded,
+      noDateRecorded: noDateRecorded
     })
   }
 
-  async change (request, catchId, activityId, dateCaught, speciesId, mass, methodId, released) {
+  async change (request, catchId, activityId, dateCaught, speciesId, mass, methodId, released,
+    onlyMonthRecorded, noDateRecorded) {
     const result = await super.change(request, catchId, {
       dateCaught: dateCaught,
       mass: mass,
       released: released,
       species: speciesId,
-      method: methodId
+      method: methodId,
+      onlyMonthRecorded: onlyMonthRecorded,
+      noDateRecorded: noDateRecorded
     })
 
     if (Object.keys(result).includes('errors')) {

@@ -3,7 +3,7 @@
 /**
  * Environment Joi validation schema
  */
-const Joi = require('joi')
+const Joi = require('@hapi/joi')
 
 module.exports = Joi.object().keys({
   NODE_ENV: Joi.string().required(),

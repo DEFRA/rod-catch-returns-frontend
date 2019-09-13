@@ -1,5 +1,5 @@
 'use strict'
-const Joi = require('joi')
+const Joi = require('@hapi/joi')
 const id = Joi.string()
 
 /**
@@ -11,11 +11,17 @@ const LicenceHandler = require('../handlers/licence')
 const ReportsHandler = require('../handlers/reports')
 const ReportDownloadHandler = require('../handlers/report-download')
 const LookupHandler = require('../handlers/lookup')
+const AgeWeightKeyHandler = require('../handlers/age-weight-key')
+const AgeWeightKeyOkHandler = require('../handlers/age-weight-key-ok')
+const AgeWeightKeyConflictCheckHandler = require('../handlers/age-weight-key-conflict-check')
+const AgeWeightKeyErrorBreakdownHandler = require('../handlers/age-weight-key-error-breakdown')
+const AgeWeightKeyCancel = require('../handlers/age-weight-key-cancel')
 const ExclusionsHandler = require('../handlers/exclusions')
 
 // Define the validators
 const loginValidator = require('../validators/login')
 const licenceValidator = require('../validators/licence')
+const ageWeightKeyValidator = require('../validators/age-weight-key')
 
 // Define the handlers
 const loginHandler = new LoginHandler('login', loginValidator)
@@ -24,6 +30,11 @@ const reportsHandler = new ReportsHandler('reports')
 const reportDownloadHandler = new ReportDownloadHandler()
 const licenceHandler = new LicenceHandler('licence', licenceValidator)
 const lookupHandler = new LookupHandler('lookup')
+const ageWeightKeyHandler = new AgeWeightKeyHandler('age-weight-key', ageWeightKeyValidator, 'ageWeightContext')
+const ageWeightKeyOkHandler = new AgeWeightKeyOkHandler('age-weight-key-ok', null, 'ageWeightContext')
+const ageWeightKeyConflictCheckHandler = new AgeWeightKeyConflictCheckHandler('age-weight-key-conflict-check', null, 'ageWeightContext')
+const ageWeightKeyErrorBreakdownHandler = new AgeWeightKeyErrorBreakdownHandler('age-weight-key-error-breakdown')
+const ageWeightKeyCancel = new AgeWeightKeyCancel(null, null, 'ageWeightContext')
 const exclusionsHandler = new ExclusionsHandler('exclusions')
 
 const api = {
@@ -102,6 +113,85 @@ module.exports = [
     handler: reportDownloadHandler.handler
   },
 
+  // Age weight key upload handlers
+  {
+    path: '/age-weight-key',
+    method: 'GET',
+    handler: ageWeightKeyHandler.handler
+  },
+
+  // Age weight key upload handlers
+  {
+    path: '/age-weight-key',
+    method: 'POST',
+    handler: ageWeightKeyHandler.handler,
+    options: {
+      payload: {
+        output: 'file',
+        parse: true,
+        maxBytes: 1000 * 1000,
+        uploads: require('../../defaults').TEMP
+      },
+      plugins: {
+        disinfect: {
+          disinfectQuery: true,
+          disinfectParams: true,
+          disinfectPayload: false
+        }
+      }
+    }
+  },
+
+  // Age weight key upload success handler
+  {
+    path: '/age-weight-key-ok',
+    method: 'GET',
+    handler: ageWeightKeyOkHandler.handler
+  },
+
+  // Age weight key conflict check handlers
+  {
+    path: '/age-weight-key-conflict-check',
+    method: 'GET',
+    handler: ageWeightKeyConflictCheckHandler.handler
+  },
+
+  // Age weight key conflict check handlers
+  {
+    path: '/age-weight-key-conflict-check',
+    method: 'POST',
+    handler: ageWeightKeyConflictCheckHandler.handler,
+    options: {
+      payload: {
+        output: 'file',
+        parse: true,
+        maxBytes: 1000 * 1000,
+        uploads: require('../../defaults').TEMP
+      },
+      plugins: {
+        disinfect: {
+          disinfectQuery: true,
+          disinfectParams: true,
+          disinfectPayload: false
+        }
+      }
+    }
+  },
+
+  // Age weight key error breakdown handler
+  {
+    path: '/age-weight-key-error-breakdown',
+    method: 'GET',
+    handler: ageWeightKeyErrorBreakdownHandler.handler
+  },
+
+  // Age weight key cancel
+  {
+    path: '/age-weight-key-cancel',
+    method: 'GET',
+    handler: ageWeightKeyCancel.handler
+  },
+
   // Lookup handler
   {
     path: '/lookup',
@@ -116,7 +206,7 @@ module.exports = [
 
   // Back to the catch return from the reports
   {
-    path: '/reports-back',
+    path: '/back',
     method: 'GET',
     handler: async (request, h) => {
       return h.redirect(((cache) => {

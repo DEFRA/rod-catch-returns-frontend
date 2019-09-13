@@ -1,8 +1,5 @@
 'use strict'
 
-const Nunjucks = require('nunjucks')
-const Uuid = require('uuid')
-const Glue = require('glue')
 const { logger } = require('defra-logging-facade')
 const Code = require('code')
 const expect = Code.expect
