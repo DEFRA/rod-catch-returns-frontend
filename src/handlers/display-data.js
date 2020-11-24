@@ -65,6 +65,11 @@ module.exports = async (request, submission) => {
   const activities = (await activitiesApi.getFromLink(request, submission._links.activities.href))
     .sort(activitiesApi.sort)
 
+  // Add a count to the activities
+  for (const activity of activities) {
+    activity.count = 0
+  }
+
   // Process the catches for the summary view
   const catches = (await catchesApi.getAllChildren(request, activities, '_links.catches.href'))
     .sort(catchesApi.sort)
