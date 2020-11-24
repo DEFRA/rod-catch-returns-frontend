@@ -9,7 +9,7 @@ When you purchase a migratory salmon and sea trout rod licence, you are legally 
 Users are asked to submit details of the fish they caught (species, weight, number etc) and where they caught them.
 
 ## To build
-Version 14 or above of Node.js is required to run the service, although it works with 8
+Version 14 or above of Node.js is required to run the service.
 ```
 npm install
 npm run build
