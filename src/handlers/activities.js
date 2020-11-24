@@ -101,7 +101,8 @@ class ActivitiesHandler extends BaseHandler {
       return h.redirect('/review')
     }
 
-    return (request.params.id === 'add') ? this.add(request, h, cache, activities, rivers)
+    return (request.params.id === 'add')
+      ? this.add(request, h, cache, activities, rivers)
       : this.change(request, h, cache, activities, rivers, submission)
   }
 

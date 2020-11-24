@@ -151,7 +151,8 @@ class SalmonAndLargeTroutHandler extends BaseHandler {
       return h.redirect('/review')
     }
 
-    return request.params.id === 'add' ? this.add(request, h, cache, rivers, methods)
+    return request.params.id === 'add'
+      ? this.add(request, h, cache, rivers, methods)
       : this.change(request, h, cache, rivers, methods, activities)
   }
 

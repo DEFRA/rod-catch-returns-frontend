@@ -25,7 +25,8 @@ function cleanDate (payload, cache) {
   } else {
     const dateCaught = moment({ year: cache.year, month: payload.month - 1, day: payload.day })
     return dateCaught.isValid()
-      ? moment({ year: cache.year, month: payload.month - 1, day: payload.day }).format() : null
+      ? moment({ year: cache.year, month: payload.month - 1, day: payload.day }).format()
+      : null
   }
 }
 

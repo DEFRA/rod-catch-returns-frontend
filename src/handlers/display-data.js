@@ -65,16 +65,14 @@ module.exports = async (request, submission) => {
   const activities = (await activitiesApi.getFromLink(request, submission._links.activities.href))
     .sort(activitiesApi.sort)
 
-  // Add a count to the activities
-  activities.map(a => { a.count = 0 })
-
   // Process the catches for the summary view
   const catches = (await catchesApi.getAllChildren(request, activities, '_links.catches.href'))
     .sort(catchesApi.sort)
     .map(mapLargeCatch(activities))
 
-  const catchIsEqual = (a, b) => process.env.CONTEXT === 'ANGLER' ? a.dateCaught === b.dateCaught : a.dateCaught === b.dateCaught &&
-    ((b.onlyMonthRecorded || b.noDateRecorded) === (a.onlyMonthRecorded || a.noDateRecorded))
+  const catchIsEqual = (a, b) => process.env.CONTEXT === 'ANGLER'
+    ? a.dateCaught === b.dateCaught
+    : a.dateCaught === b.dateCaught && ((b.onlyMonthRecorded || b.noDateRecorded) === (a.onlyMonthRecorded || a.noDateRecorded))
 
   const riverIsEqual = (a, b) => catchIsEqual(a, b) &&
     a.activity.river.id === b.activity.river.id
@@ -91,8 +89,9 @@ module.exports = async (request, submission) => {
   const smallCatches = allChildren.sort(smallCatchesApi.sort)
     .map(mapSmallCatch(activities))
 
-  const smallCatchIsEqual = (a, b) => process.env.CONTEXT === 'ANGLER' ? a.month === b.month : a.month === b.month &&
-     a.noMonthRecorded === b.noMonthRecorded
+  const smallCatchIsEqual = (a, b) => process.env.CONTEXT === 'ANGLER'
+    ? a.month === b.month
+    : a.month === b.month && a.noMonthRecorded === b.noMonthRecorded
 
   // Add show flag and rowspan for customized table template
   smallCatches.forEach(addRowSpansForSmallCatch(smallCatchIsEqual))

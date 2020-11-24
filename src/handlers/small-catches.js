@@ -161,7 +161,8 @@ class SmallCatchHandler extends BaseHandler {
       return h.redirect('/review')
     }
 
-    return request.params.id === 'add' ? this.add(request, h, rivers, cache, methods, activities)
+    return request.params.id === 'add'
+      ? this.add(request, h, rivers, cache, methods, activities)
       : this.change(request, h, rivers, cache, methods, activities)
   }
 
