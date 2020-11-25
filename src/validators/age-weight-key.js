@@ -49,13 +49,11 @@ FileScanner.prototype.scan = async function (vmock) {
       if (err) throw err
     })
 
-    return this.scanner
-      ? this.scanner.is_infected(this.path)
-      : {
-          is_infected: !!vmock,
-          file: this.filename,
-          viruses: []
-        }
+    return this.scanner ? this.scanner.is_infected(this.path) : {
+      is_infected: !!vmock,
+      file: this.filename,
+      viruses: []
+    }
   } catch (err) {
     logger.error(err)
   }

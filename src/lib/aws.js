@@ -129,7 +129,7 @@ module.exports = {
   // Get a report by key
   getReport: (key) => {
     return new Promise((resolve, reject) => {
-      const params = {
+      var params = {
         Bucket: process.env.REPORTS_S3_LOCATION_BUCKET,
         Key: key
       }
