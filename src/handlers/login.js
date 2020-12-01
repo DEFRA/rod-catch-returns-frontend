@@ -33,12 +33,14 @@ module.exports = class LoginHandler extends BaseHandler {
    */
   async doPost (request, h, errors) {
     let qryStr = false
-    if (request.query.next && request.query.next.startsWith('/lookup')) {
-      qryStr = querystring.unescape(request.raw.req.url).replace('/login?next=/lookup', '')
-    }
-
     if (errors) {
-      return h.redirect('/login-fail' + (qryStr || ''))
+      const next = request.query.next ? '?next=' + encodeURIComponent(request.query.next) : ''
+      return h.redirect('/login-fail' + next)
+    }
+    if (request.query.next && request.query.next.startsWith('/lookup')) {
+      qryStr = querystring.unescape(request.raw.req.url)
+        .replace('/login?next=/lookup', '')
+        .replace('/login-fail?next=/lookup', '')
     }
 
     await authenticateUser(request)
