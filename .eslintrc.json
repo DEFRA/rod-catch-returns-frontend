@@ -6,9 +6,11 @@
             "starred-block"
         ]
     },
+    "plugins": ["jest"],
     "env": {
         "node": true,
         "browser": false,
-        "es6": true
+        "es6": true,
+        "jest/globals": true
     }
 }

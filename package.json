@@ -11,12 +11,14 @@
   },
   "scripts": {
     "aws": "node proto.js",
-    "lint": "./node_modules/eslint/bin/eslint.js **/*.js",
+    "lint": "./node_modules/eslint/bin/eslint.js '**/*.js'",
     "lint-fix": "npm run lint -- --fix",
     "postinstall": "gulp",
     "release": "standard-version",
     "start": "node index.js",
-    "test": "./node_modules/@hapi/lab/bin/lab --verbose",
+    "test": "npm run test:jest && npm run test:lab",
+    "test:lab": "./node_modules/@hapi/lab/bin/lab --verbose",
+    "test:jest": "jest",
     "watch": "nohup gulp watch&"
   },
   "dependencies": {
@@ -61,6 +63,7 @@
     "eslint": "^7.14.0",
     "eslint-config-standard": "^14.1.1",
     "eslint-plugin-import": "^2.22.0",
+    "eslint-plugin-jest": "^24.1.3",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^4.0.1",
@@ -70,11 +73,17 @@
     "gulp-minify": "^3.1.0",
     "gulp-sass": "^4.1.0",
     "gulp-sourcemaps": "^3.0.0",
+    "jest": "^26.6.3",
     "merge-stream": "^2.0.0",
     "node-sass": "^5.0.0",
     "run-sequence": "^2.2.1",
     "standard": "^16.0.3",
     "standard-version": "^9.0.0",
     "stream-to-promise": "^3.0.0"
+  },
+  "jest": {
+    "setupFiles": [
+      "<rootDir>/test-jest/setEnvVars.js"
+    ]
   }
 }
