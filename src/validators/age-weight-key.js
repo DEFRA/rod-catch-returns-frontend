@@ -7,7 +7,6 @@ const AgeWeightKeyApi = require('../api/age-weight-key')
 const ResponseError = require('../handlers/response-error')
 
 const Path = require('path')
-// const NodeClam = require('clamscan')
 const Fs = require('fs')
 const { retryAntiVirusInit } = require('../lib/antivirus')
 
@@ -17,30 +16,6 @@ function FileScanner (filename, path) {
   this.filename = filename
   this.path = path
 }
-
-// const wait = interval => new Promise(resolve => setTimeout(resolve, interval))
-
-/*
- * async function retryNodeClamInit (retries, delay) {
- *   try {
- *     return await new NodeClam().init({
- *       clamdscan: {
- *         socket: process.env.CLAMD_SOCK,
- *         port: process.env.CLAMD_PORT,
- *         local_fallback: false
- *       },
- *       preference: 'clamdscan'
- *     })
- *   } catch (err) {
- *     if (retries === 0) {
- *       throw err
- *     }
- *     logger.info(`Unable to find virus scanner - retries left ${retries}`)
- *     await wait(delay)
- *     return await retryNodeClamInit(--retries, delay)
- *   }
- * }
- */
 
 (async () => {
   try {
