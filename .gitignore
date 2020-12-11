@@ -5,6 +5,7 @@ node_modules/
 public/
 temp/
 volumes/
+coverage/
 
 .DS_Store
 .env

@@ -82,6 +82,11 @@
     "stream-to-promise": "^3.0.0"
   },
   "jest": {
+    "collectCoverage": true,
+    "coverageReporters": [
+      "lcov",
+      "text"
+    ],
     "setupFiles": [
       "<rootDir>/test-jest/setEnvVars.js"
     ]
