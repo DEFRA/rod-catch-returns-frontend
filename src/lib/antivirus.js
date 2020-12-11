@@ -12,7 +12,8 @@ async function retryAntiVirusInit (config, retries, delay) {
     }
     logger.info(`Unable to find virus scanner - retries left ${retries}`)
     await wait(delay)
-    return await retryAntiVirusInit(config, --retries, delay)
+    const retry = retries - 1
+    return retryAntiVirusInit(config, retry, delay)
   }
 }
 
