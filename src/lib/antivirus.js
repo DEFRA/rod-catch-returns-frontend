@@ -5,7 +5,7 @@ const wait = interval => new Promise(resolve => setTimeout(resolve, interval))
 
 async function retryAntiVirusInit (config, retries, delay) {
   try {
-    return await new NodeClam(config).init()
+    return await new NodeClam().init(config)
   } catch (err) {
     if (retries === 0) {
       throw err
