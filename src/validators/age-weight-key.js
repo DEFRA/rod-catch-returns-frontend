@@ -17,17 +17,32 @@ function FileScanner (filename, path) {
   this.path = path
 }
 
+const wait = interval => new Promise(resolve => setTimeout(resolve, interval))
+
+async function retryNodeClamInit (retries, delay) {
+  try {
+    return await new NodeClam().init({
+      clamdscan: {
+        socket: process.env.CLAMD_SOCK,
+        port: process.env.CLAMD_PORT,
+        local_fallback: false
+      },
+      preference: 'clamdscan'
+    })
+  } catch (err) {
+    if (retries === 0) {
+      throw err
+    }
+    logger.info(`Unable to find virus scanner - retries left ${retries}`)
+    await wait(delay)
+    return await retryNodeClamInit(--retries, delay)
+  }
+}
+
 (async () => {
   try {
     if (process.env.CLAMD_SOCK && process.env.CLAMD_PORT) {
-      FileScanner.prototype.scanner = await new NodeClam().init({
-        clamdscan: {
-          socket: process.env.CLAMD_SOCK,
-          port: process.env.CLAMD_PORT,
-          local_fallback: false
-        },
-        preference: 'clamdscan'
-      })
+      FileScanner.prototype.scanner = await retryNodeClamInit(5, 10000)
       const version = await FileScanner.prototype.scanner.get_version()
       logger.info(`Found virus scanner: ${version} - running using sockets`)
     } else {
