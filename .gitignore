@@ -6,6 +6,8 @@ public/
 temp/
 volumes/
 coverage/
+coverage-jest/
+.scannerwork
 
 .DS_Store
 .env
