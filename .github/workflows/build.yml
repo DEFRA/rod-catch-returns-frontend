@@ -48,10 +48,6 @@ jobs:
       - name: Run with Maven
         working-directory: ./api
         run: ./mvnw -Dcheckstyle.skip=true -Ddependency-check.skip=true -DskipTests=true -Dspring-boot-plugin.fork.wait=5000 -Dspring-boot-plugin.fork.attempts=24 -Dspring-boot.run.arguments="--spring.profiles.active=h2" spring-boot:start
-      - name: curl
-        uses: wei/curl@master
-        with:
-          args: http://127.0.0.1:9580
       - name: Checkout frontend
         uses: actions/checkout@v2
       - name: Install node
