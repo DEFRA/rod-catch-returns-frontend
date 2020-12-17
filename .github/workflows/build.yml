@@ -9,3 +9,31 @@ on:
       - master
   schedule:
     - cron: '0 8 1 * *'
+
+jobs:
+  tests:
+    name: tests
+    runs-on: ubuntu-18.04
+    env:
+      DYNAMICS_IMPL: mock
+      COOKIE_PW: 532fdfghdf62645872aaau121qsqw112
+      API_PATH: /api
+      REDIS_HOSTNAME: localhost
+      REDIS_PORT: 6379
+      LOG_LEVEL: info
+      SESSION_TTL_MS: 3600000
+      API_REQUEST_TIMEOUT_MS: 20000
+      CONTEXT: ANGLER
+      AUTH_PW: 1234567890123456
+      CATCH_RETURNS_GOV_UK: https://www.gov.uk/catch-return
+    steps:
+      - name: Checkout frontend
+        uses: actions/checkout@v2
+      - name: Install node
+        uses: actions/setup-node@v1
+        with:
+          node-version: '14.x'
+      - name: Install dependencies
+        run: npm ci
+      - name: Run Tests
+        run: npm test
