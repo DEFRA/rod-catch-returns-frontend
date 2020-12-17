@@ -51,7 +51,7 @@ jobs:
       - name: curl
         uses: wei/curl@master
         with:
-          args: http://localhost:9580/api/licence/B7A718
+          args: http://localhost:9580
       - name: Checkout frontend
         uses: actions/checkout@v2
       - name: Install node
