@@ -19,12 +19,14 @@ jobs:
       API_HOSTNAME: localhost
       API_PORT: 9580
       REDIS_HOSTNAME: localhost
+      REDIS_HOST: localhost
       REDIS_PORT: 6379
       SESSION_TTL_MS: 3600000
       API_REQUEST_TIMEOUT_MS: 20000
       CONTEXT: ANGLER
       AUTH_PW: 1234567890123456
       CATCH_RETURNS_GOV_UK: https://www.gov.uk/catch-return
+      HTTPS: false
     steps:
       - name: Start Redis
         uses: supercharge/redis-github-action@1.1.0
