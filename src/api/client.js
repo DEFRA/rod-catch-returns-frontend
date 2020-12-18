@@ -22,12 +22,13 @@ const { logger } = require('defra-logging-facade')
 function requestCallback (reject, method, uri, resolve, throwOnNotFound) {
   return (err, response, body) => {
     console.log(err)
+    console.log(body)
     if (err) {
       return reject(new Error(err))
     } else {
       logger.debug(`API; ${method}:${uri} ${response.statusCode}`)
     }
-
+    console.log(body)
     // If we can deserialize the body as JSON then do so
     const responseBody = (() => {
       try {
