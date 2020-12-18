@@ -48,7 +48,7 @@ jobs:
       - name: Run with Maven
         working-directory: ./api
         run: |
-          ./mvnw -Dcheckstyle.skip=true -Ddependency-check.skip=true -DskipTests=true -Dspring-boot-plugin.fork.wait=5000 -Dspring-boot-plugin.fork.attempts=24 -Dspring-boot.run.arguments="--spring.profiles.active=h2" spring-boot:start && 
+          ./mvnw -B -Dcheckstyle.skip=true -Ddependency-check.skip=true -DskipTests=true -Dspring-boot-plugin.fork.wait=5000 -Dspring-boot-plugin.fork.attempts=24 -Dspring-boot.run.arguments="--spring.profiles.active=h2" spring-boot:start && 
           curl http://localhost:9580 -I
       - name: Checkout frontend
         uses: actions/checkout@v2
@@ -59,4 +59,4 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Run Tests
-        run: npm test
+        run: curl http://localhost:9580 -I && npm test
