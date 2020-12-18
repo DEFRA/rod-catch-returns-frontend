@@ -35,7 +35,7 @@ function requestCallback (reject, method, uri, resolve, throwOnNotFound) {
         return body
       }
     })()
-
+    console.log(response)
     // If no error occurred i.e. all statuses but 2xx - or a 304 (cache)
     if (Math.floor(response.statusCode / 100) === 2 || response.statusCode === 304) {
       resolve(responseBody)
@@ -58,7 +58,6 @@ function requestCallback (reject, method, uri, resolve, throwOnNotFound) {
       }
     } else {
       // All other errors are thrown 403 forbidden and server 500 errors
-      console.log(response)
       reject(new ResponseError.Error(response.statusMessage, response.statusCode))
     }
   }
