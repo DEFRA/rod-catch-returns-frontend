@@ -16,6 +16,8 @@ jobs:
       DYNAMICS_IMPL: mock
       COOKIE_PW: 532fdfghdf62645872aaau121qsqw112
       API_PATH: /api
+      API_HOSTNAME: localhost
+      API_PORT: 9580
       REDIS_HOSTNAME: localhost
       REDIS_PORT: 6379
       SESSION_TTL_MS: 3600000
