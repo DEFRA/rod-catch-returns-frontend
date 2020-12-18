@@ -10,7 +10,7 @@ coverage-jest/
 .scannerwork
 
 .DS_Store
-.env
+*.env
 *.iml
 coverage.html
 lcov.info
