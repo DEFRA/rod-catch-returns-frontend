@@ -35,7 +35,7 @@ function requestCallback (reject, method, uri, resolve, throwOnNotFound) {
         return body
       }
     })()
-    console.log(response)
+    console.log(response.statusMessage)
     // If no error occurred i.e. all statuses but 2xx - or a 304 (cache)
     if (Math.floor(response.statusCode / 100) === 2 || response.statusCode === 304) {
       resolve(responseBody)
