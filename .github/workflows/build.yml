@@ -58,3 +58,4 @@ jobs:
         run: npm ci
       - name: Run Tests
         run: npm test
+        wait-on: http-get://localhost:8580
