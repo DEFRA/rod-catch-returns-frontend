@@ -14,27 +14,6 @@ jobs:
     runs-on: ubuntu-18.04
     
     steps:
-      - name: Start Redis
-        uses: supercharge/redis-github-action@1.1.0
-        with:
-          redis-version: 5
-      - name: Checkout API
-        uses: actions/checkout@v2
-        with:
-          repository: DEFRA/rod-catch-returns-api
-          path: api
-      - name: Set up JDK 11
-        uses: actions/setup-java@v1
-        with:
-          java-version: '11.0.9'
-          java-package: jdk
-      - name: Run with Maven
-        working-directory: ./api
-        run: |
-          javac --version &&
-          mvn -B compile && 
-          mvn -B -Dcheckstyle.skip=true -Ddependency-check.skip=true -DskipTests=true -Dspring-boot-plugin.fork.wait=5000 -Dspring-boot-plugin.fork.attempts=24 -Dspring-boot.run.arguments="--spring.profiles.active=h2" spring-boot:start && 
-          curl http://localhost:9580 -I
       - name: Checkout frontend
         uses: actions/checkout@v2
       - name: Install node
@@ -44,31 +23,13 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Run Tests
-        env:
-          COOKIE_PW: 532fdfghdf62645872aaau121qsqw112
-          API_PATH: /api
-          API_HOSTNAME: localhost
-          API_PORT: 9580
-          REDIS_HOSTNAME: localhost
-          REDIS_HOST: localhost
-          REDIS_PORT: 6379
-          SESSION_TTL_MS: 3600000
-          API_REQUEST_TIMEOUT_MS: 20000
-          CONTEXT: ANGLER
-          AUTH_PW: 1234567890123456
-          CATCH_RETURNS_GOV_UK: https://www.gov.uk/catch-return
-          HTTPS: false
-        run: curl http://localhost:9580/api/licence/B7A718 -I && npm run test:jest
+        run: npm run test:jest
   
   sonarcloud:
     name: sonarcloud
     runs-on: ubuntu-18.04
     needs: tests
     steps:
-      - uses: actions/checkout@v2
-        with:
-          # Disabling shallow clone is recommended for improving relevancy of reporting
-          fetch-depth: 0
       - name: SonarCloud Scan
         uses: sonarsource/sonarcloud-github-action@master
         env:
