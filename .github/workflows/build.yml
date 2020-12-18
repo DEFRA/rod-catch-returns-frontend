@@ -32,8 +32,8 @@ jobs:
         working-directory: ./api
         run: |
           javac --version &&
-          ./mvnw -B compile && 
-          ./mvnw -B -Dcheckstyle.skip=true -Ddependency-check.skip=true -DskipTests=true -Dspring-boot-plugin.fork.wait=5000 -Dspring-boot-plugin.fork.attempts=24 -Dspring-boot.run.arguments="--spring.profiles.active=h2" spring-boot:start && 
+          mvn -B compile && 
+          mvn -B -Dcheckstyle.skip=true -Ddependency-check.skip=true -DskipTests=true -Dspring-boot-plugin.fork.wait=5000 -Dspring-boot-plugin.fork.attempts=24 -Dspring-boot.run.arguments="--spring.profiles.active=h2" spring-boot:start && 
           curl http://localhost:9580 -I
       - name: Checkout frontend
         uses: actions/checkout@v2
