@@ -47,7 +47,9 @@ jobs:
         run: ./mvnw compile
       - name: Run with Maven
         working-directory: ./api
-        run: ./mvnw -Dcheckstyle.skip=true -Ddependency-check.skip=true -DskipTests=true -Dspring-boot-plugin.fork.wait=5000 -Dspring-boot-plugin.fork.attempts=24 -Dspring-boot.run.arguments="--spring.profiles.active=h2" spring-boot:start
+        run: |
+          ./mvnw -Dcheckstyle.skip=true -Ddependency-check.skip=true -DskipTests=true -Dspring-boot-plugin.fork.wait=5000 -Dspring-boot-plugin.fork.attempts=24 -Dspring-boot.run.arguments="--spring.profiles.active=h2" spring-boot:start && 
+          curl http://localhost:8580 -I
       - name: Checkout frontend
         uses: actions/checkout@v2
       - name: Install node
@@ -58,4 +60,3 @@ jobs:
         run: npm ci
       - name: Run Tests
         run: npm test
-        wait-on: http-get://localhost:8580
