@@ -7,8 +7,6 @@ on:
   push:
     branches:
       - master
-  schedule:
-    - cron: '0 8 1 * *'
 
 jobs:
   tests:
@@ -58,4 +56,4 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Run Tests
-        run: curl http://localhost:9580 -I && npm test
+        run: curl http://127.0.0.1:9580 -I && npm test
