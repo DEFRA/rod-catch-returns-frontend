@@ -21,6 +21,7 @@ const { logger } = require('defra-logging-facade')
 
 function requestCallback (reject, method, uri, resolve, throwOnNotFound) {
   return (err, response, body) => {
+    console.log(err)
     if (err) {
       return reject(new Error(err))
     } else {
