@@ -14,6 +14,10 @@ jobs:
     runs-on: ubuntu-18.04
     
     steps:
+      - name: Start Redis
+        uses: supercharge/redis-github-action@1.1.0
+        with:
+          redis-version: 5
       - name: Checkout frontend
         uses: actions/checkout@v2
       - name: Install node
