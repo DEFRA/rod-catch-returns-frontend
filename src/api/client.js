@@ -21,14 +21,11 @@ const { logger } = require('defra-logging-facade')
 
 function requestCallback (reject, method, uri, resolve, throwOnNotFound) {
   return (err, response, body) => {
-    console.log(err)
-    console.log(body)
     if (err) {
       return reject(new Error(err))
     } else {
       logger.debug(`API; ${method}:${uri} ${response.statusCode}`)
     }
-    console.log(body)
     // If we can deserialize the body as JSON then do so
     const responseBody = (() => {
       try {
@@ -37,7 +34,6 @@ function requestCallback (reject, method, uri, resolve, throwOnNotFound) {
         return body
       }
     })()
-    console.log(response.statusMessage)
     // If no error occurred i.e. all statuses but 2xx - or a 304 (cache)
     if (Math.floor(response.statusCode / 100) === 2 || response.statusCode === 304) {
       resolve(responseBody)
