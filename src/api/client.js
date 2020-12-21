@@ -26,6 +26,7 @@ function requestCallback (reject, method, uri, resolve, throwOnNotFound) {
     } else {
       logger.debug(`API; ${method}:${uri} ${response.statusCode}`)
     }
+
     // If we can deserialize the body as JSON then do so
     const responseBody = (() => {
       try {
@@ -34,6 +35,7 @@ function requestCallback (reject, method, uri, resolve, throwOnNotFound) {
         return body
       }
     })()
+
     // If no error occurred i.e. all statuses but 2xx - or a 304 (cache)
     if (Math.floor(response.statusCode / 100) === 2 || response.statusCode === 304) {
       resolve(responseBody)
