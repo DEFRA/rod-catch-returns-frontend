@@ -52,12 +52,12 @@ jobs:
           CATCH_RETURNS_GOV_UK: https://www.gov.uk/catch-return
           HTTPS: false
         run: npm run test
-      - name: fix code coverage paths
+      - name: Fix lab code coverage paths
         working-directory: ./coverage
         run: |
           sed -i 's/\/home\/runner\/work\/rod-catch-returns-frontend\/rod-catch-returns-frontend\//\/github\/workspace\//g' lcov.info
           sed -i 's/\/home\/runner\/work\/rod-catch-returns-frontend\/rod-catch-returns-frontend\//\/github\/workspace\//g' coverage.html
-      - name: fix code coverage paths
+      - name: Fix jest code coverage paths
         working-directory: ./coverage-jest
         run: |
           sed -i 's/\/home\/runner\/work\/rod-catch-returns-frontend\/rod-catch-returns-frontend\//\/github\/workspace\//g' lcov.info
