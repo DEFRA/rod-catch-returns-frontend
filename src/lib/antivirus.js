@@ -18,6 +18,7 @@ async function retryAntiVirusInit (config, retries, delay) {
   }
 }
 
+
 module.exports = {
   retryAntiVirusInit
 }
