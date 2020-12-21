@@ -27,9 +27,9 @@ jobs:
           java-package: jdk
       - name: Start api
         run: |
-          nohup java -jar api-binary/rcr_api.jar --spring.profiles.active=h2 &
+          java -jar api-binary/rcr_api.jar --spring.profiles.active=h2 &
       - name: Install dependencies
         run: npm ci
       - name: Run Tests
-        run: npm run test
+        run: curl http://localhost:9580 -I && curl http://localhost:9580/api/licence/B7A718 -I && npm run test
 
