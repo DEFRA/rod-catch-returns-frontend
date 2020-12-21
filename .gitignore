@@ -1,6 +1,7 @@
 .idea/
 govuk_modules/
 logs/
+log/
 node_modules/
 public/
 temp/
