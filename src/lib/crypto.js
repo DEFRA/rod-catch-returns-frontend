@@ -23,9 +23,6 @@ const internals = {
       if (!hubId) {
         throw new CryptoError('Expected hub identifier')
       }
-      console.log('KEY=')
-      console.log(process.env.AUTH_PW);
-      console.log(keyBuffer);
       const cipher = crypto.createCipheriv(algorithm, keyBuffer, Buffer.from(hubId.data))
       let result = cipher.update(text, 'utf8', 'base64')
       result += cipher.final('base64')
