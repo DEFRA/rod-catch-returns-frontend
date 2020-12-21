@@ -46,7 +46,7 @@ jobs:
           SESSION_TTL_MS: 3600000
           API_REQUEST_TIMEOUT_MS: 20000
           CONTEXT: ANGLER
-          AUTH_PW: 1234567890123456
+          AUTH_PW: "1234567890123456"
           CATCH_RETURNS_GOV_UK: https://www.gov.uk/catch-return
           HTTPS: false
         run: sleep 10 && curl http://localhost:9580 -I && curl http://localhost:9580/api/licence/B7A718 -I && npm run test
