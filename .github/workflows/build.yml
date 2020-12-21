@@ -56,7 +56,7 @@ jobs:
         working-directory: ./coverage
         run: |
           sed -i 's/\/home\/runner\/work\/rod-catch-returns-frontend\/rod-catch-returns-frontend\//\/github\/workspace\//g' lcov.info
-          sed -i 's/\/home\/runner\/work\/rod-catch-returns-frontend\/rod-catch-returns-frontend\//\/github\/workspace\//g' coverage.xml
+          sed -i 's/\/home\/runner\/work\/rod-catch-returns-frontend\/rod-catch-returns-frontend\//\/github\/workspace\//g' coverage.html
       - name: SonarCloud Scan
         uses: sonarsource/sonarcloud-github-action@master
         env:
