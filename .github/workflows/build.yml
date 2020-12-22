@@ -39,7 +39,7 @@ jobs:
       - name: Build api
         working-directory: ./api
         run: |
-          ./mvnw  -T 1C -B --update-snapshots -Dcheckstyle.skip=true -Dfindbugs.skip=true -Ddependency-check.skip=true -DskipTests=true -Dcheckstyle.skip=true clean package &&
+          ./mvnw  -T 1C -B --update-snapshots -Dcheckstyle.skip=true -Dfindbugs.skip=true -Ddependency-check.skip=true -DskipTests=true -Dcheckstyle.skip=true clean package
       - name: Start api
         working-directory: ./api
         run: |
