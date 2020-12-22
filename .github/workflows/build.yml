@@ -31,9 +31,16 @@ jobs:
         with:
           java-version: '11.0.9'
           java-package: jdk
+      - name: Checkout API
+        uses: actions/checkout@v2
+        with:
+          repository: DEFRA/rod-catch-returns-api
+          path: api
       - name: Start api
+        working-directory: ./api
         run: |
-          nohup java -jar api-binary/rcr_api.jar --spring.profiles.active=h2 &
+          ./mvnw  -T 1C -B --update-snapshots -Dcheckstyle.skip=true -Dfindbugs.skip=true -Ddependency-check.skip=true -DskipTests=true -Dcheckstyle.skip=true clean package &&
+          nohup java -jar target/rcr_api.jar --spring.profiles.active=h2 &
       - name: Install dependencies
         run: npm ci
       - name: Run Tests
