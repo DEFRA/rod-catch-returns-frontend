@@ -1,6 +1,6 @@
 # rod-catch-returns-frontend
 
-[![Build Status](https://github.com/defra/rod-catch-returns-frontend/workflows/build.yml/badge.svg)](https://github.com/defra/rod-catch-returns-frontend/actions)
+[![Build Status](https://github.com/defra/rod-catch-returns-frontend/workflows/build/badge.svg)](https://github.com/defra/rod-catch-returns-frontend/actions)
 [![Maintainability](https://api.codeclimate.com/v1/badges/ab06e6ad0035b726aed5/maintainability)](https://codeclimate.com/github/DEFRA/rod-catch-returns-frontend/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/ab06e6ad0035b726aed5/test_coverage)](https://codeclimate.com/github/DEFRA/rod-catch-returns-frontend/test_coverage)
 
