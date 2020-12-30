@@ -3,9 +3,8 @@ const mockS3 = {
   promise: jest.fn(),
   headBucket: jest.fn(),
   listObjectsV2: jest.fn()
-};
+}
 
-const AWSSDK = require('aws-sdk')
 const { logger } = require('defra-logging-facade')
 
 const aws = require('../../src/lib/aws')
