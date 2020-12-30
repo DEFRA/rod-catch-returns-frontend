@@ -1,3 +1,5 @@
 process.env.AUTH_PW = 'abcdef1234'
 process.env.COOKIE_PW = 'cookieabcdef1234'
 process.env.HTTPS = 'false'
+process.env.REPORTS_S3_LOCATION_BUCKET = 'test'
+process.env.REPORTS_S3_LOCATION_FOLDER = '/test'
