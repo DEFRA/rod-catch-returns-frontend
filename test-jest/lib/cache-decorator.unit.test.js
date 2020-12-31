@@ -1,6 +1,10 @@
 const CacheDecorator = require('../../src/lib/cache-decorator')
 
 describe('cache-decorator', () => {
+  afterEach(() => {
+    jest.clearAllMocks()
+  })
+
   describe('get', () => {
     it('should resolve and return the result if cache.get is successful', async () => {
       const cacheDecorator = new CacheDecorator()
