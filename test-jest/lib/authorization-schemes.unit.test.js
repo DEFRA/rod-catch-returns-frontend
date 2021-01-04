@@ -57,7 +57,7 @@ describe('authorization-schemes', () => {
         Client.request.mockImplementation(() => {})
 
         await expect(authorizationSchemes.activeDirScheme().payload(request, h)).resolves.toEqual('response')
-        const auth =  {
+        const auth = {
           username: 'user@mail.com',
           password: 'password'
         }
@@ -83,7 +83,7 @@ describe('authorization-schemes', () => {
 
         await expect(authorizationSchemes.activeDirScheme().payload(request, h)).rejects
 
-        const auth =  {
+        const auth = {
           username: 'user@mail.com',
           password: 'password'
         }
@@ -109,7 +109,7 @@ describe('authorization-schemes', () => {
 
         await expect(authorizationSchemes.activeDirScheme().payload(request, h)).resolves.toEqual('response')
 
-        const auth =  {
+        const auth = {
           username: 'user@mail.com',
           password: 'password'
         }
@@ -176,8 +176,8 @@ describe('authorization-schemes', () => {
         const h = {
           continue: 'response'
         }
-        const contactResponse = { 
-          contact: { 
+        const contactResponse = {
+          contact: {
             id: '12345'
           }
         }
