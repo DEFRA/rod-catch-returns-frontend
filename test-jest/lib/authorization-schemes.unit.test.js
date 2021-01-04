@@ -27,7 +27,9 @@ describe('authorization-schemes', () => {
         const h = {
           continue: 'response'
         }
+
         await expect(authorizationSchemes.activeDirScheme().payload(request, h)).resolves.toEqual('response')
+
         expect(Client.request).not.toHaveBeenCalled()
       })
 
@@ -40,7 +42,9 @@ describe('authorization-schemes', () => {
         const h = {
           continue: 'response'
         }
+
         await expect(authorizationSchemes.activeDirScheme().payload(request, h)).resolves.toEqual('response')
+
         expect(Client.request).not.toHaveBeenCalled()
       })
 
@@ -57,6 +61,7 @@ describe('authorization-schemes', () => {
         Client.request.mockImplementation(() => {})
 
         await expect(authorizationSchemes.activeDirScheme().payload(request, h)).resolves.toEqual('response')
+
         const auth = {
           username: 'user@mail.com',
           password: 'password'
@@ -129,6 +134,7 @@ describe('authorization-schemes', () => {
         const h = {
           authenticated: jest.fn(() => 'response')
         }
+
         await expect(authorizationSchemes.activeDirScheme().authenticate(request, h)).resolves.toEqual('response')
       })
     })
@@ -149,7 +155,9 @@ describe('authorization-schemes', () => {
         const h = {
           continue: 'response'
         }
+
         await expect(authorizationSchemes.licenceScheme().payload(request, h)).resolves.toEqual('response')
+
         expect(LicenceApi.getContactFromLicenceKey).not.toHaveBeenCalled()
       })
 
@@ -162,7 +170,9 @@ describe('authorization-schemes', () => {
         const h = {
           continue: 'response'
         }
+
         await expect(authorizationSchemes.licenceScheme().payload(request, h)).resolves.toEqual('response')
+
         expect(LicenceApi.getContactFromLicenceKey).not.toHaveBeenCalled()
       })
 
@@ -184,6 +194,7 @@ describe('authorization-schemes', () => {
         LicenceApi.getContactFromLicenceKey.mockImplementation(() => contactResponse)
 
         await expect(authorizationSchemes.licenceScheme().payload(request, h)).resolves.toEqual('response')
+
         expect(LicenceApi.getContactFromLicenceKey).toHaveBeenCalled()
         expect(LicenceApi.getContactFromLicenceKey).toHaveBeenCalledWith(request, '123456', 'AB123CD')
         expect(request.app.authorization.contactId).toEqual('12345')

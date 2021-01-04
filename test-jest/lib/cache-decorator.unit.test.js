@@ -21,7 +21,9 @@ describe('cache-decorator', () => {
           sid: 'abc'
         }
       }
+
       await expect(cacheDecorator.get()).resolves.toBe('result')
+
       expect(mockGet).toHaveBeenCalledTimes(1)
     })
 
@@ -40,7 +42,9 @@ describe('cache-decorator', () => {
           sid: 'abc'
         }
       }
+
       await expect(cacheDecorator.get()).rejects.toThrow(new Error('Cache fetch error'))
+
       expect(mockGet).toHaveBeenCalledTimes(1)
     })
   })
@@ -62,7 +66,9 @@ describe('cache-decorator', () => {
         }
       }
       const obj = { user: 'bob' }
+
       await expect(cacheDecorator.set(obj)).resolves
+
       expect(mockSet).toHaveBeenCalledTimes(1)
       expect(mockSet).toBeCalledWith('123', obj)
     })
@@ -82,7 +88,9 @@ describe('cache-decorator', () => {
           sid: 'abc'
         }
       }
+
       await expect(cacheDecorator.set()).rejects.toThrow(new Error('Cache put error'))
+
       expect(mockSet).toHaveBeenCalledTimes(1)
     })
   })
@@ -103,7 +111,9 @@ describe('cache-decorator', () => {
           sid: 'abc'
         }
       }
+
       await expect(cacheDecorator.drop()).resolves
+
       expect(mockDrop).toHaveBeenCalledTimes(1)
     })
 
@@ -122,7 +132,9 @@ describe('cache-decorator', () => {
           sid: 'abc'
         }
       }
+
       await expect(cacheDecorator.drop()).rejects.toThrow(new Error('Cache drop error'))
+
       expect(mockDrop).toHaveBeenCalledTimes(1)
     })
   })

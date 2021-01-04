@@ -16,7 +16,9 @@ describe('authenticate-user', () => {
       const request = {
         app: {}
       }
-      await expect(authenticateUser(request)).rejects.toThrow(new Error('Cannot set up session cookie and cache for an unauthenticated user'))
+
+      await expect(authenticateUser(request)).rejects
+        .toThrow(new Error('Cannot set up session cookie and cache for an unauthenticated user'))
     })
 
     it('should set the encrypted authorization details in the cache if it is a user authentication', async () => {
@@ -42,7 +44,9 @@ describe('authenticate-user', () => {
           }
         }
       }
+
       await authenticateUser(request)
+
       expect(mockCookieAuthSet).toHaveBeenCalledWith({ sid: 'testid' })
       expect(Crypto.writeObj).toHaveBeenCalledTimes(1)
       expect(mockCacheSet).toHaveBeenCalledTimes(1)
@@ -71,7 +75,9 @@ describe('authenticate-user', () => {
           }
         }
       }
+
       await authenticateUser(request)
+
       expect(mockCookieAuthSet).toHaveBeenCalledWith({ sid: 'testid' })
       expect(Crypto.writeObj).not.toHaveBeenCalled()
       expect(mockCacheSet).toHaveBeenCalledTimes(1)
