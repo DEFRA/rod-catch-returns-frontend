@@ -7,7 +7,7 @@ jest.mock('uuid')
 jest.mock('../../src/lib/crypto')
 
 describe('authenticate-user', () => {
-  afterEach(() => {
+  beforeEach(() => {
     jest.clearAllMocks()
   })
 

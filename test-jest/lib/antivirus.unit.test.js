@@ -7,7 +7,7 @@ jest.mock('clamscan')
 jest.mock('defra-logging-facade')
 
 describe('antivirus', () => {
-  afterEach(() => {
+  beforeEach(() => {
     jest.clearAllMocks()
   })
 

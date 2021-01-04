@@ -12,7 +12,7 @@ jest.mock('fs', () => {
 jest.mock('defra-logging-facade')
 
 describe('misc', () => {
-  afterEach(() => {
+  beforeEach(() => {
     jest.clearAllMocks()
   })
 

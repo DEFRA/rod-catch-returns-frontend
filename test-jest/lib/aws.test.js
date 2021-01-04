@@ -20,7 +20,7 @@ jest.mock('aws-sdk', () => {
 jest.mock('defra-logging-facade')
 
 describe('aws', () => {
-  afterEach(() => {
+  beforeEach(() => {
     jest.clearAllMocks()
   })
 

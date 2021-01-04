@@ -2,7 +2,7 @@ const crypto = require('../../src/lib/crypto')
 const CryptoError = crypto.cryptoError
 
 describe('crypto', () => {
-  afterEach(() => {
+  beforeEach(() => {
     jest.clearAllMocks()
   })
 

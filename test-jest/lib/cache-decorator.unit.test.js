@@ -1,7 +1,7 @@
 const CacheDecorator = require('../../src/lib/cache-decorator')
 
 describe('cache-decorator', () => {
-  afterEach(() => {
+  beforeEach(() => {
     jest.clearAllMocks()
   })
 
