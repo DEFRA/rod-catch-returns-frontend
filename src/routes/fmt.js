@@ -10,6 +10,7 @@ const FailedLogin = require('../handlers/login-fail')
 const LicenceHandler = require('../handlers/licence')
 const ReportsHandler = require('../handlers/reports')
 const ReportDownloadHandler = require('../handlers/report-download')
+const RecordsHandler = require('../handlers/records')
 const LookupHandler = require('../handlers/lookup')
 const AgeWeightKeyHandler = require('../handlers/age-weight-key')
 const AgeWeightKeyOkHandler = require('../handlers/age-weight-key-ok')
@@ -29,6 +30,7 @@ const loginHandler = new LoginHandler('login', loginValidator)
 const failedLogin = new FailedLogin('login', loginValidator)
 const reportsHandler = new ReportsHandler('reports')
 const reportDownloadHandler = new ReportDownloadHandler()
+const recordsHandler = new RecordsHandler('records')
 const licenceHandler = new LicenceHandler('licence', licenceValidator)
 const lookupHandler = new LookupHandler('lookup')
 const ageWeightKeyHandler = new AgeWeightKeyHandler('age-weight-key', ageWeightKeyValidator, 'ageWeightContext')
@@ -100,6 +102,13 @@ module.exports = [
     path: '/licence',
     method: ['GET', 'POST'],
     handler: licenceHandler.handler
+  },
+
+  // Records handler
+  {
+    path: '/records',
+    method: ['GET', 'POST'],
+    handler: recordsHandler.handler
   },
 
   // Reports handler
