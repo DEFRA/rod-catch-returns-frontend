@@ -28,7 +28,7 @@ module.exports = class RecordsHandler extends BaseHandler {
    * @param errors
    * @returns {Promise<*>}
    */
-  async doPost (request, h, errors) {
+  async doPost (request, h) {
     return h.view(this.path)
   }
 }
