@@ -8,3 +8,4 @@ module.exports = signIn.fmtSubsequent
     .concat(requests.fmtUnlockLicence)
     .concat(requests.fmtExclude)
     .concat(requests.fmtLookupSubmission)
+    .concat(requests.fmtRecords)

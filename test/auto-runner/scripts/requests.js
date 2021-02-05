@@ -493,5 +493,8 @@ module.exports = {
   ],
   fmtLookupSubmission: [
     { method: 'GET', path: '/lookup?submissionId=submissions/1', status: 302, redirect: '/summary' }
+  ],
+  fmtRecords: [
+    { method: 'GET', path: '/records', status: 200 }
   ]
 }
