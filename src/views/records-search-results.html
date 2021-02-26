@@ -1,0 +1,28 @@
+{% extends "layout.html" %}
+
+{% from "navigation.njk" import navigationHeaderBlock %}
+{% from "button/macro.njk" import govukButton %}
+
+{% block pageTitle %}Search Results{% endblock %}
+
+{% block header %}
+  {% if fmt %}
+    {{ navigationHeaderBlock('records') }}
+  {% else %}
+    {{ super() }}
+  {% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+
+    Results
+
+{% for submission in submissions %}
+  <a href='{{submission.id}}'> {{ submission.season }}</a>
+{% endfor %}
+  </div>
+</div>
+
+{% endblock %}

@@ -8,7 +8,13 @@ const EntityApi = require('./entity-api')
  */
 module.exports = class SubmissionsApi extends EntityApi {
   constructor () {
-    super('submissions')
+    super('submissions', async (request, e) => {
+      return {
+        id: EntityApi.keyFromLink(e),
+        name: e.name,
+        season: e.season
+      }
+    })
   }
 
   async add (request, contactId, year) {
@@ -22,6 +28,10 @@ module.exports = class SubmissionsApi extends EntityApi {
 
   async getByContactIdAndYear (request, contactId, year) {
     return super.searchFunction(request, 'getByContactIdAndSeason', `contact_id=${contactId}&season=${year}`)
+  }
+
+  async getByContactId (request, contactId) {
+    return super.searchFunction(request, 'findByContactId', `contact_id=${contactId}`)
   }
 
   async setSubmitted (request, submissionId) {

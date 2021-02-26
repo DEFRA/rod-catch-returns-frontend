@@ -14,4 +14,12 @@ module.exports = class LicenceApi {
   static async getContactFromLicenceKey (request, licence, postcode) {
     return Client.request(null, Client.method.GET, `licence/${licence}`, `verification=${postcode}`, null, true)
   }
+
+  /**
+   * Gets the contact data from the full licence number
+   * @returns {Promise<*>}
+   */
+  static async getContactFromFullLicenceNumber (request, licence) {
+    return Client.request(null, Client.method.GET, `licence/full/${licence}`, null, null, true)
+  }
 }

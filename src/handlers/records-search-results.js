@@ -1,15 +1,14 @@
 'use strict'
 
 /**
- * Display the Records page
+ * Display the Records Search Results page
  */
 const BaseHandler = require('./base')
-const LicenceApi = require('../api/licence')
 const SubmissionsApi = require('../api/submissions')
 
 const submissionsApi = new SubmissionsApi()
 
-module.exports = class RecordsHandler extends BaseHandler {
+module.exports = class RecordsSearchResultsHandler extends BaseHandler {
   constructor (...args) {
     super(args)
   }
@@ -22,7 +21,10 @@ module.exports = class RecordsHandler extends BaseHandler {
    * @returns {Promise<*>}
    */
   async doGet (request, h) {
-    return h.view(this.path)
+    const submissions = await submissionsApi.getByContactId(request, request.query.contactId)
+    return h.view(this.path,{
+        submissions
+    })
   }
 
   /**
@@ -33,8 +35,6 @@ module.exports = class RecordsHandler extends BaseHandler {
    * @returns {Promise<*>}
    */
   async doPost (request, h) {
-    const licenceNumber = request.payload.licenceNumber
-    const licence = await LicenceApi.getContactFromFullLicenceNumber(request, licenceNumber)
-    return h.redirect(`/records-search-results?contactId=${licence.contact.id}`)
+    return h.view(this.path)
   }
 }
