@@ -14,27 +14,21 @@ module.exports = class RecordsSearchResultsHandler extends BaseHandler {
   }
 
   /**
-   * Get handler for records
+   * Get handler for records search results
    * @param request
    * @param h
    * @param user
    * @returns {Promise<*>}
    */
   async doGet (request, h) {
-    const submissions = await submissionsApi.getByContactId(request, request.query.contactId)
-    return h.view(this.path,{
-        submissions
-    })
-  }
+    const cache = await request.cache().get()
+    const submissions = await submissionsApi.getByContactId(request, cache.contactId)
 
-  /**
-   * Post handler for records
-   * @param request
-   * @param h
-   * @param errors
-   * @returns {Promise<*>}
-   */
-  async doPost (request, h) {
-    return h.view(this.path)
+    delete cache.contactId
+    await request.cache().set(cache)
+
+    return h.view(this.path, {
+      submissions
+    })
   }
 }

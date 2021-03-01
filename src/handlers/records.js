@@ -4,10 +4,6 @@
  * Display the Records page
  */
 const BaseHandler = require('./base')
-const LicenceApi = require('../api/licence')
-const SubmissionsApi = require('../api/submissions')
-
-const submissionsApi = new SubmissionsApi()
 
 module.exports = class RecordsHandler extends BaseHandler {
   constructor (...args) {
@@ -32,9 +28,14 @@ module.exports = class RecordsHandler extends BaseHandler {
    * @param errors
    * @returns {Promise<*>}
    */
-  async doPost (request, h) {
-    const licenceNumber = request.payload.licenceNumber
-    const licence = await LicenceApi.getContactFromFullLicenceNumber(request, licenceNumber)
-    return h.redirect(`/records-search-results?contactId=${licence.contact.id}`)
+  async doPost (request, h, errors) {
+    if (errors) {
+      return h.view(this.path, { errors: { errors }, payload: request.payload })
+    }
+    const cache = await request.cache().get()
+    cache.contactId = request.payload.licence.contact.id
+    await request.cache().set(cache)
+
+    return h.redirect('/records-search-results')
   }
 }
