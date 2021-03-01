@@ -30,7 +30,7 @@ describe('records', () => {
 
       const request = { payload: '123' }
       const errors = { error: [{ licenceNumber: 'NOT_FOUND' }] }
-      await recordsandler.doGet(request, h, errors)
+      await recordsandler.doPost(request, h, errors)
 
       expect(mockView.mock.calls.length).toBe(1)
       expect(mockView.mock.calls[0][0]).toBe('records')
