@@ -22,12 +22,12 @@
     <div class="govuk-grid-column-two-thirds">
         <form method="post">
         {% if errors %}
-            {% set licenceNumberErrorMessage = { text: 'Enter the full licence number including dashes' } %}
+            {% set licenceNumberErrorMessage = { text: 'The licence number could not be matched' } %}
             {{ govukErrorSummary({
                 titleText: "There is a problem",
                 errorList: [
                     {
-                        text: "You have not entered a correct licence number",
+                        text: "The licence number could not be matched",
                         href: "#licenceNumber"
                     }
                 ]
