@@ -42,7 +42,7 @@ describe('licence-full', () => {
       expect(result).toStrictEqual([{ licenceNumber: 'NOT_FOUND' }])
     })
 
-    it('should return no errore if the contact details are retrieved from the api', async () => {
+    it('should return no error if the contact details are retrieved from the api', async () => {
       const request = {
         payload: {
           licenceNumber: '123'

@@ -114,7 +114,7 @@ module.exports = [
     handler: recordsHandler.handler
   },
 
-  // Records handler
+  // Records search results handler
   {
     path: '/records-search-results',
     method: ['GET'],

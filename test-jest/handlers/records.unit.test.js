@@ -25,7 +25,7 @@ describe('records', () => {
   })
 
   describe('doPost', () => {
-    it('should display the records page if there are errors', async () => {
+    it('should display the records page, if there are errors', async () => {
       const recordsandler = new RecordsHandler('records')
 
       const request = { payload: '123' }
@@ -36,7 +36,7 @@ describe('records', () => {
       expect(mockView.mock.calls[0][0]).toBe('records')
     })
 
-    it('should redirect to the records-search-results page and set the contactId on the cache if there are no errors', async () => {
+    it('should redirect to the records-search-results page and set the contactId on the cache, if there are no errors', async () => {
       const mockCacheGet = jest.fn(() => ({
         contactId: ''
       }))

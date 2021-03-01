@@ -14,7 +14,6 @@ module.exports = class RecordsHandler extends BaseHandler {
    * Get handler for records
    * @param request
    * @param h
-   * @param user
    * @returns {Promise<*>}
    */
   async doGet (request, h) {

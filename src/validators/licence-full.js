@@ -10,11 +10,9 @@ module.exports = async request => {
   const payload = request.payload
   let errors = []
 
-  // Unmatched licence number
   if (!payload.licenceNumber) {
     errors.push({ licenceNumber: 'EMPTY' })
   } else {
-    // Set up the contact id for the licence in the cache
     try {
       payload.licence = await LicenceApi.getContactFromFullLicenceNumber(request, payload.licenceNumber)
       if (!payload.licence) {
