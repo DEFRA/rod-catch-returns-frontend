@@ -6,7 +6,7 @@ const ResponseError = require('../handlers/response-error')
 /**
  * Validate the full licence number
  */
-module.exports = async (request) => {
+module.exports = async request => {
   const payload = request.payload
   let errors = []
 
