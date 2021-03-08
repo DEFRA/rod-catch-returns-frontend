@@ -23,7 +23,7 @@
             <ul class="govuk-list govuk-list--bullet">
             {% for submission in submissions %}
                 <li>
-                    <a href='{{submission.id}}'>{{ submission.season }}</a>
+                    <a href='/lookup?submissionId={{submission.id}}'>{{ submission.season }}</a>
                 </li>
             {% endfor %}
             </ul>

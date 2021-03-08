@@ -21,6 +21,9 @@ module.exports = class RecordsSearchResultsHandler extends BaseHandler {
    */
   async doGet (request, h) {
     const cache = await request.cache().get()
+    if (!cache.contactId) {
+      return h.redirect('/records')
+    }
     const submissions = await submissionsApi.getByContactId(request, cache.contactId)
 
     delete cache.contactId
