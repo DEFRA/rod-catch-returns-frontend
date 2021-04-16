@@ -32,7 +32,7 @@ module.exports = class RecordsHandler extends BaseHandler {
       return h.view(this.path, { errors: { errors }, payload: request.payload })
     }
     const cache = await request.cache().get()
-    cache.contactId = request.payload.licence.contact.id
+    cache.recordsContactId = request.payload.licence.contact.id
     cache.fullName = request.payload.licence.contact.fullName
     await request.cache().set(cache)
 

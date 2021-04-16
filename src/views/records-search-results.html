@@ -2,6 +2,8 @@
 
 {% from "navigation.njk" import navigationHeaderBlock %}
 {% from "button/macro.njk" import govukButton %}
+{% from "back-link/macro.njk" import govukBackLink %}
+
 
 {% set title = "Catch returns for " + fullName %}
 
@@ -15,18 +17,29 @@
     {% endif %}
 {% endblock %}
 
+{% block beforeContent %}
+<div class="hide-if-js-disabled">
+    {{ super() }}
+    {{ govukBackLink({
+        text: "Back",
+        href: "javascript:history.back()"
+    }) }}
+</div>
+{% endblock %}
+
 {% block content %}
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-        <form action="results">
+        <form method="post">
             <h1 class="govuk-heading-l">{{ title }}</h1>
             <ul class="govuk-list govuk-list--bullet">
             {% for submission in submissions %}
                 <li>
-                    <a href='/lookup?submissionId={{submission.id}}'>{{ submission.season }}</a>
+                    <button class="button-style-hidden" type="submit" name="submissionId" value='{{submission.id}}'>{{ submission.season }}</button>
                 </li>
             {% endfor %}
             </ul>
+            {{ extra() }}
         </form>
     </div>
 </div>

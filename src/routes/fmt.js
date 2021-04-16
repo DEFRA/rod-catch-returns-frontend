@@ -12,6 +12,7 @@ const ReportsHandler = require('../handlers/reports')
 const ReportDownloadHandler = require('../handlers/report-download')
 const RecordsHandler = require('../handlers/records')
 const RecordsSearchResultsHandler = require('../handlers/records-search-results')
+const RecordsSubmissionsHandler = require('../handlers/records-submissions')
 const LookupHandler = require('../handlers/lookup')
 const AgeWeightKeyHandler = require('../handlers/age-weight-key')
 const AgeWeightKeyOkHandler = require('../handlers/age-weight-key-ok')
@@ -34,6 +35,7 @@ const reportsHandler = new ReportsHandler('reports')
 const reportDownloadHandler = new ReportDownloadHandler()
 const recordsHandler = new RecordsHandler('records', licenceFullValidator)
 const recordsSearchResultsHandler = new RecordsSearchResultsHandler('records-search-results')
+const recordsSubmissionsHandler = new RecordsSubmissionsHandler('records-submissions')
 const licenceHandler = new LicenceHandler('licence', licenceValidator)
 const lookupHandler = new LookupHandler('lookup')
 const ageWeightKeyHandler = new AgeWeightKeyHandler('age-weight-key', ageWeightKeyValidator, 'ageWeightContext')
@@ -55,7 +57,8 @@ const lookupQuerySchema = Joi.object({
   submissionId: id.required(),
   activityId: id.optional(),
   catchId: id.optional(),
-  smallCatchId: id.optional()
+  smallCatchId: id.optional(),
+  readonly: id.optional()
 }).oxor('activityId', 'catchId', 'smallCatchId')
 
 /*
@@ -117,8 +120,15 @@ module.exports = [
   // Records search results handler
   {
     path: '/records-search-results',
-    method: ['GET'],
+    method: ['GET', 'POST'],
     handler: recordsSearchResultsHandler.handler
+  },
+
+  // Records submissions handler
+  {
+    path: '/records-submissions',
+    method: ['GET'],
+    handler: recordsSubmissionsHandler.handler
   },
 
   // Reports handler
