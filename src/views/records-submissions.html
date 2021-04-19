@@ -8,15 +8,6 @@
 
 {% block pageTitle %}Enter a licence number - GOV.UK{% endblock %}
 
-
-{% block header %}
-    {% if fmt %}
-        {{ navigationHeaderBlock('records') }}
-    {% else %}
-        {{ super() }}
-    {% endif %}
-{% endblock %}
-
 {% block beforeContent %}
 <div class="hide-if-js-disabled">
     {{ super() }}
@@ -25,6 +16,14 @@
         href: "javascript:history.back()"
     }) }}
 </div>
+{% endblock %}
+
+{% block header %}
+    {% if fmt %}
+        {{ navigationHeaderBlock('records') }}
+    {% else %}
+        {{ super() }}
+    {% endif %}
 {% endblock %}
 
 {% block content %}

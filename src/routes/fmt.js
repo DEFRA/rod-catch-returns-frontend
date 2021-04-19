@@ -57,8 +57,7 @@ const lookupQuerySchema = Joi.object({
   submissionId: id.required(),
   activityId: id.optional(),
   catchId: id.optional(),
-  smallCatchId: id.optional(),
-  readonly: id.optional()
+  smallCatchId: id.optional()
 }).oxor('activityId', 'catchId', 'smallCatchId')
 
 /*
