@@ -66,6 +66,14 @@ describe('records-submissions', () => {
 
       expect(mockView.mock.calls.length).toBe(1)
       expect(mockView.mock.calls[0][0]).toBe('/records-submissions')
+      expect(mockView.mock.calls[0][1]).toStrictEqual({
+        activities: {},
+        catches: {},
+        foundInternal: true,
+        fullName: 'Homer Simpson',
+        smallCatches: {},
+        year: '2020'
+      })
     })
   })
 })
