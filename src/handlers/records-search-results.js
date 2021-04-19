@@ -33,10 +33,7 @@ module.exports = class RecordsSearchResultsHandler extends BaseHandler {
   }
 
   async doPost (request, h) {
-    const submission = await submissionsApi.getById(request, request.payload.submissionId)
-
     const cache = await request.cache().get()
-    cache.recordsYear = submission.season
     cache.recordsSubmissionId = request.payload.submissionId
 
     await request.cache().set(cache)

@@ -36,10 +36,8 @@ describe('records', () => {
       expect(mockView.mock.calls[0][0]).toBe('records')
     })
 
-    it('should redirect to the records-search-results page and set the contactId on the cache, if there are no errors', async () => {
-      const mockCacheGet = jest.fn(() => ({
-        contactId: ''
-      }))
+    it('should redirect to the records-search-results page and set the recordsContactId and fullName on the cache, if there are no errors', async () => {
+      const mockCacheGet = jest.fn(() => ({}))
       const mockCacheSet = jest.fn()
       const request = {
         payload: {
@@ -61,7 +59,7 @@ describe('records', () => {
 
       expect(mockRedirect.mock.calls.length).toBe(1)
       expect(mockRedirect.mock.calls[0][0]).toBe('/records-search-results')
-      expect(mockCacheSet.mock.calls[0][0]).toStrictEqual({ contactId: '123', fullName: 'Homer Simpson' })
+      expect(mockCacheSet.mock.calls[0][0]).toStrictEqual({ recordsContactId: '123', fullName: 'Homer Simpson' })
     })
   })
 })

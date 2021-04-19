@@ -5,7 +5,9 @@ require('../../src/api/submissions')
 
 jest.mock('./../../src/api/submissions', () => {
   return jest.fn().mockImplementation(() => {
-    return { getByContactId: mockGetByContactId }
+    return {
+      getByContactId: mockGetByContactId
+    }
   })
 })
 
@@ -22,7 +24,7 @@ describe('records-search-results', () => {
   })
 
   describe('doGet', () => {
-    it('should redirect to /records if contactId is not on the cache', async () => {
+    it('should redirect to /records if recordsContactId is not on the cache', async () => {
       const recordsSearchResultsHandler = new RecordsSearchResultsHandler('/records-search-results')
 
       const mockCacheGet = jest.fn(() => ({}))
@@ -41,7 +43,7 @@ describe('records-search-results', () => {
       const recordsSearchResultsHandler = new RecordsSearchResultsHandler('/records-search-results')
 
       const mockCacheGet = jest.fn(() => ({
-        contactId: '123'
+        recordsContactId: '123'
       }))
       const mockCacheSet = jest.fn()
       const request = {
@@ -57,6 +59,26 @@ describe('records-search-results', () => {
       expect(mockView.mock.calls[0][0]).toBe('/records-search-results')
       expect(mockGetByContactId).toHaveBeenCalledTimes(1)
       expect(mockGetByContactId).toHaveBeenCalledWith(request, '123')
+    })
+  })
+
+  describe('doPost', () => {
+    it('should redirect to records-submissions once submisson has been found', async () => {
+      const recordsSearchResultsHandler = new RecordsSearchResultsHandler('/records-search-results')
+
+      const mockCacheSet = jest.fn()
+      const request = {
+        payload: {
+          submissionId: 'submissions/1'
+        },
+        cache: () => ({
+          get: jest.fn(() => ({})),
+          set: mockCacheSet
+        })
+      }
+
+      await recordsSearchResultsHandler.doPost(request, h)
+      expect(mockCacheSet.mock.calls[0][0]).toStrictEqual({ recordsSubmissionId: 'submissions/1' })
     })
   })
 })

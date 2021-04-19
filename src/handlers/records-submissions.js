@@ -32,7 +32,7 @@ module.exports = class RecordsSubmissionsHandler extends BaseHandler {
     // Return the review details
     return h.view(this.path, {
       fullName: cache.fullName,
-      year: cache.recordsYear,
+      year: submission.season,
       activities: activities,
       catches: catches,
       smallCatches: smallCatches,
