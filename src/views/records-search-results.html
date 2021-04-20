@@ -1,9 +1,7 @@
 {% extends "layout.html" %}
 
 {% from "navigation.njk" import navigationHeaderBlock %}
-{% from "button/macro.njk" import govukButton %}
 {% from "back-link/macro.njk" import govukBackLink %}
-
 
 {% set title = "Catch returns for " + fullName %}
 
@@ -30,17 +28,23 @@
 {% block content %}
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-        <form method="post">
-            <h1 class="govuk-heading-l">{{ title }}</h1>
-            <ul class="govuk-list govuk-list--bullet">
-            {% for submission in submissions %}
-                <li>
-                    <button class="button-style-hidden" type="submit" name="submissionId" value='{{submission.id}}'>{{ submission.season }}</button>
-                </li>
-            {% endfor %}
-            </ul>
-            {{ extra() }}
-        </form>
+        <h1 class="govuk-heading-l">{{ title }}</h1>
+        {% if submissions | length %}
+            <form method="post">
+                <ul class="govuk-list govuk-list--bullet">
+                    {% for submission in submissions %}
+                        <li>
+                            <button class="button-style-hidden" type="submit" name="submissionId" value='{{submission.id}}'>{{ submission.season }}</button>
+                        </li>
+                    {% endfor %}
+                </ul>
+                
+                {{ extra() }}
+            </form>
+        {% else %}
+            <p class="govuk-body">There are no catch returns for this angler.</p>
+            <a href="/records" role="button" class="govuk-button">Search again</a>
+        {% endif %}
     </div>
 </div>
 {% endblock %}
