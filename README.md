@@ -85,8 +85,8 @@ REPORTS_S3_LOCATION_FOLDER=reports
 LRU_ITEMS=200000
 LRU_TTL=1800000 # Half an hour
 
-# Google analytics and tag manager 
-GA_TAG_MANAGER=GTM-AAAAAAA
+# Google analytics
+GA_TRACKING_ID=UA-111111111-1
 
 # Catch return entry point on GOV.UK
 CATCH_RETURNS_GOV_UK=https://www.gov.uk/catch-return

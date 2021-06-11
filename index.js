@@ -249,7 +249,7 @@ const options = {
         return {
           pgid: Uuid.v4(),
           fmt: process.env.CONTEXT === 'FMT',
-          gtm: process.env.GA_TAG_MANAGER
+          ga: process.env.GA_TRACKING_ID
         }
       }
 

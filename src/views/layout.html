@@ -25,20 +25,41 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="-1">
 
-<!-- Google Tag Manager -->
-{% if gtm %}
-<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','{{gtm}}');</script>
-<!-- End Google Tag Manager -->
-{% endif %}
-
-
 {% endblock %}
 
 {% block header %}
+    <div id="global-cookie-message" class="cookie-banner no-print" role="region" aria-label="cookie banner">
+      <div class="govuk-width-container">
+        <p class="govuk-body">
+          This website only stores the cookies that are essential to make it work. Read more about <a class="govuk-link" href="/cookies">how we use cookies</a>
+        </p>
+        <button id="close-global-cookie-message" class="govuk-button govuk-!-margin-bottom-0" type="submit">
+            Close<span class="govuk-visually-hidden"> cookie banner</span>
+        </button>
+      </div>
+    </div>
+    <script type="text/javascript">
+        function removeCookieMessage() {
+            var elem = document.getElementById('global-cookie-message')
+            if (elem.parentNode) {
+                elem.parentNode.removeChild(elem)
+            }
+        }
+        (function () {
+            'use strict'
+            var gds_seen_cookie_message = /(^|\;)\s*gds_seen_cookie_message=/.test(document.cookie)
+            if (gds_seen_cookie_message) {
+                removeCookieMessage()
+            } else {
+                document.getElementById('close-global-cookie-message').addEventListener('click', function() {
+                    var expiry = new Date()
+                    expiry.setDate(expiry.getDate() + 90)
+                    document.cookie = 'gds_seen_cookie_message=true; expires=' + expiry.toUTCString() + '; path=/;'
+                    removeCookieMessage()
+                })
+            }
+        })()
+    </script>
     {{ govukHeader({
             assetsPath: assetPath + '/images',
             homepageUrl: "https://www.gov.uk/",
@@ -66,22 +87,6 @@
             html: 'This is a new service – your <a class="govuk-link" href="https://www.smartsurvey.co.uk/s/QQJ22/" target="_blank">feedback</a> will help us to improve it.'
         }) }}
     {% endif %}
-{% endblock %}
-
-{% block bodyStart %}
-
-{% if gtm %}
-<!-- Google Tag Manager (noscript) -->
-<noscript><iframe src="https://www.googletagmanager.com/ns.html?id={{gtm}}"
-                  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-<!-- End Google Tag Manager (noscript) -->
-{% endif %}
-
-<div id="global-cookie-message">
-    <div class="govuk-width-container">
-        <p class="govuk-link govuk-body-m">GOV.UK uses cookies to make the site simpler. <a href="https://www.gov.uk/help/cookies">Find out more about cookies</a></p>
-    </div>
-</div>
 {% endblock %}
 
 {% set footerHtml %}
@@ -118,8 +123,6 @@
 
 {% block bodyEnd %}
     <script src="/public/javascript/all-min.js"></script>
-    <script src="/public/javascript/cookie-functions-min.js"></script>
-    <script src="/public/javascript/cookie-header-min.js"></script>
     <script>window.GOVUKFrontend.initAll()</script>
     <script>var e = document.getElementsByClassName('hide-if-js-disabled');
         for (var i = 0; i < e.length; i++) { e[i].style.display='block'; }
