@@ -13,12 +13,20 @@ const Nunjucks = require('nunjucks')
 const Uuid = require('uuid')
 const Crypto = require('crypto')
 const { logger } = require('defra-logging-facade')
+const HapiGapi = require('@defra/hapi-gapi')
+
 const AuthorizationSchemes = require('./src/lib/authorization-schemes')
 const AuthorizationStrategies = require('./src/lib/authorization-strategies')
 const EnvironmentSchema = require('./environment-schema')
 const CacheDecorator = require('./src/lib/cache-decorator')
 const { checkTempDir } = require('./src/lib/misc')
 const manFishing = require('./manFishing')
+
+const staticMatcherPublic = /^(?:\/public\/.*|\/robots.txt|\/favicon.ico)/
+const staticMatcherOidc = /^\/oidc\/.*/
+
+const isStaticResource = request => staticMatcherPublic.test(request.path)
+const useSessionCookie = request => !isStaticResource(request) && !staticMatcherOidc.test(request.path)
 
 const manifest = {
 
@@ -309,10 +317,30 @@ const options = {
     })
 
     /*
-     * Decorator to make access to the session cache available as
-     * simple setters and getters hiding the session key.
-     */
+    * Decorator to make access to the session cache available as
+    * simple setters and getters hiding the session key.
+    */
     server.decorate('request', 'cache', CacheDecorator)
+ 
+    /*
+    * HapiGapi plugin
+    */
+    await server.register({
+      plugin: HapiGapi,
+      options: {
+        propertySettings: [
+          {
+            id: process.env.GA_TRACKING_ID,
+            hitTypes: ['pageview', 'event', 'ecommerce']
+          }
+        ],
+        sessionIdProducer: async request => {
+          return request.cache().getId()
+        },
+        batchSize: 20,
+        batchInterval: 15000
+      }
+    })
 
     /*
      * Test that cryptographic support is enabled on the build

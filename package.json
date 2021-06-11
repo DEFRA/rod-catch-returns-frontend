@@ -22,6 +22,7 @@
     "watch": "nohup gulp watch&"
   },
   "dependencies": {
+    "@defra/hapi-gapi": "^1.1.0",
     "@hapi/basic": "^6.0.0",
     "@hapi/catbox-redis": "^6.0.1",
     "@hapi/cookie": "^11.0.1",
