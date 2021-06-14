@@ -28,6 +28,8 @@ const staticMatcherOidc = /^\/oidc\/.*/
 const isStaticResource = request => staticMatcherPublic.test(request.path)
 const useSessionCookie = request => !isStaticResource(request) && !staticMatcherOidc.test(request.path)
 
+const salt = Crypto.randomBytes(16);
+
 const manifest = {
 
   // Configure Hapi server and server-caching subsystem
@@ -335,7 +337,15 @@ const options = {
           }
         ],
         sessionIdProducer: async request => {
-          return request.cache().getId()
+          const ip = request.info.remoteAddress
+          const ua = request.headers['user-agent']
+
+          const hash = Crypto.createHash('sha256')
+            .update(ip + ua)
+            .update(salt)
+            .digest('base64');
+          console.log(hash)
+          return hash
         },
         batchSize: 20,
         batchInterval: 15000
