@@ -14,6 +14,7 @@ const Uuid = require('uuid')
 const Crypto = require('crypto')
 const { logger } = require('defra-logging-facade')
 const HapiGapi = require('@defra/hapi-gapi')
+const { v4: uuid } = require('uuid')
 
 const AuthorizationSchemes = require('./src/lib/authorization-schemes')
 const AuthorizationStrategies = require('./src/lib/authorization-strategies')
@@ -23,10 +24,8 @@ const { checkTempDir } = require('./src/lib/misc')
 const manFishing = require('./manFishing')
 
 const staticMatcherPublic = /^(?:\/public\/.*|\/robots.txt|\/favicon.ico)/
-const staticMatcherOidc = /^\/oidc\/.*/
 
 const isStaticResource = request => staticMatcherPublic.test(request.path)
-const useSessionCookie = request => !isStaticResource(request) && !staticMatcherOidc.test(request.path)
 
 const manifest = {
 
@@ -317,11 +316,11 @@ const options = {
     })
 
     /*
-    * Decorator to make access to the session cache available as
-    * simple setters and getters hiding the session key.
-    */
+     * Decorator to make access to the session cache available as
+     * simple setters and getters hiding the session key.
+     */
     server.decorate('request', 'cache', CacheDecorator)
- 
+
     /*
     * HapiGapi plugin
     */
@@ -331,11 +330,23 @@ const options = {
         propertySettings: [
           {
             id: process.env.GA_TRACKING_ID,
-            hitTypes: ['pageview', 'event', 'ecommerce']
+            hitTypes: ['pageview', 'event']
           }
         ],
         sessionIdProducer: async request => {
-          return request.cache().getId()
+          let sessionId = null
+          if (!isStaticResource(request)) {
+            try {
+            const cache = await request.cache().get()
+            console.log(cache)
+            const gaClientId = cache.gaClientId
+            sessionId = gaClientId ?? (await request.cache().getId())
+            } catch (err) {
+              console.log(err)
+            }
+          }
+          console.log('id='+sessionId)
+          return sessionId
         },
         batchSize: 20,
         batchInterval: 15000

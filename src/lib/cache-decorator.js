@@ -10,22 +10,25 @@ module.exports = function () {
     getId: () => this.auth?.artifacts?.sid,
     get: async () => {
       try {
-        const result = await this.server.app.cache.get(this.auth.artifacts.sid)
+        console.log(this.state)
+        //console.log(this.auth.artifacts.sid)
+        const result = await this.server.app.cache.get(this.state.sid.sid)
         return result
       } catch (err) {
+        console.log(err)
         throw new Error('Cache fetch error')
       }
     },
     set: async (obj) => {
       try {
-        await this.server.app.cache.set(this.auth.artifacts.sid, obj)
+        await this.server.app.cache.set(this.state.sid.sid, obj)
       } catch (err) {
         throw new Error('Cache put error')
       }
     },
     drop: async () => {
       try {
-        await this.server.app.cache.drop(this.auth.artifacts.sid)
+        await this.server.app.cache.drop(this.state.sid.sid)
       } catch (err) {
         throw new Error('Cache drop error')
       }

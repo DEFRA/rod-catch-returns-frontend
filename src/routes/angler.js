@@ -53,6 +53,8 @@ const reviewHandler = new ReviewHandler('review')
 const confirmationHandler = new ConfirmationHandler('confirmation')
 const saveHandler = new SaveHandler('save')
 
+const { initialiseAnalyticsSessionData } = require('../lib/analytics')
+
 module.exports = [
 
   // Redirect to the start page
@@ -60,7 +62,8 @@ module.exports = [
     path: '/',
     method: 'GET',
     options: { auth: false },
-    handler: (request, h) => {
+    handler: async (request, h) => {
+      await initialiseAnalyticsSessionData(request, h)
       return process.env.CONTEXT === 'ANGLER' ? h.redirect('/licence-auth') : h.redirect('/login')
     }
   },
@@ -212,7 +215,8 @@ module.exports = [
     path: '/cookies',
     method: 'GET',
     options: { auth: false },
-    handler: (request, h) => {
+    handler: async (request, h) => {
+      await initialiseAnalyticsSessionData(request)
       return h.view('cookies')
     }
   },
@@ -222,7 +226,8 @@ module.exports = [
     path: '/accessibility',
     method: 'GET',
     options: { auth: false },
-    handler: (request, h) => {
+    handler: async (request, h) => {
+      await initialiseAnalyticsSessionData(request)
       return h.view('accessibility')
     }
   },
@@ -232,7 +237,8 @@ module.exports = [
     path: '/privacy',
     method: 'GET',
     options: { auth: false },
-    handler: (request, h) => {
+    handler: async (request, h) => {
+      await initialiseAnalyticsSessionData(request)
       return h.view('privacy')
     }
   }
