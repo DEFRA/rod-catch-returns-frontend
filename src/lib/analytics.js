@@ -4,7 +4,7 @@ const salt = crypto.randomBytes(16)
 const staticMatcherPublic = /^(?:\/public\/.*|\/robots.txt|\/favicon.ico)/
 const isStaticResource = request => staticMatcherPublic.test(request.path)
 
-const sessionIdProducer = (request) => {
+const sessionIdProducer = request => {
   let hash = null
   if (!isStaticResource(request)) {
     const ip = request.info.remoteAddress
