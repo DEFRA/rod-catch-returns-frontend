@@ -7,7 +7,6 @@
 
 module.exports = function () {
   return {
-    getId: () => this.auth?.artifacts?.sid,
     get: async () => {
       try {
         const result = await this.server.app.cache.get(this.auth.artifacts.sid)
