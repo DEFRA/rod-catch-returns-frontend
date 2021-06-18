@@ -25,7 +25,7 @@ describe('analytics', () => {
       expect(result).toBeNull()
     })
 
-    it('should return a hash of the ip and user-agent using sha256', () => {
+    it('should return a hash of the ip and user-agent using sha512', () => {
       const hashMock = jest.spyOn(crypto, 'createHash')
       const request = {
         path: '/',
@@ -40,7 +40,7 @@ describe('analytics', () => {
       const result = sessionIdProducer(request)
 
       expect(result).not.toBeNull()
-      expect(hashMock).toBeCalledWith('sha256')
+      expect(hashMock).toBeCalledWith('sha512')
     })
 
     it('should return the same hash if the function is called twice', () => {
