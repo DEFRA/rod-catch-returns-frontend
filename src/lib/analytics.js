@@ -5,17 +5,17 @@ const staticMatcherPublic = /^(?:\/public\/.*|\/robots.txt|\/favicon.ico)/
 const isStaticResource = request => staticMatcherPublic.test(request.path)
 
 const sessionIdProducer = (request) => {
-  let hash = null
+  let id = null
   if (!isStaticResource(request)) {
     const ip = request.info.remoteAddress
     const ua = request.headers['user-agent']
 
-    hash = crypto.createHash('sha256')
-      .update(ip + ua)
+    const hash = crypto.createHash('sha256')
+    id = hash.update(ip + ua)
       .update(salt)
       .digest('base64')
   }
-  return hash
+  return id
 }
 module.exports = {
   sessionIdProducer,
