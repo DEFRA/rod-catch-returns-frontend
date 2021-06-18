@@ -10,7 +10,7 @@ const sessionIdProducer = (request) => {
     const ip = request.info.remoteAddress
     const ua = request.headers['user-agent']
 
-    hash = crypto.createHash('sha512')
+    hash = crypto.createHash('sha256')
       .update(ip + ua)
       .update(salt)
       .digest('base64')
