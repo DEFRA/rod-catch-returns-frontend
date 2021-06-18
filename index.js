@@ -21,12 +21,7 @@ const EnvironmentSchema = require('./environment-schema')
 const CacheDecorator = require('./src/lib/cache-decorator')
 const { checkTempDir } = require('./src/lib/misc')
 const manFishing = require('./manFishing')
-
-const staticMatcherPublic = /^(?:\/public\/.*|\/robots.txt|\/favicon.ico)/
-const staticMatcherOidc = /^\/oidc\/.*/
-
-const isStaticResource = request => staticMatcherPublic.test(request.path)
-const useSessionCookie = request => !isStaticResource(request) && !staticMatcherOidc.test(request.path)
+const { sessionIdProducer } = require('./src/lib/analytics')
 
 const manifest = {
 
@@ -317,14 +312,14 @@ const options = {
     })
 
     /*
-    * Decorator to make access to the session cache available as
-    * simple setters and getters hiding the session key.
-    */
+     * Decorator to make access to the session cache available as
+     * simple setters and getters hiding the session key.
+     */
     server.decorate('request', 'cache', CacheDecorator)
- 
+
     /*
-    * HapiGapi plugin
-    */
+     * HapiGapi plugin
+     */
     await server.register({
       plugin: HapiGapi,
       options: {
@@ -334,9 +329,7 @@ const options = {
             hitTypes: ['pageview', 'event', 'ecommerce']
           }
         ],
-        sessionIdProducer: async request => {
-          return request.cache().getId()
-        },
+        sessionIdProducer: sessionIdProducer,
         batchSize: 20,
         batchInterval: 15000
       }
