@@ -22,7 +22,7 @@
     "watch": "nohup gulp watch&"
   },
   "dependencies": {
-    "@defra/hapi-gapi": "^1.1.0",
+    "@defra/hapi-gapi": "defra/hapi-gapi#IWTF-2190-support-requests-with-proxy",
     "@hapi/basic": "^6.0.0",
     "@hapi/catbox-redis": "^6.0.1",
     "@hapi/cookie": "^11.0.1",
