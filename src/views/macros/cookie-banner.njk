@@ -1,0 +1,34 @@
+{% macro cookieBanner() %}
+    <div id="global-cookie-message" class="cookie-banner no-print" role="region" aria-label="cookie banner">
+      <div class="govuk-width-container">
+        <p class="govuk-body">
+          This website only stores the cookies that are essential to make it work. Read more about <a class="govuk-link" href="/cookies">how we use cookies</a>
+        </p>
+        <button id="close-global-cookie-message" class="govuk-button govuk-!-margin-bottom-0" type="submit">
+            Close<span class="govuk-visually-hidden"> cookie banner</span>
+        </button>
+      </div>
+    </div>
+    <script type="text/javascript">
+        function removeCookieMessage() {
+            var elem = document.getElementById('global-cookie-message')
+            if (elem.parentNode) {
+                elem.parentNode.removeChild(elem)
+            }
+        }
+        (function () {
+            'use strict'
+            var gds_seen_cookie_message = /(^|\;)\s*gds_seen_cookie_message=/.test(document.cookie)
+            if (gds_seen_cookie_message) {
+                removeCookieMessage()
+            } else {
+                document.getElementById('close-global-cookie-message').addEventListener('click', function() {
+                    var expiry = new Date()
+                    expiry.setDate(expiry.getDate() + 90)
+                    document.cookie = 'gds_seen_cookie_message=true; expires=' + expiry.toUTCString() + '; path=/;'
+                    removeCookieMessage()
+                })
+            }
+        })()
+    </script>
+{% endmacro %}

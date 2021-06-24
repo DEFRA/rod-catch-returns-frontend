@@ -1,6 +1,8 @@
 {% from "header/macro.njk" import govukHeader %}
+{% from "cookie-banner.njk" import cookieBanner %}
 
 {% macro navigationHeaderBlock(page) %}
+    {{ cookieBanner() }}
     {{ govukHeader({
         serviceUrl: "/",
         homepageUrl: "https://www.gov.uk/",
