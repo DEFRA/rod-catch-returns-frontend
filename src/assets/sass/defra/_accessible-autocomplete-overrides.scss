@@ -1,0 +1,7 @@
+.autocomplete__menu {
+    @include govuk-font($size: 19);
+}
+
+.autocomplete__wrapper {
+    max-width: 16em;
+}

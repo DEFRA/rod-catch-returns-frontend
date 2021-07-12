@@ -41,6 +41,17 @@ const copyJs = () => {
   ).pipe(minify({ noSource: true })).pipe(gulp.dest(paths.public + '/javascript'))
 }
 
+const copyMinifiedCSS = () => {
+  return gulp.src('node_modules/accessible-autocomplete/dist/accessible-autocomplete.min.css')
+    .pipe(gulp.dest(paths.public + 'stylesheets/'))
+}
+
+const copyMinifiedJS = () => {
+  return gulp.src('node_modules/accessible-autocomplete/dist/accessible-autocomplete.min.js')
+    .pipe(gulp.dest(paths.public + '/javascript'))
+}
+
+
 // Build the sass
 const buildSass = () => {
   return gulp.src(paths.assets + 'sass/*.scss')
@@ -58,7 +69,9 @@ gulp.task('default', gulp.series(
   clean,
   copyAssets,
   copyAdditionalImages,
+  copyMinifiedCSS,
   copyJs,
+  copyMinifiedJS,
   buildSass
 ))
 

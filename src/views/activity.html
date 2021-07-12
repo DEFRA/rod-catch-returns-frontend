@@ -153,3 +153,14 @@
     </div>
 </div>
 {% endblock %}
+
+{% block bodyEnd %}
+    <link href="/public/stylesheets/accessible-autocomplete.min.css" rel="stylesheet" type="text/css" />
+    <script src="/public/javascript/accessible-autocomplete.min.js"></script>
+
+    <script>
+        accessibleAutocomplete.enhanceSelectElement({
+            selectElement: document.querySelector('#river')
+        })
+    </script>
+{% endblock %}
