@@ -51,7 +51,6 @@ const copyMinifiedJS = () => {
     .pipe(gulp.dest(paths.public + '/javascript'))
 }
 
-
 // Build the sass
 const buildSass = () => {
   return gulp.src(paths.assets + 'sass/*.scss')
