@@ -31,13 +31,13 @@
 {% macro renderChange(id, desc) %}
     {% set url = id %}
     <!--suppress ALL -->
-    <span><a id="edit-{{ id }}" class="govuk-link" href="{{ url }}">Change<span class="govuk-visually-hidden">&nbsp;{{ desc }}</span></a></span>
+    <span><a id="edit-{{ id }}" class="govuk-link" href="{{ url }}">Change<span class="govuk-visually-hidden"> {{ desc }}</span></a></span>
 {% endmacro %}
 
 {% macro renderDelete(id, desc) %}
     {% set url = "/delete/" + id %}
     <!--suppress ALL -->
-    <span><a id="delete-{{ id }}" class="govuk-link" href="{{ url }}">Delete<span class="govuk-visually-hidden">&nbsp;{{ desc }}</span></a></span>
+    <span><a id="delete-{{ id }}" class="govuk-link" href="{{ url }}">Delete<span class="govuk-visually-hidden"> {{ desc }}</span></a></span>
 {% endmacro %}
 
 {% macro renderCheck(id, name, checked, desc) %}
