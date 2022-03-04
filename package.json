@@ -79,7 +79,7 @@
     "merge-stream": "^2.0.0",
     "node-sass": "^5.0.0",
     "run-sequence": "^2.2.1",
-    "standard": "^16.0.3",
+    "standard": "^16.0.4",
     "standard-version": "^9.3.2",
     "stream-to-promise": "^3.0.0"
   },
