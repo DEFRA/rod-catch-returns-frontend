@@ -1,5 +1,6 @@
 @Library('defra-shared@feature/iwtf-2874-s3-interface') _
 def arti = defraArtifactory()
+def s3 = defraS3()
 
 pipeline {
     agent any
@@ -21,14 +22,16 @@ pipeline {
         stage('Archive distribution') {
             steps {
                 script {
-                    DIST_FILE = arti.createDistributionFile(env.WORKSPACE, "rcr_web")
+                    // DIST_FILE = arti.createDistributionFile(env.WORKSPACE, "rcr_web")
+                    DIST_FILE = s3.createDistributionFile(env.WORKSPACE, "rcr_web")
                 }
             }
         }
         stage('Upload distribution') {
             steps {
                 script {
-                    arti.uploadArtifact("rcr-snapshots/web/", "rcr_web", BUILD_TAG, DIST_FILE)
+                    // arti.uploadArtifact("rcr-snapshots/web/", "rcr_web", BUILD_TAG, DIST_FILE)
+                    s3.uploadArtifact("rcr-snapshots/web/", "rcr_web", BUILD_TAG, DIST_FILE)
                 }
             }
         }
