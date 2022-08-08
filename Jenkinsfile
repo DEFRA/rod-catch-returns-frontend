@@ -32,26 +32,15 @@ pipeline {
         stage('Archive distribution') {
             steps {
                 script {
-                    // DIST_FILE = arti.createDistributionFile(env.WORKSPACE, "rcr_web")
                     DIST_FILE = s3.createDistributionFile(env.WORKSPACE, "rcr_web")
                 }
             }
         }
         stage('Upload distribution') {
             steps {
-                // script {
-                //     withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aps-rcr-user']]) {
-                //         // arti.uploadArtifact("rcr-snapshots/web/", "rcr_web", BUILD_TAG, DIST_FILE)
-                //         s3.uploadArtifact("rcr-snapshots/web/", "rcr_web", BUILD_TAG, DIST_FILE)
-                //     }
-                // }
                 script {
+                    arti.uploadArtifact("rcr-snapshots/web/", "rcr_web", BUILD_TAG, DIST_FILE)
                     s3.uploadArtifact("rcr-snapshots/web/", "rcr_web", BUILD_TAG, DIST_FILE)
-                    // sh """
-                    //     echo hello > abc.txt 
-                    //     aws s3 cp abc.txt s3://apsldnrcrsrv001
-                    //     aws s3 cp ${DIST_FILE} s3://apsldnrcrsrv001
-                    // """
                 }
             }
         }
