@@ -27,12 +27,23 @@ pipeline {
                 }
             }
         }
-        stage('Upload distribution') {
-            steps {
-                script {
-                    withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aps-rcr-user']]) {
-                        // arti.uploadArtifact("rcr-snapshots/web/", "rcr_web", BUILD_TAG, DIST_FILE)
-                        s3.uploadArtifact("rcr-snapshots/web/", "rcr_web", BUILD_TAG, DIST_FILE)
+        node {
+            stage('Upload distribution') {
+                steps {
+                    // script {
+                    //     withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aps-rcr-user']]) {
+                    //         // arti.uploadArtifact("rcr-snapshots/web/", "rcr_web", BUILD_TAG, DIST_FILE)
+                    //         s3.uploadArtifact("rcr-snapshots/web/", "rcr_web", BUILD_TAG, DIST_FILE)
+                    //     }
+                    // }
+                    script {
+                        withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aps-rcr-user']]) {
+                            sh """
+                                echo hello > abc.txt 
+                                aws s3 cp abc.txt s3://apsldnrcrsrv001
+                                aws s3 cp ${DIST_FILE} s3://apsldnrcrsrv001
+                            """
+                        }
                     }
                 }
             }
