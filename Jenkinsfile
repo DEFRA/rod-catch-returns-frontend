@@ -30,8 +30,10 @@ pipeline {
         stage('Upload distribution') {
             steps {
                 script {
-                    // arti.uploadArtifact("rcr-snapshots/web/", "rcr_web", BUILD_TAG, DIST_FILE)
-                    s3.uploadArtifact("rcr-snapshots/web/", "rcr_web", BUILD_TAG, DIST_FILE)
+                    withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aps-rcr-user']]) {
+                        // arti.uploadArtifact("rcr-snapshots/web/", "rcr_web", BUILD_TAG, DIST_FILE)
+                        s3.uploadArtifact("rcr-snapshots/web/", "rcr_web", BUILD_TAG, DIST_FILE)
+                    }
                 }
             }
         }
