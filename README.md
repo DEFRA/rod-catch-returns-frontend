@@ -12,7 +12,6 @@ Users are asked to submit details of the fish they caught (species, weight, numb
 Version 14 or above of Node.js is required to run the service.
 ```
 npm install
-npm run build
 ```
 
 If you need to run a local version of REDIS you can do so using docker. Ensure you have the appropriate docker version installed for your architecture and type;
@@ -22,82 +21,7 @@ docker-compose up -d
 ```
 
 ## Environment file
-The service will require a `.env` file in the root directory. Below is an example
-
-```
-# Node mode
-NODE_ENV=development
-
-
-# Interface context - FMT or ANGLER user
-CONTEXT=ANGLER
-
-# Redis
-REDIS_HOSTNAME=0.0.0.0
-REDIS_PORT=6379
-
-# Logging level
-LOG_LEVEL=debug
-
-# Cookie **CHANGE THIS** encryption key for the user authorization cookie session key
-COOKIE_PW=562fhgfqaj626ba87212ausaiqjqw112
-
-# **CHANGE THIS** Cypher key for authorization details in redis - requires 16 byte key
-AUTH_PW=1234567890123456
-
-# Set true in secure environments
-HTTPS=false
-
-# Time to live, the server authentication cache entries in milliseconds. 1 Hour
-SESSION_TTL_MS=3600000
-
-# The logging setup
-AIRBRAKE_HOST=<<airbrake host>>
-AIRBRAKE_PROJECT_KEY=<<airbrake key>>
-
-# The API setup
-API_HOSTNAME=localhost
-API_PORT=9580
-API_PATH=/api
-API_REQUEST_TIMEOUT_MS=60000
-
-# AWS Credentials
-# Note that the AWS-SDK expects to find the credentialis from the credentials provider chain, 
-# See https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/setting-credentials-node.html. 
-# Where running locally it is not sufficient to set these variables in the .env file - they need to be added 
-# to the parent shell.
-AWS_ACCESS_KEY_ID=AAAAAAAAAAAAAAAAAAAA
-AWS_SECRET_ACCESS_KEY=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-AWS_DEFAULT_REGION=eu-west-1
-
-# Proxy settings - do not use locally
-http_proxy=http://defra-proxy:3128
-https_proxy=http://defra-proxy:3128
-no_proxy=localhost
-
-# Report locations - The FMT system expects to find the reports in this location
-# A metadata tag of 'decription' can be used to give the report a name otherwise
-# the name will be derived from the filename
-REPORTS_S3_LOCATION_BUCKET=devrcrs3bkt001
-REPORTS_S3_LOCATION_FOLDER=reports 
-
-# LRU Cache
-LRU_ITEMS=200000
-LRU_TTL=1800000 # Half an hour
-
-# Google analytics
-GA_TRACKING_ID=UA-111111111-1
-
-# Catch return entry point on GOV.UK
-CATCH_RETURNS_GOV_UK=https://www.gov.uk/catch-return
-
-# Max file upload size - 1Mb
-MAX_FILE_UPLOAD_BYTES=1000000
-
-# Scanner deamon location
-CLAMD_SOCK=
-CLAMD_PORT=
-TEMP_DIR=
+The service will require a `.env` file in the root directory. This can be obtained from the rod-catch-returns-env-vars repo in GitLab.
 
 ```
 ## To Run
@@ -112,7 +36,7 @@ node index.js --force-year-choose
 ```
 
 ### Virus Scanner
-The file uploader may use the ClamAV deamon if it is available. 
+The file uploader may use the ClamAV daemon if it is available. 
 
 See https://www.clamav.net/ for details
 
