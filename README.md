@@ -26,8 +26,7 @@ The service will require a `.env` file in the root directory. This can be obtain
 ```
 ## To Run
 ```
-npm start
-http://localhost:3000
+npm start && open http://localhost:3000
 ```
 
 For automated testing, to force the user to choose this or the previous year run with the --force-year-choose argument
