@@ -11,8 +11,8 @@ on:
 jobs:
   tests:
     name: tests
-    runs-on: ubuntu-18.04
-    
+    runs-on: ubuntu-latest
+
     steps:
       - name: Start Redis
         uses: supercharge/redis-github-action@1.1.0
