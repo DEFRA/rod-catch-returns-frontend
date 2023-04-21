@@ -1,9 +1,10 @@
-const mockS3 = {
+const mockS3 = Object.freeze({
   upload: jest.fn().mockReturnThis(),
   promise: jest.fn(),
   headBucket: jest.fn(),
-  listObjectsV2: jest.fn()
-}
+  listObjectsV2: jest.fn(),
+  getObject: jest.fn()
+})
 
 const { logger } = require('defra-logging-facade')
 
@@ -29,12 +30,12 @@ describe('aws', () => {
 
   describe('reportLocationExists', () => {
     it('should resolve if the specified bucket exists', async () => {
-      mockS3.headBucket = jest.fn((params, callback) => callback())
+      mockS3.headBucket.mockImplementationOnce((params, callback) => callback())
       await expect(aws.reportLocationExists()).resolves.toBe('test')
     })
 
     it('should reject if the specified bucket does not exist', async () => {
-      mockS3.headBucket = jest.fn((params, callback) => callback(new Error('error')))
+      mockS3.headBucket.mockImplementationOnce((params, callback) => callback(new Error('error')))
       await expect(aws.reportLocationExists()).rejects.toThrow()
       expect(logger.error).toHaveBeenCalledTimes(1)
     })
@@ -42,14 +43,54 @@ describe('aws', () => {
 
   describe('listReports', () => {
     it('should reject if it cannot retrieve the report listing', async () => {
-      mockS3.listObjectsV2 = jest.fn((params, callback) => callback(new Error('error')))
+      mockS3.listObjectsV2.mockImplementationOnce((params, callback) => callback(new Error('error')))
       await expect(aws.listReports()).rejects.toThrow()
       expect(logger.error).toHaveBeenCalledTimes(1)
     })
 
     it('should resolve and return empty array if an empty array is returned from listObjectsV2', async () => {
-      mockS3.listObjectsV2 = jest.fn((params, callback) => callback(undefined, { Contents: [] }))
+      mockS3.listObjectsV2.mockImplementationOnce((params, callback) => callback(undefined, { Contents: [] }))
       await expect(aws.listReports()).resolves.toEqual([])
+    })
+  })
+
+  describe('getReport', () => {
+    it('should return data from S3', async () => {
+      const data = Symbol('data')
+      mockS3.getObject.mockImplementationOnce((params, callback) => callback(undefined, data))
+      await expect(aws.getReport()).resolves.toBe(data)
+    })
+
+    it('passes key to getObject', () => {
+      const Key = Symbol('skeleton')
+      aws.getReport(Key)
+      expect(mockS3.getObject).toHaveBeenCalledWith(
+        expect.objectContaining({ Key }),
+        expect.any(Function)
+      )
+    })
+
+    it('uses REPORTS_S3_LOCATION_BUCKET env var as Bucket param', () => {
+      const S3Bucket = 'S3 Location'
+      process.env.REPORTS_S3_LOCATION_BUCKET = S3Bucket
+      aws.getReport()
+      expect(mockS3.getObject).toHaveBeenCalledWith(
+        expect.objectContaining({ Bucket: S3Bucket }),
+        expect.any(Function)
+      )
+    })
+
+    it('should throw error if getObject generates one', async () => {
+      mockS3.getObject.mockImplementationOnce((params, callback) => callback(new Error('error')))
+      await expect(() => aws.getReport()).rejects.toThrow('error')
+    })
+
+    it('logs error if getObject generates one', async () => {
+      mockS3.getObject.mockImplementationOnce((params, callback) => callback(new Error('error')))
+      try {
+        await aws.getReport()
+      } catch {}
+      expect(logger.error).toHaveBeenCalledWith('Cannot retrieve report: Error: error')
     })
   })
 })
