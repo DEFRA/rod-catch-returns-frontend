@@ -17,6 +17,9 @@ jest.mock('aws-sdk', () => {
     }
   }
 })
+jest.mock('@aws-sdk/client-s3', () => ({
+  S3: jest.fn(() => mockS3)
+}))
 jest.mock('defra-logging-facade')
 
 describe('aws', () => {

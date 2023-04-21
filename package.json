@@ -19,9 +19,11 @@
     "test": "npm run test:jest && npm run test:lab",
     "test:lab": "./node_modules/@hapi/lab/bin/lab --verbose",
     "test:jest": "jest",
+    "test:jest-watch": "jest --watch",
     "watch": "nohup gulp watch&"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.316.0",
     "@defra/hapi-gapi": "^1.2.1",
     "@hapi/basic": "^6.0.0",
     "@hapi/catbox-redis": "^6.0.1",
@@ -36,7 +38,7 @@
     "@hapi/scooter": "^6.0.0",
     "@hapi/vision": "^6.1.0",
     "accessible-autocomplete": "^2.0.4",
-    "aws-sdk": "^2.1086.0",
+    "aws-sdk": "^2.1361.0",
     "bash": "^0.0.1",
     "blankie": "^5.0.0",
     "blipp": "^4.0.2",

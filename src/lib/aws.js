@@ -5,6 +5,7 @@
  */
 const { logger } = require('defra-logging-facade')
 const AWS = require('aws-sdk')
+const { S3 } = require('@aws-sdk/client-s3')
 const Mime = require('./mime-desc')
 
 // If the proxy details are set up then include them in the AWS configuration
@@ -24,7 +25,7 @@ if (Object.keys(process.env).find(k => k === 'https_proxy')) {
 
 const s3Region = process.env.AWS_REGION || 'eu-west-1'
 AWS.config.update({ region: s3Region })
-const s3 = new AWS.S3({ apiVersion: '2006-03-01' })
+const s3 = new S3({ apiVersion: '2006-03-01' })
 
 // Convert the file name to a description
 const fileNameToDesc = (filename) => {
@@ -129,7 +130,7 @@ module.exports = {
   // Get a report by key
   getReport: (key) => {
     return new Promise((resolve, reject) => {
-      var params = {
+      const params = {
         Bucket: process.env.REPORTS_S3_LOCATION_BUCKET,
         Key: key
       }
