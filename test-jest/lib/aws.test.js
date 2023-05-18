@@ -30,12 +30,12 @@ describe('aws', () => {
 
   describe('reportLocationExists', () => {
     it('should resolve if the specified bucket exists', async () => {
-      mockS3.headBucket.mockImplementationOnce((params, callback) => callback())
+      mockS3.headBucket.mockImplementationOnce(() => 'test')
       await expect(aws.reportLocationExists()).resolves.toBe('test')
     })
 
     it('should reject if the specified bucket does not exist', async () => {
-      mockS3.headBucket.mockImplementationOnce((params, callback) => callback(new Error('error')))
+      mockS3.headBucket.mockImplementationOnce(() => { throw new Error('error') })
       await expect(aws.reportLocationExists()).rejects.toThrow()
       expect(logger.error).toHaveBeenCalledTimes(1)
     })
