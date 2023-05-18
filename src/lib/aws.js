@@ -23,9 +23,7 @@ if (Object.keys(process.env).find(k => k === 'https_proxy')) {
   }
 }
 
-const s3Region = process.env.AWS_REGION || 'eu-west-1'
-AWS.config.update({ region: s3Region })
-const s3 = new S3({ apiVersion: '2006-03-01' })
+const s3 = new S3({ region: process.env.AWS_REGION || 'eu-west-1' })
 
 // Convert the file name to a description
 const fileNameToDesc = (filename) => {
@@ -88,17 +86,13 @@ const getReportMetaData = (key) => {
 
 module.exports = {
   // Test that the specified S3 bucket exists
-  reportLocationExists: () => {
-    return new Promise((resolve, reject) => {
-      s3.headBucket({ Bucket: process.env.REPORTS_S3_LOCATION_BUCKET }, function (err) {
-        if (err) {
-          logger.error('Cannot find report location: ' + err)
-          reject(err)
-        }
-
-        resolve(process.env.REPORTS_S3_LOCATION_BUCKET)
-      })
-    })
+  reportLocationExists: async () => {
+    try {
+      return s3.headBucket({ Bucket: process.env.REPORTS_S3_LOCATION_BUCKET })
+    } catch (e) {
+      logger.error(`Cannot find report location: ${e}`)
+      throw e
+    }
   },
 
   // List the available reports in the specified location.
