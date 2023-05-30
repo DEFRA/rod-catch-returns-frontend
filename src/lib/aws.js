@@ -72,6 +72,7 @@ const getReportMetaData = (key) => {
         logger.error('Cannot retrieve report metadata: ' + err)
         reject(err)
       }
+      logger.debug('retrieved object', data)
       resolve({
         key: key,
         length: Math.round(data.ContentLength / 1000),
@@ -88,7 +89,9 @@ module.exports = {
   // Test that the specified S3 bucket exists
   reportLocationExists: async () => {
     try {
-      return s3.headBucket({ Bucket: process.env.REPORTS_S3_LOCATION_BUCKET })
+      const reportsLocationExtant = s3.headBucket({ Bucket: process.env.REPORTS_S3_LOCATION_BUCKET })
+      logger.debug('report location exists:', reportsLocationExtant)
+      return reportsLocationExtant
     } catch (e) {
       logger.error(`Cannot find report location: ${e}`)
       throw e
@@ -109,6 +112,8 @@ module.exports = {
           logger.error('Cannot retrieve report listing: ' + err)
           reject(err)
         }
+
+        logger.debug('retrieved reports listing', data)
 
         Promise.all(data.Contents.map(c => getReportDescription(c.Key))).then((details) => {
           Promise.all(details.map(d => getReportMetaData(d.key))).then((reportMetaData) => {
