@@ -9,6 +9,7 @@ const { S3 } = require('@aws-sdk/client-s3')
 const Mime = require('./mime-desc')
 
 // If the proxy details are set up then include them in the AWS configuration
+logger.debug('checking for https proxy')
 if (Object.keys(process.env).find(k => k === 'https_proxy')) {
   try {
     logger.debug(`Using proxy: ${process.env.https_proxy}`)
@@ -23,6 +24,7 @@ if (Object.keys(process.env).find(k => k === 'https_proxy')) {
   }
 }
 
+logger.debug('initialising s3')
 const s3 = new S3({ region: process.env.AWS_REGION || 'eu-west-1' })
 
 // Convert the file name to a description
@@ -36,7 +38,9 @@ const fileNameToDesc = (filename) => {
  * Or convert the filename to a description
  */
 const getReportDescription = (key) => {
+  logger.debug('getReportDescription')
   return new Promise((resolve, reject) => {
+    logger.debug('getReportDescription')
     const params = {
       Bucket: process.env.REPORTS_S3_LOCATION_BUCKET,
       Key: key
@@ -88,6 +92,7 @@ const getReportMetaData = (key) => {
 module.exports = {
   // Test that the specified S3 bucket exists
   reportLocationExists: async () => {
+    logger.debug('report location exists', process.env.REPORTS_S3_LOCATION_BUCKET)
     try {
       const reportsLocationExtant = s3.headBucket({ Bucket: process.env.REPORTS_S3_LOCATION_BUCKET })
       logger.debug('report location exists:', reportsLocationExtant)
