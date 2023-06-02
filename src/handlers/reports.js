@@ -19,8 +19,15 @@ module.exports = class ReportsHandler extends BaseHandler {
    * @returns {Promise<*>}
    */
   async doGet (request, h) {
-    await aws.reportLocationExists()
-    const reportsList = await aws.listReports()
+    // await aws.reportLocationExists()
+    // const reportsList = await aws.listReports()
+    const reportsList = [{
+      description: 'Sample report',
+      contentType: 'Sample content',
+      length: '56,000',
+      lastModified: '2023-06-02T11:33:00.000',
+      key: 'skeleton'
+    }]
     return this.readCacheAndDisplayView(request, h, { reports: reportsList })
   }
 }
