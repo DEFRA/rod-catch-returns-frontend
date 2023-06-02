@@ -48,7 +48,10 @@ module.exports = {
         }
 
         try {
+          console.log(`auth request for ${auth.username}`)
           await Client.request(auth, Client.method.GET, 'profile')
+          const { password, ...output } = auth
+          console.log('made client request', output)
           request.app = {
             authorization: auth
           }
