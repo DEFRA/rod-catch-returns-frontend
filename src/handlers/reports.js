@@ -19,7 +19,7 @@ module.exports = class ReportsHandler extends BaseHandler {
    * @returns {Promise<*>}
    */
   async doGet (request, h) {
-    // await aws.reportLocationExists()
+    await aws.reportLocationExists()
     // const reportsList = await aws.listReports()
     const reportsList = [{
       description: 'Sample report',
