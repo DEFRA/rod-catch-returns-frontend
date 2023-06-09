@@ -106,7 +106,7 @@ module.exports = {
       logger.debug('report location exists:', reportsLocationExtant)
       return reportsLocationExtant
     } catch (e) {
-      logger.error(`Cannot find report location: ${e}`)
+      logger.error(`Cannot find report location (${process.env.REPORTS_S3_LOCATION_BUCKET}): ${e}`)
       throw e
     }
   },
