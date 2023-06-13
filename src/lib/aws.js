@@ -5,8 +5,7 @@
  */
 const { logger } = require('defra-logging-facade')
 const AWS = require('aws-sdk')
-// const { S3 } = require('@aws-sdk/client-s3')
-const { S3, S3Client, HeadBucketCommand } = require('@aws-sdk/client-s3')
+const { S3 } = require('@aws-sdk/client-s3')
 const Mime = require('./mime-desc')
 
 // If the proxy details are set up then include them in the AWS configuration
@@ -25,10 +24,7 @@ if (Object.keys(process.env).find(k => k === 'https_proxy')) {
   }
 }
 
-logger.debug('initialising s3')
-const config = { region: process.env.AWS_REGION || 'eu-west-1' }
-const s3 = new S3(config)
-const s3Client = new S3Client(config)
+const s3 = new S3({ region: process.env.AWS_REGION || 'eu-west-1' })
 
 // Convert the file name to a description
 const fileNameToDesc = (filename) => {
@@ -109,8 +105,7 @@ module.exports = {
 
     try {
       logger.debug('report location exists', process.env.REPORTS_S3_LOCATION_BUCKET)
-      const reportsLocationExtant = await s3Client.send(new HeadBucketCommand({ Bucket: process.env.REPORTS_S3_LOCATION_BUCKET }))
-      // const reportsLocationExtant = await s3.headBucket({ Bucket: process.env.REPORTS_S3_LOCATION_BUCKET })
+      const reportsLocationExtant = await s3.headBucket({ Bucket: process.env.REPORTS_S3_LOCATION_BUCKET })
       logger.debug('report location exists:', reportsLocationExtant)
       return reportsLocationExtant
     } catch (e) {
