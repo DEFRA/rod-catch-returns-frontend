@@ -7,6 +7,8 @@ const { logger } = require('defra-logging-facade')
 const AWS = require('aws-sdk')
 const { S3 } = require('@aws-sdk/client-s3')
 const Mime = require('./mime-desc')
+const { HttpsProxyAgent } = require('https-proxy-agent')
+const { NodeHttpHandler } = require('@aws-sdk/node-http-handler')
 
 // If the proxy details are set up then include them in the AWS configuration
 logger.debug('checking for https proxy')
@@ -24,7 +26,13 @@ if (Object.keys(process.env).find(k => k === 'https_proxy')) {
   }
 }
 
-const s3 = new S3({ region: process.env.AWS_REGION || 'eu-west-1' })
+const agent = new HttpsProxyAgent(process.env.https_proxy)
+const s3 = new S3({
+  region: process.env.AWS_REGION || 'eu-west-1',
+  requestHandler: new NodeHttpHandler({
+    httpsAgent: agent
+  })
+})
 
 // Convert the file name to a description
 const fileNameToDesc = (filename) => {
