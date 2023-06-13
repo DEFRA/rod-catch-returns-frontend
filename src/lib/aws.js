@@ -6,7 +6,7 @@
 const { logger } = require('defra-logging-facade')
 const AWS = require('aws-sdk')
 // const { S3 } = require('@aws-sdk/client-s3')
-const { S3Client, HeadBucketCommand } = require('@aws-sdk/client-s3')
+const { S3, S3Client, HeadBucketCommand } = require('@aws-sdk/client-s3')
 const Mime = require('./mime-desc')
 
 // If the proxy details are set up then include them in the AWS configuration
