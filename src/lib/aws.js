@@ -28,12 +28,7 @@ const createS3Agent = () => {
   }
   return new S3(config)
 }
-// const s3 = new S3({
-//   region: process.env.AWS_REGION || 'eu-west-1',
-//   requestHandler: new NodeHttpHandler({
-//     httpsAgent: agent
-//   })
-// })
+
 const s3 = createS3Agent()
 
 // Convert the file name to a description
