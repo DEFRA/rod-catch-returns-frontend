@@ -23,7 +23,7 @@ const createS3Agent = () => {
         httpsAgent: new Proxy()
       })
     } catch (err) {
-      logger.error('Bad proxy specification: ' + err)
+      logger.error(`Bad proxy specification: ${err}`)
     }
   }
   return new S3(config)
@@ -104,15 +104,8 @@ const s3ListObjectsV2 = async () => {
 module.exports = {
   // Test that the specified S3 bucket exists
   reportLocationExists: async () => {
-    logger.debug(`process.env.REPORTS_S3_LOCATION_BUCKET: '${process.env.REPORTS_S3_LOCATION_BUCKET}'`)
-    logger.debug(`process.env.REPORTS_S3_LOCATION_FOLDER: '${process.env.REPORTS_S3_LOCATION_FOLDER}'`)
-    logger.debug(`process.env.AWS_REGION: '${process.env.AWS_REGION}'`)
-
     try {
-      logger.debug('report location exists', process.env.REPORTS_S3_LOCATION_BUCKET)
-      const reportsLocationExtant = await s3.headBucket({ Bucket: process.env.REPORTS_S3_LOCATION_BUCKET })
-      logger.debug('report location exists:', reportsLocationExtant)
-      return reportsLocationExtant
+      return await s3.headBucket({ Bucket: process.env.REPORTS_S3_LOCATION_BUCKET })
     } catch (e) {
       logger.error(`Cannot find report location (${process.env.REPORTS_S3_LOCATION_BUCKET}): ${e}`)
       throw e
