@@ -70,7 +70,7 @@ describe('aws', () => {
     it('should throw error if proxy spec is wrong', async () => {
       jest.isolateModules(() => {
         jest.resetModules()
-        const is3Client = require('@aws-sdk/client-s3')
+        require('@aws-sdk/client-s3')
 
         jest.mock('@aws-sdk/client-s3', () => ({
           S3: jest.fn(() => mockS3)
@@ -92,7 +92,7 @@ describe('aws', () => {
         }))
 
         delete process.env.https_proxy
-        const iaws = require('../../src/lib/aws')
+        require('../../src/lib/aws')
         expect(is3Client.S3).not.toHaveBeenCalledWith(
           expect.objectContaining({
             requestHandler: expect.any(NodeHttpHandler)
