@@ -17,9 +17,9 @@ const createS3Agent = () => {
   if (Object.keys(process.env).find(k => k === 'https_proxy')) {
     try {
       logger.debug(`Using proxy: ${process.env.https_proxy}`)
-      const Proxy = require('proxy-agent')
+      const ProxyAgent = require('proxy-agent')
       config.requestHandler = new NodeHttpHandler({
-        httpsAgent: new Proxy()
+        httpsAgent: new ProxyAgent()
       })
     } catch (err) {
       const mssg = `Bad proxy specification: ${err}`
