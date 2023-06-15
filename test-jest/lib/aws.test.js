@@ -4,7 +4,7 @@ const mockS3 = Object.freeze({
   getObject: jest.fn(),
   getObjectTagging: jest.fn()
 })
-const mockProxy = 'https-proxy'
+process.env.https_proxy = 'https-proxy'
 const { logger } = require('defra-logging-facade')
 const aws = require('../../src/lib/aws')
 const s3Client = require('@aws-sdk/client-s3')
@@ -21,9 +21,6 @@ jest.mock('@aws-sdk/node-http-handler', () => ({
 }))
 
 describe('aws', () => {
-  beforeAll(() => {
-    process.env.https_proxy = mockProxy
-  })
   describe('setup', () => {
     it('should pass region', async () => {
       expect(s3Client.S3).toHaveBeenCalledWith(
