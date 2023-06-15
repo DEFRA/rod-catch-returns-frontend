@@ -4,7 +4,6 @@
  * Handle the s3 bucket functions used for the FMT reports
  */
 const { logger } = require('defra-logging-facade')
-const AWS = require('aws-sdk')
 const { S3 } = require('@aws-sdk/client-s3')
 const Mime = require('./mime-desc')
 const { NodeHttpHandler } = require('@aws-sdk/node-http-handler')
@@ -23,7 +22,9 @@ const createS3Agent = () => {
         httpsAgent: new Proxy()
       })
     } catch (err) {
-      logger.error(`Bad proxy specification: ${err}`)
+      const mssg = `Bad proxy specification: ${err}`
+      logger.error(mssg)
+      throw new Error(mssg)
     }
   }
   return new S3(config)
@@ -44,8 +45,8 @@ const s3GetObjectTagging = async Key => {
       Key
     })
   } catch (e) {
-    logger.error(`Cannot retrieve report description: ${e}`)
-    throw e
+    logger.error(`Cannot retrieve report description: ${e.message}`)
+    throw new Error(`Cannot retrieve report description: ${e.message}`)
   }
 }
 
@@ -69,8 +70,8 @@ const s3GetObject = async Key => {
       Key
     })
   } catch (e) {
-    logger.error(`Cannot retrieve report metadata: ${e}`)
-    throw e
+    logger.error(`Cannot retrieve report metadata: ${e.message}`)
+    throw new Error(`Cannot retrieve report metadata: ${e.message}`)
   }
 }
 

@@ -1,0 +1,20 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`aws mock clearance tests listReports should return all objects provided by S3 1`] = `
+Array [
+  Object {
+    "contentType": "Microsoft Excel",
+    "description": "Sample description for Report 1",
+    "key": "Report 1",
+    "lastModified": "Thu Jun 15 2023",
+    "length": 21,
+  },
+  Object {
+    "contentType": "Weird format spreadsheet",
+    "description": "Report 2",
+    "key": "Report 2",
+    "lastModified": "Thu Jun 15 2023",
+    "length": 12,
+  },
+]
+`;
