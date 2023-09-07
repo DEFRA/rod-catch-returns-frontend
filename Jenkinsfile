@@ -1,6 +1,6 @@
-@Library('defra-shared@master') _
+@Library('defra-shared@iwtf-3523-codeartifact') _
 def arti = defraArtifactory()
-def s3
+def codeArtifact
 
 pipeline {
     agent any
@@ -11,13 +11,13 @@ pipeline {
                     BUILD_TAG = buildTag.updateJenkinsJob()
                     withCredentials([
                         [
-                            $class: 'AmazonWebServicesCredentialsBinding', 
+                            $class: 'AmazonWebServicesCredentialsBinding',
                             credentialsId: 'aps-rcr-user',
                             accessKeyVariable: 'AWS_ACCESS_KEY_ID',
                             secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
                         ]
                     ]) {
-                        s3 = defraS3()
+                        codeArtifact = defraCodeArtifact()
                     }
                 }
             }
@@ -32,7 +32,7 @@ pipeline {
         stage('Archive distribution') {
             steps {
                 script {
-                    DIST_FILE = s3.createDistributionFile(env.WORKSPACE, "rcr_web")
+                    DIST_FILE = codeArtifact.createDistributionFile(env.WORKSPACE, "rcr_web")
                 }
             }
         }
@@ -40,7 +40,7 @@ pipeline {
             steps {
                 script {
                     arti.uploadArtifact("rcr-snapshots/web/", "rcr_web", BUILD_TAG, DIST_FILE)
-                    s3.uploadArtifact("rcr-snapshots/web/", "rcr_web", BUILD_TAG, DIST_FILE)
+                    codeArtifact.uploadArtifact("rcr-snapshots/web/", "rcr_web", BUILD_TAG, DIST_FILE)
                 }
             }
         }
