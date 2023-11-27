@@ -77,7 +77,9 @@ module.exports = class BaseHandler {
       return h.redirect(errorPath)
     }
 
-    if (cache[this.context]) delete cache[this.context]
+    if (cache[this.context]) {
+      delete cache[this.context]
+    }
 
     await request.cache().set(cache)
     return h.redirect(successPath)

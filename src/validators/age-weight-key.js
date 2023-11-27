@@ -46,7 +46,9 @@ FileScanner.prototype.scan = async function (vmock) {
     // Ensure that the clamd user can read, write and execute the file
     logger.info(`Scanning ${this.filename} for viruses...`)
     Fs.chmod(this.path, 0o777, (err) => {
-      if (err) throw err
+      if (err) {
+        throw err
+      }
     })
 
     return this.scanner ? this.scanner.is_infected(this.path) : {
