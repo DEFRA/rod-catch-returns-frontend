@@ -48,7 +48,7 @@
     "dot-prop": "^6.0.1",
     "dotenv": "^8.6.0",
     "figlet": "^1.5.2",
-    "govuk-frontend": "^4.0.0",
+    "govuk-frontend": "^3.15.0",
     "hapi-alive": "^2.0.4",
     "hapi-robots": "^3.2.2",
     "hapi-router": "^4.0.1",
