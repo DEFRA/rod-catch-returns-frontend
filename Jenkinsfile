@@ -25,7 +25,7 @@ pipeline {
         stage('Build') {
             steps {
                 script {
-                    sh  "npm ci --registry https://registry.npmjs.org"
+                    sh  "npm ci"
                 }
             }
         }
