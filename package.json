@@ -37,6 +37,7 @@
     "@hapi/joi": "^17.1.1",
     "@hapi/scooter": "^6.0.0",
     "@hapi/vision": "^6.1.0",
+    "@smithy/node-http-handler": "^2.4.0",
     "accessible-autocomplete": "^2.0.4",
     "aws-sdk": "^2.1361.0",
     "bash": "^0.0.1",

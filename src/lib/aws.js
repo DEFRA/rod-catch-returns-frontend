@@ -6,7 +6,7 @@
 const { logger } = require('defra-logging-facade')
 const { S3 } = require('@aws-sdk/client-s3')
 const Mime = require('./mime-desc')
-const { NodeHttpHandler } = require('@aws-sdk/node-http-handler')
+const { NodeHttpHandler } = require('@smithy/node-http-handler')
 
 // If the proxy details are set up then include them in the AWS configuration
 logger.debug('checking for https proxy')
