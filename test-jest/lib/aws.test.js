@@ -8,7 +8,7 @@ process.env.https_proxy = 'https-proxy'
 const { logger } = require('defra-logging-facade')
 const aws = require('../../src/lib/aws')
 const s3Client = require('@aws-sdk/client-s3')
-const { NodeHttpHandler } = require('@aws-sdk/node-http-handler')
+const { NodeHttpHandler } = require('@smithy/node-http-handler')
 const Proxy = require('proxy-agent')
 
 jest.mock('@aws-sdk/client-s3', () => ({
@@ -16,7 +16,7 @@ jest.mock('@aws-sdk/client-s3', () => ({
 }))
 jest.mock('defra-logging-facade')
 jest.mock('proxy-agent')
-jest.mock('@aws-sdk/node-http-handler', () => ({
+jest.mock('@smithy/node-http-handler', () => ({
   NodeHttpHandler: jest.fn()
 }))
 
