@@ -24,7 +24,7 @@ describe('crypto', () => {
       }
       const obj = { text: 'hello' }
 
-      await expect(crypto.writeObj(cache, obj)).rejects.toThrow(new CryptoError('Encryption errorError: Invalid IV length'))
+      await expect(crypto.writeObj(cache, obj)).rejects.toThrow(new CryptoError('Encryption errorTypeError: Invalid initialization vector'))
     })
 
     it('should throw an error if cache.get is empty', async () => {
