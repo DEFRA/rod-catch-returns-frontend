@@ -9,7 +9,7 @@ When you purchase a migratory salmon and sea trout rod licence, you are legally 
 Users are asked to submit details of the fish they caught (species, weight, number etc) and where they caught them.
 
 ## To build
-Version 18 or above of Node.js is required to run the service.
+Version 14 or above of Node.js is required to run the service.
 ```
 npm install
 ```
@@ -122,5 +122,8 @@ Fire up RCR in admin mode – a console log should print indicating it has found
 Log in using admin1@example.com/admin	
 Go to file uploads and load test/files/age-weigth-key (valid).csv
 
-	
-The tests should now all run. 
+## Lab Tests
+(1) Run RCR API in 'standard' mode (i.e. not with in memory database)
+(2) Ensure you have the .env file pointing at your local env (`API_HOSTNAME=localhost`) and set to run in admin mode (`CONTEXT=FMT`)
+(3) Start the frontend (`npm start`)
+(4) Run the tests (`npm run test:lab`)
