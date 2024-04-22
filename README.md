@@ -42,15 +42,15 @@ In order to installer the scanner type:
 
 ``sudo apt-get install clamav``
 
-Install the deamon 
+Install the daemon 
 
 ``sudo apt-get install clamav-daemon``
 
-The deamon can be started and stopped as follows
+The daemon can be started and stopped as follows
 ``sudo systemctl start clamav-daemon``
 ``sudo systemctl stop clamav-daemon``
 
-Check that the deamon is running
+Check that the daemon is running
 
 ``ps ax | grep [c]lamd``
 
@@ -58,7 +58,7 @@ And the version
 
 ```clamdscan --version```
 
-The configuration for the deamon can be found here
+The configuration for the daemon can be found here
 
 ```/etc/clamav/clamd.conf```
 
@@ -72,7 +72,7 @@ Note: the program creates a ./temp directory on startup for the temporary storag
 
 ```chmod 777 ./temp```
 
-When running locally the deamon will not be able to read files in the user area. In this case the location temporary directory can be moved by setting TEMP_DIR. It may also be necessary to disable AppArmor - see https://help.ubuntu.com/lts/serverguide/apparmor.html
+When running locally the daemon will not be able to read files in the user area. In this case the location temporary directory can be moved by setting TEMP_DIR. It may also be necessary to disable AppArmor - see https://help.ubuntu.com/lts/serverguide/apparmor.html
 
 ## Installing clamav on a mac 
 
@@ -97,14 +97,14 @@ Edit /usr/local/etc/clamav/freshclam.conf
 3. Download the virus database
  - /usr/local/Cellar/clamav/0.102.4/bin/freshclam
 
-4. Configure the deamon
+4. Configure the daemon
  - cp clamd.conf.sample clamd.conf
  - Remove or comment the ‘Example’ line
  - Set the database location as above
  - Set the socket location; LocalSocket /usr/local/var/run/clamav/clamd.sock
  - Make sure the directory exists: mkdir -p  /usr/local/var/run/clamav
 
-5. Run the clam deamon
+5. Run the clam daemon
  - /usr/local/sbin/clamd
  - Go to the activity monitor and make sure its running.
 
