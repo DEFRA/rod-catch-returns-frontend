@@ -23,7 +23,6 @@ docker-compose up -d
 ## Environment file
 The service will require a `.env` file in the root directory. This can be obtained from the rod-catch-returns-env-vars repo in GitLab.
 
-```
 ## To Run
 ```
 npm start && open http://localhost:3000
