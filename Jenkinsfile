@@ -26,7 +26,7 @@ pipeline {
             steps {
                 script {
                     sh  """
-                        . /var/lib/jenkins/.bashrc && nvm install
+                        . /var/lib/jenkins/.bashrc && nvm install 22.6.0
                         npm ci
                     """
                 }
