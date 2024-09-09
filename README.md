@@ -10,7 +10,7 @@ Users are asked to submit details of the fish they caught (species, weight, numb
 
 ## To build
 
-Version 18 or above of Node.js is required to run the service.
+Version 20 or above of Node.js is required to run the service.
 
 ```
 npm install
