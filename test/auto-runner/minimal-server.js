@@ -47,9 +47,7 @@ const manifest = {
   }
 }
 
-
 module.exports = async () => {
-
   // Set up a minimal server to run the tests
   const server = await Glue.compose(manifest, {})
 
@@ -71,10 +69,16 @@ module.exports = async () => {
           }
         },
         prepare: (options, next) => {
-          options.compileOptions.environment = Nunjucks.configure(options.path, {watch: false})
+          options.compileOptions.environment = Nunjucks.configure(
+            options.path,
+            { watch: false }
+          )
 
           // Add a custom filter for use to test the existance of a key on an object
-          options.compileOptions.environment.addFilter('existsOn', (obj, item) => Object.keys(obj || {}).includes(item))
+          options.compileOptions.environment.addFilter(
+            'existsOn',
+            (obj, item) => Object.keys(obj || {}).includes(item)
+          )
           return next()
         }
       }
@@ -82,8 +86,8 @@ module.exports = async () => {
     path: [
       'src/views',
       'src/views/macros',
-      'node_modules/govuk-frontend/govuk/',
-      'node_modules/govuk-frontend/govuk/components/'
+      'node_modules/govuk-frontend/dist/govuk/',
+      'node_modules/govuk-frontend/dist/govuk/components/'
     ],
     context: () => {
       return {
@@ -103,7 +107,10 @@ module.exports = async () => {
   await server.register({
     plugin: require('hapi-router'),
     options: {
-      routes: process.env.CONTEXT === 'FMT' ? './src/routes/*.js' : './src/routes/angler.js'
+      routes:
+        process.env.CONTEXT === 'FMT'
+          ? './src/routes/*.js'
+          : './src/routes/angler.js'
     }
   })
 
@@ -113,8 +120,12 @@ module.exports = async () => {
   await server.initialize()
 
   // Set a random cache key good for 30 years - shared between the nodes
-  if (!await server.app.cache.get('hub-identity')) {
-    await server.app.cache.set('hub-identity', Crypto.randomBytes(16), 1000 * 3600 * 24 * 365 * 30)
+  if (!(await server.app.cache.get('hub-identity'))) {
+    await server.app.cache.set(
+      'hub-identity',
+      Crypto.randomBytes(16),
+      1000 * 3600 * 24 * 365 * 30
+    )
   }
 
   return server

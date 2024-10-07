@@ -24,7 +24,6 @@ const manFishing = require('./manFishing')
 const { sessionIdProducer } = require('./src/lib/analytics')
 
 const manifest = {
-
   // Configure Hapi server and server-caching subsystem
   server: {
     port: process.env.PORT || 3000,
@@ -171,9 +170,29 @@ const manifest = {
         options: {
           generateNonces: false, // Seems to prevent the print dialog
           defaultSrc: 'self',
-          scriptSrc: ['self', 'unsafe-inline', 'unsafe-eval', 'www.googletagmanager.com', 'tagmanager.google.com', 'www.google-analytics.com', 'ssl.google-analytics.com'],
-          styleSrc: ['self', 'unsafe-inline', 'tagmanager.google.com', 'fonts.googleapis.com'],
-          imgSrc: ['self', 'www.googletagmanager.com', 'www.google-analytics.com', 'ssl.gstatic.com', 'www.gstatic.com', 'data:'],
+          scriptSrc: [
+            'self',
+            'unsafe-inline',
+            'unsafe-eval',
+            'www.googletagmanager.com',
+            'tagmanager.google.com',
+            'www.google-analytics.com',
+            'ssl.google-analytics.com'
+          ],
+          styleSrc: [
+            'self',
+            'unsafe-inline',
+            'tagmanager.google.com',
+            'fonts.googleapis.com'
+          ],
+          imgSrc: [
+            'self',
+            'www.googletagmanager.com',
+            'www.google-analytics.com',
+            'ssl.gstatic.com',
+            'www.gstatic.com',
+            'data:'
+          ],
           fontSrc: ['self', 'fonts.gstatic.com', 'data:'],
           connectSrc: ['self', 'www.google-analytics.com']
         }
@@ -186,16 +205,15 @@ const manifest = {
       {
         plugin: require('@hapi/scooter')
       }
-
     ]
   }
 }
 
 const options = {
   relativeTo: __dirname
-}
+};
 
-;(async () => {
+(async () => {
   try {
     /**
      * Test that the environment is set up correctly
@@ -229,10 +247,16 @@ const options = {
             }
           },
           prepare: (options, next) => {
-            options.compileOptions.environment = Nunjucks.configure(options.path, { watch: false })
+            options.compileOptions.environment = Nunjucks.configure(
+              options.path,
+              { watch: false }
+            )
 
             // Add a custom filter for use to test the existence of a key on an object
-            options.compileOptions.environment.addFilter('existsOn', (obj, item) => Object.keys(obj || {}).includes(item))
+            options.compileOptions.environment.addFilter(
+              'existsOn',
+              (obj, item) => Object.keys(obj || {}).includes(item)
+            )
             return next()
           }
         }
@@ -243,8 +267,8 @@ const options = {
       path: [
         'src/views',
         'src/views/macros',
-        'node_modules/govuk-frontend/govuk/',
-        'node_modules/govuk-frontend/govuk/components/'
+        'node_modules/govuk-frontend/dist/govuk/',
+        'node_modules/govuk-frontend/dist/govuk/components/'
       ],
 
       // Set up the common view data
@@ -255,7 +279,6 @@ const options = {
           ga: process.env.GA_TRACKING_ID
         }
       }
-
     })
 
     // Set up the route handlers for static resources
@@ -292,11 +315,18 @@ const options = {
       expiresIn: process.env.SESSION_TTL_MS
     })
 
-    server.auth.scheme('active-dir-scheme', AuthorizationSchemes.activeDirScheme)
+    server.auth.scheme(
+      'active-dir-scheme',
+      AuthorizationSchemes.activeDirScheme
+    )
     server.auth.scheme('licence-scheme', AuthorizationSchemes.licenceScheme)
     server.auth.strategy('active-dir-strategy', 'active-dir-scheme')
     server.auth.strategy('licence-strategy', 'licence-scheme')
-    server.auth.strategy('session', 'cookie', AuthorizationStrategies.sessionCookie)
+    server.auth.strategy(
+      'session',
+      'cookie',
+      AuthorizationStrategies.sessionCookie
+    )
     server.auth.default('session')
 
     /*
@@ -307,7 +337,10 @@ const options = {
     await server.register({
       plugin: require('hapi-router'),
       options: {
-        routes: process.env.CONTEXT === 'FMT' ? './src/routes/*.js' : './src/routes/angler.js'
+        routes:
+          process.env.CONTEXT === 'FMT'
+            ? './src/routes/*.js'
+            : './src/routes/angler.js'
       }
     })
 
@@ -371,9 +404,13 @@ const options = {
     await server.start()
 
     // Set a random cache key good for 30 years - shared between the nodes
-    if (!await server.app.cache.get('hub-identity')) {
+    if (!(await server.app.cache.get('hub-identity'))) {
       logger.info('Assigning a new hub identity')
-      await server.app.cache.set('hub-identity', Crypto.randomBytes(16), 1000 * 3600 * 24 * 365 * 30)
+      await server.app.cache.set(
+        'hub-identity',
+        Crypto.randomBytes(16),
+        1000 * 3600 * 24 * 365 * 30
+      )
     }
 
     // Handle shutdown gracefully
@@ -381,7 +418,7 @@ const options = {
       logger.info('Stopping server...')
       const err = await server.stop({ timeout: 10000 })
       logger.info('Stopped')
-      process.exit((err) ? 1 : 0)
+      process.exit(err ? 1 : 0)
     })
 
     // Attempt to log uncaught exceptions
