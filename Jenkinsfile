@@ -1,5 +1,4 @@
 @Library('defra-shared@master') _
-def arti = defraArtifactory()
 def codeArtifact
 
 pipeline {
@@ -42,7 +41,6 @@ pipeline {
         stage('Upload distribution') {
             steps {
                 script {
-                    arti.uploadArtifact("rcr-snapshots/web/", "rcr_web", BUILD_TAG, DIST_FILE)
                     codeArtifact.uploadArtifact("rcr-snapshots/web/", "rcr_web", BUILD_TAG, DIST_FILE)
                 }
             }
