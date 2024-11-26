@@ -31,6 +31,7 @@ jobs:
         with:
           java-version: "11.0.9"
           java-package: jdk
+          distribution: adopt
       - name: Checkout API
         uses: actions/checkout@v4
         with:
