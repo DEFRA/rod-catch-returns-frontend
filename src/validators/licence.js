@@ -16,6 +16,7 @@ module.exports = async (request) => {
   } else if (!payload.postcode) {
     errors.push({ postcode: 'EMPTY' })
   } else {
+    // Set up the contact id for the licence in the cache
     try {
       payload.contact = await LicenceApi.getContactFromLicenceKey(request, payload.licence, payload.postcode)
       if (!payload.contact) {
