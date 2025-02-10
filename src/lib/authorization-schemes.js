@@ -20,6 +20,12 @@ const activeDirectorySchema = Joi.object().keys({
   password: Joi.string().required()
 })
 
+const ukPostcodeRegex = /^([A-PR-UWYZ]\d{1,2}[A-HJKPSTUW]?|[A-PR-UWYZ][A-HK-Y]\d{1,2}[ABEHMNPRVWXY]?)\s{0,6}(\d[A-Z]{2})$/i
+
+const parsePostcode = (postcode) => {
+  return postcode.trim().replace(ukPostcodeRegex, '$1 $2').toUpperCase()
+}
+
 module.exports = {
   activeDirScheme: () => {
     return {
@@ -90,7 +96,7 @@ module.exports = {
         }
 
         request.payload.licence = request.payload.licence.replace(/\s+/g, '')
-        request.payload.postcode = request.payload.postcode.trim()
+        request.payload.postcode = parsePostcode(request.payload.postcode)
 
         const result = licenceSchema.validate(request.payload, { allowUnknown: true, abortEarly: true })
 
@@ -100,7 +106,7 @@ module.exports = {
         }
 
         const licence = request.payload.licence.toUpperCase()
-        const postcode = request.payload.postcode.toUpperCase()
+        const postcode = request.payload.postcode
 
         try {
           const contact = await LicenceApi.getContactFromLicenceKey(request, licence, postcode)

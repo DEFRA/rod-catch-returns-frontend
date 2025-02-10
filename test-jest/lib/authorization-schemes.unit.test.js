@@ -180,7 +180,7 @@ describe('authorization-schemes', () => {
         const request = {
           payload: {
             licence: '123456',
-            postcode: 'AB123CD'
+            postcode: 'AB12 3CD'
           }
         }
         const h = {
@@ -196,7 +196,7 @@ describe('authorization-schemes', () => {
         await expect(authorizationSchemes.licenceScheme().payload(request, h)).resolves.toEqual('response')
 
         expect(LicenceApi.getContactFromLicenceKey).toHaveBeenCalled()
-        expect(LicenceApi.getContactFromLicenceKey).toHaveBeenCalledWith(request, '123456', 'AB123CD')
+        expect(LicenceApi.getContactFromLicenceKey).toHaveBeenCalledWith(request, '123456', 'AB12 3CD')
         expect(request.app.authorization.contactId).toEqual('12345')
       })
 
@@ -204,7 +204,7 @@ describe('authorization-schemes', () => {
         const request = {
           payload: {
             licence: '123456',
-            postcode: 'AB123CD'
+            postcode: 'AB12 3CD'
           },
           app: {}
         }
@@ -218,7 +218,7 @@ describe('authorization-schemes', () => {
         await expect(authorizationSchemes.licenceScheme().payload(request, h)).rejects
 
         expect(LicenceApi.getContactFromLicenceKey).toHaveBeenCalled()
-        expect(LicenceApi.getContactFromLicenceKey).toHaveBeenCalledWith(request, '123456', 'AB123CD')
+        expect(LicenceApi.getContactFromLicenceKey).toHaveBeenCalledWith(request, '123456', 'AB12 3CD')
         expect(request.app.authorization).toBeUndefined()
       })
 
@@ -226,7 +226,7 @@ describe('authorization-schemes', () => {
         const request = {
           payload: {
             licence: '123456',
-            postcode: 'AB123CD'
+            postcode: 'AB12 3CD'
           },
           app: {}
         }
@@ -240,8 +240,62 @@ describe('authorization-schemes', () => {
         await expect(authorizationSchemes.licenceScheme().payload(request, h)).resolves.toEqual('response')
 
         expect(LicenceApi.getContactFromLicenceKey).toHaveBeenCalled()
-        expect(LicenceApi.getContactFromLicenceKey).toHaveBeenCalledWith(request, '123456', 'AB123CD')
+        expect(LicenceApi.getContactFromLicenceKey).toHaveBeenCalledWith(request, '123456', 'AB12 3CD')
         expect(request.app.authorization).toBeUndefined()
+      })
+
+      it.each([
+        ['ba21nw', 'BA2 1NW'],
+        [' AB12    3CD ', 'AB12 3CD'],
+        ['AB123CD ', 'AB12 3CD']
+      ])('formats the UK postcode %s successfully as %s', async (postcode, replacedValue) => {
+        const request = {
+          payload: {
+            licence: '123456',
+            postcode
+          }
+        }
+        const h = { continue: 'response' }
+
+        await authorizationSchemes.licenceScheme().payload(request, h)
+
+        expect(LicenceApi.getContactFromLicenceKey).toHaveBeenCalledWith(request, '123456', replacedValue)
+      })
+
+      it.each([
+        ['BS1 5AH'],
+        ['WA4 1HT'],
+        ['NE4 7AR']
+      ])('does not change the format of the UK postcode %s', async (postcode) => {
+        const request = {
+          payload: {
+            licence: '123456',
+            postcode
+          }
+        }
+        const h = { continue: 'response' }
+
+        await authorizationSchemes.licenceScheme().payload(request, h)
+
+        expect(LicenceApi.getContactFromLicenceKey).toHaveBeenCalledWith(request, '123456', postcode)
+      })
+
+      it.each([
+        ['22041'],
+        ['D24 CK66'],
+        ['6011']
+      ])('does not change the format of the non-UK postcode %s', async (postcode) => {
+        const request = {
+          payload: {
+            licence: '123456',
+            postcode
+          }
+        }
+        const h = { continue: 'response' }
+
+        await authorizationSchemes.licenceScheme().payload(request, h)
+
+        expect(LicenceApi.getContactFromLicenceKey).toHaveBeenCalledWith(request, '123456', postcode)
       })
     })
 
