@@ -3,7 +3,7 @@
 const LicenceApi = require('../api/licence')
 const ResponseError = require('../handlers/response-error')
 
-const ukPostcodeRegex = /^([A-PR-UWYZ][0-9]{1,2}[A-HJKPSTUW]?|[A-PR-UWYZ][A-HK-Y][0-9]{1,2}[ABEHMNPRVWXY]?)\s{0,6}([0-9][A-Z]{2})$/i
+const ukPostcodeRegex = /^([A-PR-UWYZ]\d{1,2}[A-HJKPSTUW]?|[A-PR-UWYZ][A-HK-Y]\d{1,2}[ABEHMNPRVWXY]?)\s{0,6}(\d[A-Z]{2})$/i
 
 const parsePostcode = (postcode) => {
   return postcode.trim().replace(ukPostcodeRegex, '$1 $2').toUpperCase()
