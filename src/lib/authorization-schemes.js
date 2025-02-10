@@ -95,18 +95,15 @@ module.exports = {
           return h.continue
         }
 
-        request.payload.licence = request.payload.licence.replace(/\s+/g, '')
-        request.payload.postcode = parsePostcode(request.payload.postcode)
+        const licence = request.payload.licence.replace(/\s+/g, '').toUpperCase()
+        const postcode = parsePostcode(request.payload.postcode)
 
-        const result = licenceSchema.validate(request.payload, { allowUnknown: true, abortEarly: true })
+        const result = licenceSchema.validate({ licence, postcode }, { allowUnknown: true, abortEarly: true })
 
         // If cannot validate the schema is not authorized
         if (result.error) {
           return h.continue
         }
-
-        const licence = request.payload.licence.toUpperCase()
-        const postcode = request.payload.postcode
 
         try {
           const contact = await LicenceApi.getContactFromLicenceKey(request, licence, postcode)

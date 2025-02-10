@@ -152,40 +152,26 @@ describe('authorization-schemes', () => {
             postcode: 'postcode'
           }
         }
-        const h = {
-          continue: 'response'
-        }
 
-        await expect(authorizationSchemes.licenceScheme().payload(request, h)).resolves.toEqual('response')
+        await expect(authorizationSchemes.licenceScheme().payload(request, getMockH())).resolves.toEqual('response')
 
         expect(LicenceApi.getContactFromLicenceKey).not.toHaveBeenCalled()
       })
 
-      it('should return h.postcode if password is not present', async () => {
+      it('should return h.postcode if postcode is not present', async () => {
         const request = {
           payload: {
             licence: 'licence'
           }
         }
-        const h = {
-          continue: 'response'
-        }
 
-        await expect(authorizationSchemes.licenceScheme().payload(request, h)).resolves.toEqual('response')
+        await expect(authorizationSchemes.licenceScheme().payload(request, getMockH())).resolves.toEqual('response')
 
         expect(LicenceApi.getContactFromLicenceKey).not.toHaveBeenCalled()
       })
 
       it('should return h.continue and calls LicenceApi.getContactFromLicenceKey if call is successful', async () => {
-        const request = {
-          payload: {
-            licence: '123456',
-            postcode: 'AB12 3CD'
-          }
-        }
-        const h = {
-          continue: 'response'
-        }
+        const request = getMockLicenceRequest()
         const contactResponse = {
           contact: {
             id: '12345'
@@ -193,53 +179,32 @@ describe('authorization-schemes', () => {
         }
         LicenceApi.getContactFromLicenceKey.mockImplementation(() => contactResponse)
 
-        await expect(authorizationSchemes.licenceScheme().payload(request, h)).resolves.toEqual('response')
+        await expect(authorizationSchemes.licenceScheme().payload(request, getMockH())).resolves.toEqual('response')
 
-        expect(LicenceApi.getContactFromLicenceKey).toHaveBeenCalled()
         expect(LicenceApi.getContactFromLicenceKey).toHaveBeenCalledWith(request, '123456', 'AB12 3CD')
         expect(request.app.authorization.contactId).toEqual('12345')
       })
 
       it('should return an error and auth should not be present if LicenceApi.getContactFromLicenceKey call fails', async () => {
-        const request = {
-          payload: {
-            licence: '123456',
-            postcode: 'AB12 3CD'
-          },
-          app: {}
-        }
-        const h = {
-          continue: 'response'
-        }
+        const request = getMockLicenceRequest()
         LicenceApi.getContactFromLicenceKey.mockImplementation(() => {
           throw new Error()
         })
 
-        await expect(authorizationSchemes.licenceScheme().payload(request, h)).rejects
+        await expect(authorizationSchemes.licenceScheme().payload(request, getMockH())).rejects
 
-        expect(LicenceApi.getContactFromLicenceKey).toHaveBeenCalled()
         expect(LicenceApi.getContactFromLicenceKey).toHaveBeenCalledWith(request, '123456', 'AB12 3CD')
         expect(request.app.authorization).toBeUndefined()
       })
 
       it('should return h.continue and auth should not be present if LicenceApi.getContactFromLicenceKey call fails with a statusCode beginning with 4', async () => {
-        const request = {
-          payload: {
-            licence: '123456',
-            postcode: 'AB12 3CD'
-          },
-          app: {}
-        }
-        const h = {
-          continue: 'response'
-        }
+        const request = getMockLicenceRequest()
         LicenceApi.getContactFromLicenceKey.mockImplementation(() => {
           throw new ResponseError.Error('Error', ResponseError.status.UNAUTHORIZED)
         })
 
-        await expect(authorizationSchemes.licenceScheme().payload(request, h)).resolves.toEqual('response')
+        await expect(authorizationSchemes.licenceScheme().payload(request, getMockH())).resolves.toEqual('response')
 
-        expect(LicenceApi.getContactFromLicenceKey).toHaveBeenCalled()
         expect(LicenceApi.getContactFromLicenceKey).toHaveBeenCalledWith(request, '123456', 'AB12 3CD')
         expect(request.app.authorization).toBeUndefined()
       })
@@ -249,15 +214,9 @@ describe('authorization-schemes', () => {
         [' AB12    3CD ', 'AB12 3CD'],
         ['AB123CD ', 'AB12 3CD']
       ])('formats the UK postcode %s successfully as %s', async (postcode, replacedValue) => {
-        const request = {
-          payload: {
-            licence: '123456',
-            postcode
-          }
-        }
-        const h = { continue: 'response' }
+        const request = getMockLicenceRequest(postcode)
 
-        await authorizationSchemes.licenceScheme().payload(request, h)
+        await authorizationSchemes.licenceScheme().payload(request, getMockH())
 
         expect(LicenceApi.getContactFromLicenceKey).toHaveBeenCalledWith(request, '123456', replacedValue)
       })
@@ -267,15 +226,9 @@ describe('authorization-schemes', () => {
         ['WA4 1HT'],
         ['NE4 7AR']
       ])('does not change the format of the UK postcode %s', async (postcode) => {
-        const request = {
-          payload: {
-            licence: '123456',
-            postcode
-          }
-        }
-        const h = { continue: 'response' }
+        const request = getMockLicenceRequest(postcode)
 
-        await authorizationSchemes.licenceScheme().payload(request, h)
+        await authorizationSchemes.licenceScheme().payload(request, getMockH())
 
         expect(LicenceApi.getContactFromLicenceKey).toHaveBeenCalledWith(request, '123456', postcode)
       })
@@ -285,15 +238,9 @@ describe('authorization-schemes', () => {
         ['D24 CK66'],
         ['6011']
       ])('does not change the format of the non-UK postcode %s', async (postcode) => {
-        const request = {
-          payload: {
-            licence: '123456',
-            postcode
-          }
-        }
-        const h = { continue: 'response' }
+        const request = getMockLicenceRequest(postcode)
 
-        await authorizationSchemes.licenceScheme().payload(request, h)
+        await authorizationSchemes.licenceScheme().payload(request, getMockH())
 
         expect(LicenceApi.getContactFromLicenceKey).toHaveBeenCalledWith(request, '123456', postcode)
       })
@@ -312,5 +259,17 @@ describe('authorization-schemes', () => {
         await expect(authorizationSchemes.licenceScheme().authenticate(request, h)).resolves.toEqual('response')
       })
     })
+  })
+
+  const getMockLicenceRequest = (postcode = 'AB12 3CD') => ({
+    payload: {
+      licence: '123456',
+      postcode
+    },
+    app: {}
+  })
+
+  const getMockH = () => ({
+    continue: 'response'
   })
 })
