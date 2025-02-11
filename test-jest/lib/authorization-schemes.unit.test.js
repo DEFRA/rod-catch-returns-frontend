@@ -212,7 +212,8 @@ describe('authorization-schemes', () => {
       it.each([
         ['ba21nw', 'BA2 1NW'],
         [' AB12    3CD ', 'AB12 3CD'],
-        ['AB123CD ', 'AB12 3CD']
+        ['AB123CD ', 'AB12 3CD'],
+        ['A99AA', 'A9 9AA']
       ])('formats the UK postcode %s successfully as %s', async (postcode, replacedValue) => {
         const request = getMockLicenceRequest(postcode)
 
@@ -224,7 +225,8 @@ describe('authorization-schemes', () => {
       it.each([
         ['BS1 5AH'],
         ['WA4 1HT'],
-        ['NE4 7AR']
+        ['NE4 7AR'],
+        ['A9 9AA']
       ])('does not change the format of the UK postcode %s', async (postcode) => {
         const request = getMockLicenceRequest(postcode)
 
