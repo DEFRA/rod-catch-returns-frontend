@@ -20,7 +20,8 @@
     "test:lab": "./node_modules/@hapi/lab/bin/lab --verbose",
     "test:jest": "jest",
     "test:jest-watch": "jest --watch",
-    "watch": "nohup gulp watch&"
+    "watch": "nohup gulp watch&",
+    "docker:infrastructure": "docker compose -f docker/infrastructure.yml build && docker stack deploy -c docker/infrastructure.yml rcrfi"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.316.0",

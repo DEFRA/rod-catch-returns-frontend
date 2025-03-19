@@ -1,0 +1,20 @@
+services:
+  #######################################################
+  # nginx
+  #######################################################
+  nginx:
+    image: nginx:alpine
+    environment:
+      - FMT_LISTEN=4043
+      - FMT_UPSTREAM_PORT=4000
+      - ANGLER_LISTEN=3043
+      - ANGLER_UPSTREAM_PORT=3000
+    ports:
+      - "4043:4043"
+      - "3043:3043"
+    volumes:
+      - ./resources/infrastructure/nginx/templates:/etc/nginx/templates
+      - ./resources/infrastructure/nginx/ssl:/etc/nginx/ssl
+    deploy:
+      restart_policy:
+        condition: on-failure

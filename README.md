@@ -38,6 +38,9 @@ For automated testing, to force the user to choose this or the previous year run
 node index.js --force-year-choose
 ```
 
+# Run usiing docker
+docker swarm init
+
 ### Virus Scanner
 
 The file uploader may use the ClamAV daemon if it is available.
