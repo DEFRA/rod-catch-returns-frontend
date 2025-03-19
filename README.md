@@ -38,8 +38,10 @@ For automated testing, to force the user to choose this or the previous year run
 node index.js --force-year-choose
 ```
 
-# Run usiing docker
-docker swarm init
+## Run using docker
+
+To run using docker, see the [README](docker/README.md) in the docker folder. The reason we have the ability to run in docker is because for the OAuth 2.0 authentication to work on a users development environment (for the admin version of the service), it is necessary to run the service using HTTPS.
+
 
 ### Virus Scanner
 
