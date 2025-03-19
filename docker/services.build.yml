@@ -1,0 +1,6 @@
+services:
+  frontend:
+    image: rod_catch_returns/frontend:${TAG:-latest}
+    build:
+      context: ../
+

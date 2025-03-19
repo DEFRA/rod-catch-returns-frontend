@@ -22,7 +22,7 @@
     "test:jest-watch": "jest --watch",
     "watch": "nohup gulp watch&",
     "docker:infrastructure": "docker compose -f docker/infrastructure.yml build && docker stack deploy -c docker/infrastructure.yml rcrfi",
-    "docker:build": "docker compose -f docker/services.dev.yml build",
+    "docker:build": "docker compose -f docker/services.build.yml build",
     "docker:services-dev": "docker stack deploy -c docker/services.dev.yml rcrfs"
   },
   "dependencies": {
