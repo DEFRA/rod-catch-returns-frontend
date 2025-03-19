@@ -13,7 +13,7 @@ RUN npm install pm2 -g --ignore-scripts \
     && npm install --ignore-scripts
 
 # Default service port
-ARG PORT=5000
+ARG PORT=4000
 
 EXPOSE ${PORT}
 

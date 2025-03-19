@@ -1,0 +1,16 @@
+services:
+  fmt:
+    image: rod_catch_returns/frontend:${TAG:-latest}
+    build:
+      context: ../
+    env_file:
+      - ./env/.fmt.env
+    volumes:
+      - ../:/app # copy everything to container, to allow pm2 to restart when a file is saved
+    ports:
+      - 4000:4000
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: on-failure
