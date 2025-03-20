@@ -8,7 +8,13 @@ When you purchase a migratory salmon and sea trout rod licence, you are legally 
 
 Users are asked to submit details of the fish they caught (species, weight, number etc) and where they caught them.
 
-## To build
+## Run using docker
+
+To run using docker, see the [README](docker/README.md) in the docker folder. The reason we have the ability to run in docker is because for the OAuth 2.0 authentication to work on a users development environment (for the admin version of the service), it is necessary to run the service using HTTPS. The admin app also has the Virus Scanner installed, so you won't have to install it yourself manually
+
+## Run locally
+
+### To build
 
 Version 20 or above of Node.js is required to run the service.
 
@@ -22,11 +28,11 @@ If you need to run a local version of REDIS you can do so using docker. Ensure y
 docker-compose up -d
 ```
 
-## Environment file
+### Environment file
 
 The service will require a `.env` file in the root directory. This can be obtained from the rod-catch-returns-env-vars repo in GitLab.
 
-## To Run
+### To Run
 
 ```
 npm start && open http://localhost:3000
@@ -38,12 +44,7 @@ For automated testing, to force the user to choose this or the previous year run
 node index.js --force-year-choose
 ```
 
-## Run using docker
-
-To run using docker, see the [README](docker/README.md) in the docker folder. The reason we have the ability to run in docker is because for the OAuth 2.0 authentication to work on a users development environment (for the admin version of the service), it is necessary to run the service using HTTPS.
-
-
-### Virus Scanner
+#### Virus Scanner
 
 The file uploader may use the ClamAV daemon if it is available.
 
@@ -86,7 +87,7 @@ Note: the program creates a ./temp directory on startup for the temporary storag
 
 When running locally the daemon will not be able to read files in the user area. In this case the location temporary directory can be moved by setting TEMP_DIR. It may also be necessary to disable AppArmor - see https://help.ubuntu.com/lts/serverguide/apparmor.html
 
-## Installing clamav on a mac
+### Installing clamav on a mac
 
 It is difficult to build from source; the homebrew process is outlined here: https://gist.github.com/zhurui1008/4fdc875e557014c3a34e
 
@@ -140,7 +141,7 @@ Fire up RCR in admin mode – a console log should print indicating it has found
 Log in using admin1@example.com/admin
 Go to file uploads and load test/files/age-weigth-key (valid).csv
 
-## Lab Tests
+### Lab Tests
 
 1. Run RCR API in 'standard' mode (i.e. not with in memory database)
 2. Ensure you have the .env file pointing at your local env (`API_HOSTNAME=localhost`) and set to run in admin mode (`CONTEXT=FMT`)
