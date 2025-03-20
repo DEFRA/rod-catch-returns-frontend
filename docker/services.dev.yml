@@ -6,6 +6,7 @@ services:
       - ./env/.fmt.secrets.env
     volumes:
       - ../:/app
+      - rcrfi_clamav-socket:/tmp
     ports:
       - 4000:4000
     deploy:
@@ -28,3 +29,7 @@ services:
       replicas: 1
       restart_policy:
         condition: on-failure
+
+volumes:
+  rcrfi_clamav-socket:
+    external: true
