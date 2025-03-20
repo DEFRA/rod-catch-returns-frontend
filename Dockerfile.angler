@@ -1,0 +1,1 @@
+FROM rod_catch_returns/frontend-base AS angler

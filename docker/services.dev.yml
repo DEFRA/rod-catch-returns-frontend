@@ -1,12 +1,11 @@
 services:
   fmt:
-    image: rod_catch_returns/frontend:${TAG:-latest}
+    image: rod_catch_returns/frontend-fmt:${TAG:-latest}
     env_file:
       - ./env/.fmt.env
       - ./env/.fmt.secrets.env
     volumes:
       - ../:/app
-      - rcrfi_clamav-socket:/tmp
     ports:
       - 4000:4000
     deploy:
@@ -16,7 +15,7 @@ services:
         condition: on-failure
   
   angler:
-    image: rod_catch_returns/frontend:${TAG:-latest}
+    image: rod_catch_returns/frontend-angler:${TAG:-latest}
     env_file:
       - ./env/.angler.env
       - ./env/.angler.secrets.env
@@ -29,7 +28,3 @@ services:
       replicas: 1
       restart_policy:
         condition: on-failure
-
-volumes:
-  rcrfi_clamav-socket:
-    external: true

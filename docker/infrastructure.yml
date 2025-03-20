@@ -18,19 +18,3 @@ services:
     deploy:
       restart_policy:
         condition: on-failure
-  
-  clamav:
-    image: clamav/clamav:latest
-    container_name: clamav
-    ports:
-      - "3310:3310"
-    volumes:
-      - clamav-db:/var/lib/clamav  # Persistent volume for ClamAV database
-      - clamav-socket:/tmp/  # Mount Unix socket for communication
-    deploy:
-      restart_policy:
-        condition: on-failure
-
-volumes:
-  clamav-db:
-  clamav-socket:

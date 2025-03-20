@@ -1,6 +1,23 @@
 services:
-  frontend:
-    image: rod_catch_returns/frontend:${TAG:-latest}
+  frontend-base:
+    image: rod_catch_returns/frontend-base:${TAG:-latest}
     build:
       context: ../
+      dockerfile: Dockerfile.base
+
+  frontend-fmt:
+    image: rod_catch_returns/frontend-fmt:${TAG:-latest}
+    build:
+      context: ../
+      dockerfile: Dockerfile.fmt
+    depends_on:
+      - frontend-base
+
+  frontend-angler:
+    image: rod_catch_returns/frontend-angler:${TAG:-latest}
+    build:
+      context: ../
+      dockerfile: Dockerfile.angler
+    depends_on:
+      - frontend-base
 

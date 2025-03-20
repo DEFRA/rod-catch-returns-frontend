@@ -1,0 +1,20 @@
+FROM rod_catch_returns/frontend-base AS fmt
+
+USER root
+
+# Install ClamAV
+RUN apk add --no-cache clamav clamav-daemon \
+    && freshclam
+
+RUN freshclam
+
+# Ensure required directories exist and have correct permissions
+RUN mkdir -p /run/clamav /var/lib/clamav && \
+    chown -R clamav:clamav /run/clamav /var/lib/clamav
+
+# Copy the entrypoint script
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+# Use the custom entrypoint script
+ENTRYPOINT ["/entrypoint.sh"]
