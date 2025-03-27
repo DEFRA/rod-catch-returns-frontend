@@ -37,7 +37,7 @@ To support running the services locally using docker, there are two different do
   > to quickly run all of the services and containers will automatically restart whenever changes are made to the source.
   > This is accomplished by using pm2-dev which automatically watches the filesystem for changes.
 
-In order to run the services locally, you'll need to to rename the env files in the in the [env](env) folder to include a leading dot and removing .example. You'll need to insert the appropriate values into the environment files ending with .secrets.env. Copy files as follows, then get values for secret files from gitlab repo fish/rod-catch-returns-env-vars.'
+In order to run the services locally, you'll need to to rename the env files in the in the [env](env) folder to include a leading dot and removing .example. You'll need to insert the appropriate values into the environment files ending with .secrets.env. Run the command below in the `/docker` folder then get values for secret files from gitlab repo fish/rod-catch-returns-env-vars.'
 
 To rename the files:
 ```shell script
@@ -86,7 +86,7 @@ The root certificate file can be found at
 ./resources/infrastructure/nginx/ca/ca.pem
 ```
 
-In order to add the root certificate to the keychain the following command can be used on MAC-OS:
+In order to add the root certificate to the keychain the following command in the `/docker` folder on MAC-OS:
 
 ```shell script
 sudo security add-trusted-cert -d -r trustRoot -k "/Library/Keychains/System.keychain" ./resources/infrastructure/nginx/ca/ca.pem
