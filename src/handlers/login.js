@@ -6,6 +6,7 @@
 const BaseHandler = require('./base')
 const authenticateUser = require('../lib/authenticate-user')
 const querystring = require('querystring')
+const azureAuth = require('../lib/azure-auth')
 
 module.exports = class LoginHandler extends BaseHandler {
   constructor (...args) {
@@ -18,8 +19,9 @@ module.exports = class LoginHandler extends BaseHandler {
    * @param h
    * @returns {Promise<*>}
    */
-  async doGet (request, h) {
-    return h.view(this.path)
+  async doGet (_, h) {
+    const authUrl = await azureAuth.getAuthenticationUrl()
+    return h.redirect(authUrl)
   }
 
   /**

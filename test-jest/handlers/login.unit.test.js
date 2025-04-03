@@ -1,6 +1,9 @@
 const LoginHandler = require('../../src/handlers/login')
 
 jest.mock('../../src/lib/authenticate-user')
+jest.mock('../../src/lib/azure-auth', () => ({
+  getAuthenticationUrl: jest.fn().mockResolvedValue('https://mock-auth-url')
+}))
 
 const mockRedirect = jest.fn()
 const mockView = jest.fn()
@@ -8,17 +11,18 @@ const h = {
   redirect: mockRedirect,
   view: mockView
 }
+
 describe('login', () => {
   afterEach(() => {
     jest.clearAllMocks()
   })
 
   describe('doGet', () => {
-    it('should display the authentication page', async () => {
-      const loginHandler = new LoginHandler()
-      await loginHandler.doGet({}, h)
+    it('should redirect to the auth url', async () => {
+      const handler = new LoginHandler()
+      await handler.doGet({}, h)
 
-      expect(mockView.mock.calls.length).toBe(1)
+      expect(mockRedirect).toHaveBeenCalledWith('https://mock-auth-url')
     })
   })
 
