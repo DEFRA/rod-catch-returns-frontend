@@ -16,9 +16,8 @@
     "postinstall": "gulp",
     "release": "standard-version",
     "start": "node index.js",
-    "test": "npm run test:jest",
-    "test:jest": "jest",
-    "test:jest-watch": "jest --watch",
+    "test": "jest",
+    "test:watch": "jest --watch",
     "watch": "nohup gulp watch&",
     "docker:infrastructure": "docker compose -f docker/infrastructure.yml build && docker stack deploy -c docker/infrastructure.yml rcrfi",
     "docker:build": "docker compose -f docker/services.build.yml build",
@@ -63,9 +62,7 @@
     "uuid": "^8.3.2"
   },
   "devDependencies": {
-    "@hapi/lab": "^24.5.1",
     "browser-sync": "^2.27.7",
-    "code": "^5.2.4",
     "del": "^6.0.0",
     "eslint": "^7.14.0",
     "eslint-config-standard": "^14.1.1",
@@ -74,7 +71,6 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^4.3.1",
     "eslint-plugin-standard": "^4.1.0",
-    "form-data": "^3.0.1",
     "gulp": "^4.0.2",
     "gulp-merge": "^0.1.1",
     "gulp-minify": "^3.1.0",
@@ -85,8 +81,7 @@
     "run-sequence": "^2.2.1",
     "sass": "^1.69.3",
     "standard": "^16.0.4",
-    "standard-version": "^9.3.2",
-    "stream-to-promise": "^3.0.0"
+    "standard-version": "^9.3.2"
   },
   "jest": {
     "collectCoverage": true,
