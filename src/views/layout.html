@@ -61,8 +61,18 @@
 {% endblock %}
 
 {% set footerHtml %}
-    <p class="govuk-!-margin-top-5 govuk-!-margin-bottom-0">Environment Agency Helpline: <a class="govuk-link" href="tel:03708506506">03708 506 506</a></p>
-    <p class="govuk-!-margin-top-0">Monday to Friday, 8am to 6pm</p>
+    <dl class="govuk-body govuk-!-margin-top-5">
+        <dt class="govuk-!-display-inline govuk-!-font-size-16">
+            Environment Agency Helpline:
+        </dt>
+        <dd class="govuk-!-display-inline govuk-!-margin-left-0 govuk-!-font-size-16">
+            <a class="govuk-link" href="tel:03708506506">03708 506 506</a>
+        </dd>
+        <dd class="govuk-!-margin-left-0 govuk-!-font-size-16">
+            Monday to Friday, 8am to 6pm
+        </dd>
+    </dl>
+    
     <ul class="govuk-footer__inline-list">
         <li class="govuk-footer__inline-list-item">
             <a class="govuk-link" href="https://www.gov.uk/government/organisations/environment-agency/about/personal-information-charter">
@@ -102,6 +112,3 @@
         for (var i = 0; i < e.length; i++) { e[i].style.display='block'; }
     </script>
 {% endblock %}
-
-
-

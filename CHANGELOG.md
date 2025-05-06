@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.11.0](https://github.com/DEFRA/rod-catch-returns-frontend/compare/v1.9.0...v1.11.0) (2025-04-16)
+
+Version RCR Release 12 (River Arrow)
+[Release notes](https://eaflood.atlassian.net/wiki/spaces/IWTF/pages/5608603719/16+04+2025+RCR+v1.11+River+Arrow)
+
 ## [1.9.0](https://github.com/DEFRA/rod-catch-returns-frontend/compare/v1.8.0...v1.9.0) (2024-12-16)
 
 Version RCR Release 11 (River Taff)

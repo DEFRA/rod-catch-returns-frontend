@@ -135,15 +135,10 @@ CLAMD_PORT=3310
 TEMP_DIR=/tmp
 ```
 
-7. Test it
+7. Testing
 
-Fire up RCR in admin mode – a console log should print indicating it has found clam via the socket
-Log in using admin1@example.com/admin
-Go to file uploads and load test/files/age-weigth-key (valid).csv
+To run the unit tests run the following in the command line:
 
-### Lab Tests
-
-1. Run RCR API in 'standard' mode (i.e. not with in memory database)
-2. Ensure you have the .env file pointing at your local env (`API_HOSTNAME=localhost`) and set to run in admin mode (`CONTEXT=FMT`)
-3. Start the frontend (`npm start`)
-4. Run the tests (`npm run test:lab`)
+```shell script
+npm run test
+```
