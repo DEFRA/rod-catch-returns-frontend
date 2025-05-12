@@ -325,7 +325,7 @@ const options = {
     server.auth.strategy(
       'session',
       'cookie',
-      AuthorizationStrategies.sessionCookie
+      process.env.CONTEXT === 'FMT' ? AuthorizationStrategies.adminCookie : AuthorizationStrategies.sessionCookie
     )
     server.auth.default('session')
 

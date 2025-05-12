@@ -12,8 +12,7 @@ module.exports = {
       clearInvalid: true
     },
 
-    redirectTo: process.env.CONTEXT === 'ANGLER' ? '/licence-auth' : '/login',
-    appendNext: process.env.CONTEXT === 'FMT',
+    redirectTo: '/licence-auth',
     /**
      * validation function called on every request
      * When the cache-entry expires the user has to re-authenticate
@@ -32,5 +31,18 @@ module.exports = {
 
       return out
     }
+  },
+  adminCookie: {
+    cookie: {
+      name: 'sid',
+      password: process.env.COOKIE_PW,
+      ttl: null,
+      isSecure: process.env.NODE_ENV !== 'development',
+      isHttpOnly: process.env.NODE_ENV !== 'development',
+      isSameSite: 'Lax',
+      path: '/'
+    },
+    redirectTo: '/login',
+    appendNext: true
   }
 }

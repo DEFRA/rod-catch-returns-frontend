@@ -61,7 +61,7 @@ module.exports = [
     method: 'GET',
     options: { auth: false },
     handler: (request, h) => {
-      return process.env.CONTEXT === 'ANGLER' ? h.redirect('/licence-auth') : h.redirect('/login')
+      return process.env.CONTEXT === 'ANGLER' ? h.redirect('/licence-auth') : h.redirect('/licence')
     }
   },
 

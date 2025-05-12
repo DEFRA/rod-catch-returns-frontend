@@ -20,6 +20,7 @@ const AgeWeightKeyConflictCheckHandler = require('../handlers/age-weight-key-con
 const AgeWeightKeyErrorBreakdownHandler = require('../handlers/age-weight-key-error-breakdown')
 const AgeWeightKeyCancel = require('../handlers/age-weight-key-cancel')
 const ExclusionsHandler = require('../handlers/exclusions')
+const AzureAuth = require('../lib/azure-auth')
 
 // Define the validators
 const loginValidator = require('../validators/login')
@@ -30,7 +31,6 @@ const ageWeightKeyConflictValidator = require('../validators/age-weight-key-conf
 
 // Define the handlers
 const loginHandler = new LoginHandler('login', loginValidator)
-const failedLogin = new FailedLogin('login', loginValidator)
 const reportsHandler = new ReportsHandler('reports')
 const reportDownloadHandler = new ReportDownloadHandler()
 const recordsHandler = new RecordsHandler('records', licenceFullValidator)
@@ -71,31 +71,25 @@ module.exports = [
     path: '/login',
     method: 'GET',
     handler: loginHandler.handler,
-    options: { auth: false }
+    options: {
+      auth: false,
+      plugins: {
+        crumb: false
+      }
+    }
   },
 
   // Login POST handler
   {
-    path: '/login',
+    path: '/oidc/signin',
     method: 'POST',
-    handler: loginHandler.handler,
-    options: { auth: { strategies: ['active-dir-strategy', 'session'] } }
-  },
-
-  // Failed Login GET handler
-  {
-    path: '/login-fail',
-    method: 'GET',
-    handler: failedLogin.handler,
-    options: { auth: false }
-  },
-
-  // Failed Login POST handler
-  {
-    path: '/login-fail',
-    method: 'POST',
-    handler: failedLogin.handler,
-    options: { auth: { strategies: ['active-dir-strategy', 'session'] } }
+    handler: AzureAuth.oidcSignIn,
+    options: {
+      auth: false,
+      plugins: {
+        crumb: false
+      }
+    }
   },
 
   /*
