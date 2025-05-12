@@ -2,6 +2,7 @@ const msal = require('@azure/msal-node')
 const Boom = require('@hapi/boom')
 const { v4: uuid } = require('uuid')
 const Client = require('../api/client')
+const { logger } = require('defra-logging-facade')
 
 /** @type {msal.Configuration} */
 const config = {
@@ -14,13 +15,13 @@ const config = {
 
 const msalClient = new msal.ConfidentialClientApplication(config)
 
-const getAuthenticationUrl = async () => {
+const getAuthenticationUrl = async (_, h) => {
   const authUrl = await msalClient.getAuthCodeUrl({
     scopes: [`${process.env.MSAL_CLIENT_ID}/.default`],
     redirectUri: process.env.MSAL_REDIRECT_URI,
     responseMode: 'form_post'
   })
-  return authUrl
+  return h.redirect(authUrl)
 }
 
 const oidcSignIn = async (request, h) => {
@@ -49,7 +50,7 @@ const oidcSignIn = async (request, h) => {
 
     return h.redirect('/')
   } catch (error) {
-    console.error('Auth error:', error)
+    logger.error('Auth error:', error)
     return Boom.unauthorized('Authentication failed')
   }
 }

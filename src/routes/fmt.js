@@ -27,7 +27,6 @@ const ageWeightKeyValidator = require('../validators/age-weight-key')
 const ageWeightKeyConflictValidator = require('../validators/age-weight-key-conflict')
 
 // Define the handlers
-const loginHandler = new LoginHandler('login', loginValidator)
 const reportsHandler = new ReportsHandler('reports')
 const reportDownloadHandler = new ReportDownloadHandler()
 const recordsHandler = new RecordsHandler('records', licenceFullValidator)
@@ -68,7 +67,7 @@ module.exports = [
   {
     path: '/login',
     method: 'GET',
-    handler: loginHandler.handler,
+    handler: AzureAuth.getAuthenticationUrl,
     options: {
       auth: false,
       plugins: {
