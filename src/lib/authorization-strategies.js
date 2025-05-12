@@ -37,8 +37,8 @@ module.exports = {
       name: 'sid',
       password: process.env.COOKIE_PW,
       ttl: null,
-      isSecure: process.env.HTTPS === 'true',
-      isHttpOnly: process.env.HTTPS === 'true',
+      isSecure: process.env.NODE_ENV !== 'development',
+      isHttpOnly: process.env.NODE_ENV !== 'development',
       isSameSite: 'Lax',
       path: '/'
     },

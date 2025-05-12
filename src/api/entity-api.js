@@ -23,9 +23,7 @@ module.exports = class EntityApi {
   }
 
   static async getAuth (request) {
-    const cache = await request.cache().get()
-    // authorization will have the token and user's name
-    return cache.authorization ? cache.authorization.token : null
+    return request.auth.credentials.token
   }
 
   // Calculate the object key from the link. Used in payloads
