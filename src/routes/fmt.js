@@ -5,8 +5,6 @@ const id = Joi.string()
 /**
  * These routes are scanned automatically by the hapi-router
  */
-const LoginHandler = require('../handlers/login')
-const FailedLogin = require('../handlers/login-fail')
 const LicenceHandler = require('../handlers/licence')
 const ReportsHandler = require('../handlers/reports')
 const ReportDownloadHandler = require('../handlers/report-download')
@@ -23,14 +21,12 @@ const ExclusionsHandler = require('../handlers/exclusions')
 const AzureAuth = require('../lib/azure-auth')
 
 // Define the validators
-const loginValidator = require('../validators/login')
 const licenceValidator = require('../validators/licence')
 const licenceFullValidator = require('../validators/licence-full')
 const ageWeightKeyValidator = require('../validators/age-weight-key')
 const ageWeightKeyConflictValidator = require('../validators/age-weight-key-conflict')
 
 // Define the handlers
-const loginHandler = new LoginHandler('login', loginValidator)
 const reportsHandler = new ReportsHandler('reports')
 const reportDownloadHandler = new ReportDownloadHandler()
 const recordsHandler = new RecordsHandler('records', licenceFullValidator)
@@ -70,7 +66,7 @@ module.exports = [
   {
     path: '/login',
     method: 'GET',
-    handler: loginHandler.handler,
+    handler: AzureAuth.getAuthenticationUrl,
     options: {
       auth: false,
       plugins: {

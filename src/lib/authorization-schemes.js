@@ -27,6 +27,7 @@ const parsePostcode = (postcode) => {
 }
 
 module.exports = {
+  // TODO remove this
   activeDirScheme: () => {
     return {
       options: {
@@ -53,6 +54,7 @@ module.exports = {
           password: request.payload.password
         }
 
+        // TODO may need to copy this
         try {
           await Client.request(auth, Client.method.GET, 'profile')
           request.app = {

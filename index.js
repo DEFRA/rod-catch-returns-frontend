@@ -315,12 +315,7 @@ const options = {
       expiresIn: process.env.SESSION_TTL_MS
     })
 
-    server.auth.scheme(
-      'active-dir-scheme',
-      AuthorizationSchemes.activeDirScheme
-    )
     server.auth.scheme('licence-scheme', AuthorizationSchemes.licenceScheme)
-    server.auth.strategy('active-dir-strategy', 'active-dir-scheme')
     server.auth.strategy('licence-strategy', 'licence-scheme')
     server.auth.strategy(
       'session',
