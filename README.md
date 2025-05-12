@@ -30,7 +30,7 @@ docker-compose up -d
 
 ### Environment file
 
-The service will require a `.env` file in the root directory. This can be obtained from the rod-catch-returns-env-vars repo in GitLab.
+The service will require a `.env` file in the root directory. The values cans be obtained from the GitLab repo fish/rod-catch-returns-env-vars repo, in the rod-catch-returns-frontend/.env file.
 
 ### To Run
 

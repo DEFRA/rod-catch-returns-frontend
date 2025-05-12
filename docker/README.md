@@ -37,7 +37,7 @@ To support running the services locally using docker, there are two different do
   > to quickly run all of the services and containers will automatically restart whenever changes are made to the source.
   > This is accomplished by using pm2-dev which automatically watches the filesystem for changes.
 
-In order to run the services locally, you'll need to to rename the env files in the in the [env](env) folder to include a leading dot and removing .example. You'll need to insert the appropriate values into the environment files ending with .secrets.env. Run the command below in the `/docker/env` folder then get values for secret files from gitlab repo fish/rod-catch-returns-env-vars.'
+In order to run the services locally, you'll need to to rename the env files in the in the [env](env) folder to include a leading dot and removing .example. Run the command below in the `/docker/env` folder.
 
 To rename the files:
 ```shell script
@@ -46,6 +46,7 @@ cp angler.secrets.env.example .angler.secrets.env
 cp fmt.env.example .fmt.env
 cp fmt.secrets.env.example .fmt.secrets.env
 ```
+The secret values for .angler.sercets.env can remain as they are, but the .fmt.secrets.env will require updating. The values can be obtained from the GitLab repo fish/rod-catch-returns-env-vars, in the rod-catch-returns-frontend/docker/env/.fmt.secrets.env file.
 
 #### Development mode
 
