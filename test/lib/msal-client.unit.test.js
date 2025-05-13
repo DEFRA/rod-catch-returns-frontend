@@ -1,13 +1,21 @@
-const { msalClient } = require('../../src/lib/msal-client')
+const mockGetAuthCodeUrl = jest.fn()
+const mockAcquireTokenByCode = jest.fn()
+const mockAcquireTokenSilent = jest.fn()
+const mockGetTokenCache = jest.fn()
+
+const azureAuth = require('../../src/lib/azure-auth')
 const msal = require('@azure/msal-node')
 
 jest.mock('@azure/msal-node', () => {
-  const mockInstance = {}
-
-  const MockConfidentialClientApplication = jest.fn().mockImplementation(() => mockInstance)
-
   return {
-    ConfidentialClientApplication: MockConfidentialClientApplication,
+    ConfidentialClientApplication: jest.fn().mockImplementation(() => {
+      return {
+        getAuthCodeUrl: mockGetAuthCodeUrl,
+        acquireTokenByCode: mockAcquireTokenByCode,
+        acquireTokenSilent: mockAcquireTokenSilent,
+        getTokenCache: mockGetTokenCache
+      }
+    }),
     LogLevel: {
       Verbose: 'verbose'
     }
@@ -21,10 +29,6 @@ describe('msal-client', () => {
     jest.resetModules()
   })
 
-  it('should have msalClient as msal.ConfidentialClientApplication', () => {
-    expect(msalClient).toBe(msal.ConfidentialClientApplication.mock.results[0].value)
-  })
-
   it('should initialise msal with the correct config', () => {
     expect(msal.ConfidentialClientApplication).toHaveBeenCalledWith({
       auth: {
@@ -32,6 +36,23 @@ describe('msal-client', () => {
         clientSecret: 'mock-client-secret',
         authority: 'https://login.microsoftonline.com/mock-tenant-id'
       }
+    })
+  })
+
+  describe('getAuthenticationUrl', () => {
+    test('should call getAuthCodeUrl with the correct config', async () => {
+      await azureAuth.getAuthenticationUrl()
+      expect(mockGetAuthCodeUrl).toHaveBeenCalledWith({
+        redirectUri: 'http://localhost/mock-redirect',
+        responseMode: 'form_post'
+      })
+    })
+
+    test('should return the correct url', async () => {
+      mockGetAuthCodeUrl.mockResolvedValueOnce('https://mock-auth-url')
+      await expect(
+        azureAuth.getAuthenticationUrl()
+      ).resolves.toBe('https://mock-auth-url')
     })
   })
 })
