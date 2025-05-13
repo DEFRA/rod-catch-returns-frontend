@@ -19,10 +19,9 @@ module.exports = async (request) => {
   request.cookieAuth.set({ sid: uuid() })
 
   if (request.app.authorization.token) {
-    // If it is a user authentication then set the encrypted authorization details in the cache
-    const cache = { authorization: await Crypto.writeObj(request.server.app.cache, request.app.authorization) }
+    // If it is a user authentication then set the authorization details in the cache
+    const cache = { authorization: request.app.authorization }
     await request.cache().set(cache)
-    // authorization will have the token and user's name
     logger.debug('User is authenticated: ' + JSON.stringify(request.app.authorization))
   } else {
     // If the user is authenticated by the license set the contactId
