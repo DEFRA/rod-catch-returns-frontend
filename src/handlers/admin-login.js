@@ -5,9 +5,10 @@
  * Ask the to sign in
  */
 const BaseHandler = require('./base')
-const authenticateUser = require('../lib/authenticate-user')
-const { msalClient } = require('../lib/msal-client')
+// const authenticateUser = require('../lib/authenticate-user')
+const { msalClient } = require('../lib/azure-auth')
 const Boom = require('@hapi/boom')
+const { v4: uuid } = require('uuid')
 const Client = require('../api/client')
 const { logger } = require('defra-logging-facade')
 
@@ -32,44 +33,45 @@ module.exports = class LoginHandler extends BaseHandler {
   }
 
   /**
-   * Get the code returned from the Microsoft login and use it to return a token.
-   * Use that token to make a request to /profile to see if it is valid.
-   * Then redirect the user to the homepage
+   * If the user has been authenticated using the
+   * validator then assign a session identifier to the authorization cookie
+   * and redirect to the start of the authenticated journey
    * @param request
    * @param h
+   * @param errors
    * @returns {Promise<*>}
    */
-  async doPost (request, h) {
+  async doPost (request, h, errors) {
     const { code } = request.payload
+    if (!code) {
+      return Boom.unauthorized('No authorization code provided')
+    }
 
     try {
-      if (!code) {
-        throw new Error('No authorization code provided')
-      }
-
       const tokenResponse = await msalClient.acquireTokenByCode({
         code,
         scopes: [],
         redirectUri: process.env.MSAL_REDIRECT_URI
       })
 
-      if (!tokenResponse.accessToken) {
-        throw new Error('No access token in response from Microsoft')
-      }
-
       // call /profile, if the user is unauthorized it will return a 401
       await Client.request(tokenResponse.accessToken, Client.method.GET, 'profile')
 
-      // if /profile is successful, set token on authorization
-      request.app = {
-        authorization: {
-          name: tokenResponse.account.name,
-          token: tokenResponse.accessToken
-        }
-      }
+      /*
+       * maybe ablt to do
+       * request.app = {
+       *  authorization: auth
+       * }
+       *
+       * could set token in above code instead of cookie, then call authenticateUser
+       */
+      request.cookieAuth.set({
+        name: tokenResponse.account.name,
+        token: tokenResponse.accessToken,
+        sid: uuid()
+      })
 
-      // store session
-      await authenticateUser(request)
+      await request.cache().set({ authorization: { name: tokenResponse.account.name } })
 
       return h.redirect('/')
     } catch (error) {
