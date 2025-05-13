@@ -6,7 +6,7 @@
  */
 const BaseHandler = require('./base')
 // const authenticateUser = require('../lib/authenticate-user')
-const { msalClient } = require('../lib/azure-auth')
+const { msalClient } = require('../lib/msal-client')
 const Boom = require('@hapi/boom')
 const { v4: uuid } = require('uuid')
 const Client = require('../api/client')
