@@ -19,7 +19,7 @@ module.exports = async (request) => {
   // Set the cookie to the new session identifier
   request.cookieAuth.set({ sid: uuid() })
 
-  if (request.app.authorization.username) {
+  if (request.app.authorization.token) {
     // If it is a user authentication then set the encrypted authorization details in the cache
     const cache = { authorization: await Crypto.writeObj(request.server.app.cache, request.app.authorization) }
     await request.cache().set(cache)

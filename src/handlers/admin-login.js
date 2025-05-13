@@ -5,10 +5,9 @@
  * Ask the to sign in
  */
 const BaseHandler = require('./base')
-// const authenticateUser = require('../lib/authenticate-user')
+const authenticateUser = require('../lib/authenticate-user')
 const { msalClient } = require('../lib/msal-client')
 const Boom = require('@hapi/boom')
-const { v4: uuid } = require('uuid')
 const Client = require('../api/client')
 const { logger } = require('defra-logging-facade')
 
@@ -33,15 +32,14 @@ module.exports = class LoginHandler extends BaseHandler {
   }
 
   /**
-   * If the user has been authenticated using the
-   * validator then assign a session identifier to the authorization cookie
-   * and redirect to the start of the authenticated journey
+   * Get the code returned from the Microsoft login and use it to return a token.
+   * Use that token to make a request to /profile to see if it is valid.
+   * Then redirect the user to the homepage
    * @param request
    * @param h
-   * @param errors
    * @returns {Promise<*>}
    */
-  async doPost (request, h, errors) {
+  async doPost (request, h) {
     const { code } = request.payload
     if (!code) {
       return Boom.unauthorized('No authorization code provided')
@@ -57,21 +55,15 @@ module.exports = class LoginHandler extends BaseHandler {
       // call /profile, if the user is unauthorized it will return a 401
       await Client.request(tokenResponse.accessToken, Client.method.GET, 'profile')
 
-      /*
-       * maybe ablt to do
-       * request.app = {
-       *  authorization: auth
-       * }
-       *
-       * could set token in above code instead of cookie, then call authenticateUser
-       */
-      request.cookieAuth.set({
-        name: tokenResponse.account.name,
-        token: tokenResponse.accessToken,
-        sid: uuid()
-      })
+      // if /profile is successful, set token on authorization
+      request.app = {
+        authorization: {
+          token: tokenResponse.accessToken
+        }
+      }
 
-      await request.cache().set({ authorization: { name: tokenResponse.account.name } })
+      // store session
+      await authenticateUser(request)
 
       return h.redirect('/')
     } catch (error) {
