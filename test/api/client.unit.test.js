@@ -11,10 +11,7 @@ jest.mock('request-etag', () => {
     return mockRequest
   })
 })
-
 describe('client', () => {
-  beforeEach(jest.clearAllMocks)
-
   describe('request', () => {
     it('should add a token to the request header if it is passed in', async () => {
       const token = 'abc123'
@@ -25,7 +22,7 @@ describe('client', () => {
         {
           uri: expect.any(String),
           method: Client.method.GET,
-          timeout: expect.any(Number),
+          timeout: 60000,
           json: false,
           headers: {
             'Content-Type': 'application/json',
@@ -43,10 +40,10 @@ describe('client', () => {
         {
           uri: expect.any(String),
           method: Client.method.GET,
-          timeout: expect.any(Number),
+          timeout: 60000,
           json: false,
           headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
           }
         },
         expect.any(Function)
