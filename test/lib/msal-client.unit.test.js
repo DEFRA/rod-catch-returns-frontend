@@ -24,7 +24,7 @@ jest.mock('@azure/msal-node', () => {
 
 jest.mock('@azure/msal-node')
 
-describe('azure-auth', () => {
+describe('msal-client', () => {
   beforeEach(() => {
     jest.resetModules()
   })
