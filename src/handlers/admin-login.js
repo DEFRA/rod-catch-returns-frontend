@@ -58,6 +58,7 @@ module.exports = class LoginHandler extends BaseHandler {
       // if /profile is successful, set token on authorization
       request.app = {
         authorization: {
+          name: tokenResponse.account.name,
           token: tokenResponse.accessToken
         }
       }
