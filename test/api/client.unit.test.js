@@ -6,12 +6,12 @@ const mockRequest = jest.fn((options, callback) => {
 
 const Client = require('../../src/api/client')
 
-
 jest.mock('request-etag', () => {
   return jest.fn().mockImplementation(() => {
     return mockRequest
   })
 })
+
 describe('client', () => {
   describe('request', () => {
     it('should add a token to the request header if it is passed in', async () => {
@@ -44,7 +44,7 @@ describe('client', () => {
           timeout: 60000,
           json: false,
           headers: {
-            'Content-Type': 'application/json',
+            'Content-Type': 'application/json'
           }
         },
         expect.any(Function)
