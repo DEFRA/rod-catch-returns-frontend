@@ -23,7 +23,8 @@ module.exports = class EntityApi {
   }
 
   static async getAuth (request) {
-    return request.auth.credentials.token
+    const cache = await request.cache().get()
+    return cache.authorization ? Crypto.readObj(request.server.app.cache, cache.authorization).token : null
   }
 
   // Calculate the object key from the link. Used in payloads
