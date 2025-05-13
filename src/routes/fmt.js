@@ -18,7 +18,7 @@ const AgeWeightKeyConflictCheckHandler = require('../handlers/age-weight-key-con
 const AgeWeightKeyErrorBreakdownHandler = require('../handlers/age-weight-key-error-breakdown')
 const AgeWeightKeyCancel = require('../handlers/age-weight-key-cancel')
 const ExclusionsHandler = require('../handlers/exclusions')
-const AzureAuth = require('../lib/azure-auth')
+const AdminLoginHandler = require('../handlers/admin-login')
 
 // Define the validators
 const licenceValidator = require('../validators/licence')
@@ -42,6 +42,7 @@ const ageWeightKeyErrorBreakdownHandler = new AgeWeightKeyErrorBreakdownHandler(
   null, 'ageWeightContext')
 const ageWeightKeyCancel = new AgeWeightKeyCancel(null, null, 'ageWeightContext')
 const exclusionsHandler = new ExclusionsHandler('exclusions')
+const adminLoginHandler = new AdminLoginHandler()
 
 const api = {
   host: process.env.API_HOSTNAME || 'localhost',
@@ -66,7 +67,7 @@ module.exports = [
   {
     path: '/login',
     method: 'GET',
-    handler: AzureAuth.getAuthenticationUrl,
+    handler: adminLoginHandler.handler,
     options: {
       auth: false,
       plugins: {
@@ -79,7 +80,7 @@ module.exports = [
   {
     path: '/oidc/signin',
     method: 'POST',
-    handler: AzureAuth.oidcSignIn,
+    handler: adminLoginHandler.handler,
     options: {
       auth: false,
       plugins: {
