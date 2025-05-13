@@ -1,7 +1,6 @@
 'use strict'
 
 const { v4: uuid } = require('uuid')
-const Crypto = require('./crypto')
 
 const { logger } = require('defra-logging-facade')
 /**
@@ -20,10 +19,10 @@ module.exports = async (request) => {
   request.cookieAuth.set({ sid: uuid() })
 
   if (request.app.authorization.token) {
-    // If it is a user authentication then set the encrypted authorization details in the cache
-    const cache = { authorization: await Crypto.writeObj(request.server.app.cache, request.app.authorization) }
+    // If it is a user authentication then set the authorization details in the cache
+    const cache = { authorization: request.app.authorization }
     await request.cache().set(cache)
-    logger.debug('User is authenticated: ' + JSON.stringify(request.app.authorization.username))
+    logger.debug('User is authenticated: ' + JSON.stringify(request.app.authorization))
   } else {
     // If the user is authenticated by the license set the contactId
     const cache = { contactId: request.app.authorization.contactId }

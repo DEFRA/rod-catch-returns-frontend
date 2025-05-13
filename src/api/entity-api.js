@@ -8,7 +8,6 @@
  */
 
 const Client = require('./client')
-const Crypto = require('../lib/crypto')
 const { URL } = require('url')
 const dotProp = require('dot-prop')
 
@@ -25,7 +24,7 @@ module.exports = class EntityApi {
 
   static async getAuth (request) {
     const cache = await request.cache().get()
-    return cache.authorization ? Crypto.readObj(request.server.app.cache, cache.authorization).token : null
+    return cache.authorization ? cache.authorization.token : null
   }
 
   // Calculate the object key from the link. Used in payloads

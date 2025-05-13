@@ -11,7 +11,6 @@ require('dotenv').config()
 const Glue = require('@hapi/glue')
 const Nunjucks = require('nunjucks')
 const Uuid = require('uuid')
-const Crypto = require('crypto')
 const { logger } = require('defra-logging-facade')
 const HapiGapi = require('@defra/hapi-gapi')
 
@@ -363,16 +362,6 @@ const options = {
       }
     })
 
-    /*
-     * Test that cryptographic support is enabled on the build
-     */
-    try {
-      require('crypto')
-    } catch (err) {
-      logger.error('Crypto support disabled: ' + err)
-      process.exit(1)
-    }
-
     // Register an onPreResponse handler so that errors can be properly trapped.
     server.ext('onPreResponse', (request, h) => {
       if (request.response.isBoom) {
@@ -397,16 +386,6 @@ const options = {
 
     // Start the server
     await server.start()
-
-    // Set a random cache key good for 30 years - shared between the nodes
-    if (!(await server.app.cache.get('hub-identity'))) {
-      logger.info('Assigning a new hub identity')
-      await server.app.cache.set(
-        'hub-identity',
-        Crypto.randomBytes(16),
-        1000 * 3600 * 24 * 365 * 30
-      )
-    }
 
     // Handle shutdown gracefully
     process.on('SIGINT', async () => {
