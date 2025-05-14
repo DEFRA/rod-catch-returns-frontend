@@ -41,16 +41,21 @@ module.exports = class LoginHandler extends BaseHandler {
    */
   async doPost (request, h) {
     const { code } = request.payload
-    if (!code) {
-      return Boom.unauthorized('No authorization code provided')
-    }
 
     try {
+      if (!code) {
+        throw new Error('No authorization code provided')
+      }
+
       const tokenResponse = await msalClient.acquireTokenByCode({
         code,
         scopes: [],
         redirectUri: process.env.MSAL_REDIRECT_URI
       })
+
+      if (!tokenResponse.accessToken) {
+        throw new Error('No access token in response from Microsoft')
+      }
 
       // call /profile, if the user is unauthorized it will return a 401
       await Client.request(tokenResponse.accessToken, Client.method.GET, 'profile')
