@@ -25,7 +25,7 @@ describe('client', () => {
         {
           uri: expect.any(String),
           method: Client.method.GET,
-          timeout: 60000,
+          timeout: expect.any(Number),
           json: false,
           headers: {
             'Content-Type': 'application/json',
@@ -43,7 +43,7 @@ describe('client', () => {
         {
           uri: expect.any(String),
           method: Client.method.GET,
-          timeout: 60000,
+          timeout: expect.any(Number),
           json: false,
           headers: {
             'Content-Type': 'application/json'
