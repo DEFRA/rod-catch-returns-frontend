@@ -1,101 +1,39 @@
-const LoginHandler = require('../../src/handlers/login')
+const AdminLoginHandler = require('../../src/handlers/admin-login')
 
-jest.mock('../../src/lib/authenticate-user')
-jest.mock('../../src/lib/azure-auth', () => ({
-  getAuthenticationUrl: jest.fn().mockResolvedValue('https://mock-auth-url')
-}))
+const { msalClient } = require('../../src/lib/msal-client')
+const { getMockH } = require('../test-utils/server-test-utils')
 
-const mockRedirect = jest.fn()
-const mockView = jest.fn()
-const h = {
-  redirect: mockRedirect,
-  view: mockView
-}
+jest.mock('../../src/lib/msal-client')
 
 describe('login', () => {
-  afterEach(() => {
-    jest.clearAllMocks()
+  beforeEach(() => {
+    jest.resetModules()
   })
 
   describe('doGet', () => {
+    it('should call getAuthCodeUrl with the correct config', async () => {
+      const handler = new AdminLoginHandler()
+      await handler.doGet({}, getMockH())
+
+      expect(msalClient.getAuthCodeUrl).toHaveBeenCalledWith({
+        scopes: ['mock-client-id/.default'],
+        redirectUri: 'http://localhost/mock-redirect',
+        responseMode: 'form_post'
+      })
+    })
+
     it('should redirect to the auth url', async () => {
-      const handler = new LoginHandler()
+      const h = getMockH()
+      msalClient.getAuthCodeUrl.mockResolvedValue('https://mock-auth-url')
+
+      const handler = new AdminLoginHandler()
       await handler.doGet({}, h)
 
-      expect(mockRedirect).toHaveBeenCalledWith('https://mock-auth-url')
+      expect(h.redirect).toHaveBeenCalledWith('https://mock-auth-url')
     })
   })
 
   describe('doPost', () => {
-    it('should redirect to login failed if there are any errors', async () => {
-      const request = {
-        query: {}
-      }
-      const loginHandler = new LoginHandler()
-      await loginHandler.doPost(request, h, {})
 
-      expect(mockRedirect.mock.calls.length).toBe(1)
-      expect(mockRedirect.mock.calls[0][0]).toBe('/login-fail')
-    })
-
-    it('should redirect to login failed, with correct next url if there are any errors', async () => {
-      const request = {
-        query: {
-          next: '/lookup?submissionId=submissions/1'
-        }
-      }
-      const loginHandler = new LoginHandler()
-      await loginHandler.doPost(request, h, {})
-
-      expect(mockRedirect.mock.calls.length).toBe(1)
-      expect(mockRedirect.mock.calls[0][0]).toBe('/login-fail?next=%2Flookup%3FsubmissionId%3Dsubmissions%2F1')
-    })
-
-    it('should redirect to the license page after successful login', async () => {
-      const request = {
-        query: {}
-      }
-      const loginHandler = new LoginHandler()
-      await loginHandler.doPost(request, h)
-
-      expect(mockRedirect.mock.calls.length).toBe(1)
-      expect(mockRedirect.mock.calls[0][0]).toBe('/licence')
-    })
-
-    it('should redirect to the page in the next variable, after successful login', async () => {
-      const request = {
-        query: {
-          next: '/lookup?submissionId=submissions/1'
-        },
-        raw: {
-          req: {
-            url: '/login?next=%2Flookup%3FsubmissionId%3Dsubmissions%2F1'
-          }
-        }
-      }
-      const loginHandler = new LoginHandler()
-      await loginHandler.doPost(request, h)
-
-      expect(mockRedirect.mock.calls.length).toBe(1)
-      expect(mockRedirect.mock.calls[0][0]).toBe('/lookup?submissionId=submissions/1')
-    })
-
-    it('should redirect to the page in the next variable, after successful login on the login-fail page', async () => {
-      const request = {
-        query: {
-          next: '/lookup?submissionId=submissions/1'
-        },
-        raw: {
-          req: {
-            url: '/login-fail?next=%2Flookup%3FsubmissionId%3Dsubmissions%2F1'
-          }
-        }
-      }
-      const loginHandler = new LoginHandler()
-      await loginHandler.doPost(request, h)
-
-      expect(mockRedirect.mock.calls.length).toBe(1)
-      expect(mockRedirect.mock.calls[0][0]).toBe('/lookup?submissionId=submissions/1')
-    })
   })
 })
