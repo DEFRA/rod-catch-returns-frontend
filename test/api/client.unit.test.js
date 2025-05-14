@@ -13,6 +13,8 @@ jest.mock('request-etag', () => {
 })
 
 describe('client', () => {
+  beforeEach(jest.clearAllMocks)
+
   describe('request', () => {
     it('should add a token to the request header if it is passed in', async () => {
       const token = 'abc123'
