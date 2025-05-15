@@ -11,9 +11,9 @@ require('dotenv').config()
 const Glue = require('@hapi/glue')
 const Nunjucks = require('nunjucks')
 const Uuid = require('uuid')
-const Crypto = require('crypto')
 const { logger } = require('defra-logging-facade')
 const HapiGapi = require('@defra/hapi-gapi')
+const figlet = require('figlet')
 
 const AuthorizationSchemes = require('./src/lib/authorization-schemes')
 const AuthorizationStrategies = require('./src/lib/authorization-strategies')
@@ -315,17 +315,12 @@ const options = {
       expiresIn: process.env.SESSION_TTL_MS
     })
 
-    server.auth.scheme(
-      'active-dir-scheme',
-      AuthorizationSchemes.activeDirScheme
-    )
     server.auth.scheme('licence-scheme', AuthorizationSchemes.licenceScheme)
-    server.auth.strategy('active-dir-strategy', 'active-dir-scheme')
     server.auth.strategy('licence-strategy', 'licence-scheme')
     server.auth.strategy(
       'session',
       'cookie',
-      AuthorizationStrategies.sessionCookie
+      process.env.CONTEXT === 'FMT' ? AuthorizationStrategies.adminCookie : AuthorizationStrategies.sessionCookie
     )
     server.auth.default('session')
 
@@ -368,16 +363,6 @@ const options = {
       }
     })
 
-    /*
-     * Test that cryptographic support is enabled on the build
-     */
-    try {
-      require('crypto')
-    } catch (err) {
-      logger.error('Crypto support disabled: ' + err)
-      process.exit(1)
-    }
-
     // Register an onPreResponse handler so that errors can be properly trapped.
     server.ext('onPreResponse', (request, h) => {
       if (request.response.isBoom) {
@@ -403,16 +388,6 @@ const options = {
     // Start the server
     await server.start()
 
-    // Set a random cache key good for 30 years - shared between the nodes
-    if (!(await server.app.cache.get('hub-identity'))) {
-      logger.info('Assigning a new hub identity')
-      await server.app.cache.set(
-        'hub-identity',
-        Crypto.randomBytes(16),
-        1000 * 3600 * 24 * 365 * 30
-      )
-    }
-
     // Handle shutdown gracefully
     process.on('SIGINT', async () => {
       logger.info('Stopping server...')
@@ -428,7 +403,7 @@ const options = {
     })
 
     // Print the banner
-    require('figlet')('Rod Catch Returns', function (err, data) {
+    figlet('Rod Catch Returns', function (err, data) {
       if (err) {
         return
       }

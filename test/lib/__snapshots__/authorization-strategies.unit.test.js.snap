@@ -1,0 +1,30 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`authorization-strategies adminCookie should have the correct config 1`] = `
+Object {
+  "appendNext": true,
+  "cookie": Object {
+    "isHttpOnly": false,
+    "isSameSite": "Lax",
+    "isSecure": false,
+    "name": "sid",
+    "password": "cookieabcdef1234",
+    "path": "/",
+    "ttl": null,
+  },
+  "redirectTo": "/login",
+}
+`;
+
+exports[`authorization-strategies sessionCookie should have the correct config 1`] = `
+Object {
+  "cookie": Object {
+    "clearInvalid": true,
+    "isSecure": false,
+    "name": "sid",
+    "password": "cookieabcdef1234",
+  },
+  "redirectTo": "/licence-auth",
+  "validateFunc": [Function],
+}
+`;

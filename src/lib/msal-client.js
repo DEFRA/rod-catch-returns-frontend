@@ -11,14 +11,6 @@ const config = {
 
 const msalClient = new msal.ConfidentialClientApplication(config)
 
-const getAuthenticationUrl = async () => {
-  const authUrl = await msalClient.getAuthCodeUrl({
-    redirectUri: process.env.MSAL_REDIRECT_URI,
-    responseMode: 'form_post'
-  })
-  return authUrl
-}
-
 module.exports = {
-  getAuthenticationUrl
+  msalClient
 }

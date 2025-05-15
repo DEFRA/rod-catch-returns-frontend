@@ -1,10 +1,8 @@
 const { v4: uuid } = require('uuid')
-const Crypto = require('../../src/lib/crypto')
 
 const authenticateUser = require('../../src/lib/authenticate-user')
 
 jest.mock('uuid')
-jest.mock('../../src/lib/crypto')
 
 describe('authenticate-user', () => {
   beforeEach(() => {
@@ -21,7 +19,7 @@ describe('authenticate-user', () => {
         .toThrow(new Error('Cannot set up session cookie and cache for an unauthenticated user'))
     })
 
-    it('should set the encrypted authorization details in the cache if it is a user authentication', async () => {
+    it('should set the authorization details in the cache if it is a user authentication', async () => {
       const mockCacheSet = jest.fn(() => ({}))
       const mockCookieAuthSet = jest.fn(() => ({}))
       uuid.mockImplementation(() => 'testid')
@@ -32,7 +30,8 @@ describe('authenticate-user', () => {
         })),
         app: {
           authorization: {
-            username: 'username'
+            token: 'abc123',
+            name: 'Bob Jones'
           }
         },
         cookieAuth: {
@@ -48,7 +47,6 @@ describe('authenticate-user', () => {
       await authenticateUser(request)
 
       expect(mockCookieAuthSet).toHaveBeenCalledWith({ sid: 'testid' })
-      expect(Crypto.writeObj).toHaveBeenCalledTimes(1)
       expect(mockCacheSet).toHaveBeenCalledTimes(1)
     })
 
@@ -79,7 +77,6 @@ describe('authenticate-user', () => {
       await authenticateUser(request)
 
       expect(mockCookieAuthSet).toHaveBeenCalledWith({ sid: 'testid' })
-      expect(Crypto.writeObj).not.toHaveBeenCalled()
       expect(mockCacheSet).toHaveBeenCalledTimes(1)
       expect(mockCacheSet).toHaveBeenCalledWith({ contactId: '1234' })
     })

@@ -11,7 +11,12 @@ describe('authorization-strategies', () => {
     process.env = OLD_ENV // restore old env
   })
 
-  describe('module.exports', () => {
+  describe('sessionCookie', () => {
+    it('should have the correct config', () => {
+      const authorizationStrategies = require('../../src/lib/authorization-strategies')
+      expect(authorizationStrategies.sessionCookie).toMatchSnapshot()
+    })
+
     it('should set cookie password if COOKIE_PW environment variable is present', () => {
       process.env.COOKIE_PW = 'cookie_password'
       const authorizationStrategies = require('../../src/lib/authorization-strategies')
@@ -35,29 +40,48 @@ describe('authorization-strategies', () => {
       const authorizationStrategies = require('../../src/lib/authorization-strategies')
       expect(authorizationStrategies.sessionCookie.cookie.isSecure).toBeFalsy()
     })
+  })
 
-    it('should set redirectTo to /licence-auth if CONTEXT environment variable is ANGLER', () => {
-      process.env.CONTEXT = 'ANGLER'
+  describe('adminCookie', () => {
+    it('should have the correct config', () => {
       const authorizationStrategies = require('../../src/lib/authorization-strategies')
-      expect(authorizationStrategies.sessionCookie.redirectTo).toBe('/licence-auth')
+      expect(authorizationStrategies.adminCookie).toMatchSnapshot()
     })
 
-    it('should set redirectTo to /login if CONTEXT environment variable is not ANGLER', () => {
-      process.env.CONTEXT = 'FMT'
+    it('should set cookie password if COOKIE_PW environment variable is present', () => {
+      process.env.COOKIE_PW = 'cookie_password'
       const authorizationStrategies = require('../../src/lib/authorization-strategies')
-      expect(authorizationStrategies.sessionCookie.redirectTo).toBe('/login')
+      expect(authorizationStrategies.adminCookie.cookie.password).toBe('cookie_password')
     })
 
-    it('should set appendNext to true if CONTEXT environment variable is FMT', () => {
-      process.env.CONTEXT = 'FMT'
+    it('should not set cookie password if COOKIE_PW environment variable is not present', () => {
+      delete process.env.COOKIE_PW
       const authorizationStrategies = require('../../src/lib/authorization-strategies')
-      expect(authorizationStrategies.sessionCookie.appendNext).toBeTruthy()
+      expect(authorizationStrategies.adminCookie.cookie.password).toBeUndefined()
     })
 
-    it('should set appendNext to false if CONTEXT environment variable is not FMT', () => {
-      process.env.CONTEXT = 'ANGLER'
+    it('should set cookie isSecure to true if HTTPS environment variable is true', () => {
+      process.env.HTTPS = 'true'
       const authorizationStrategies = require('../../src/lib/authorization-strategies')
-      expect(authorizationStrategies.sessionCookie.appendNext).toBeFalsy()
+      expect(authorizationStrategies.adminCookie.cookie.isSecure).toBeTruthy()
+    })
+
+    it('should set cookie isSecure to false if HTTPS environment variable is not set', () => {
+      delete process.env.HTTPS
+      const authorizationStrategies = require('../../src/lib/authorization-strategies')
+      expect(authorizationStrategies.adminCookie.cookie.isSecure).toBeFalsy()
+    })
+
+    it('should set cookie isHttpOnly to true if HTTPS environment variable is true', () => {
+      process.env.HTTPS = 'true'
+      const authorizationStrategies = require('../../src/lib/authorization-strategies')
+      expect(authorizationStrategies.adminCookie.cookie.isHttpOnly).toBeTruthy()
+    })
+
+    it('should set cookie isHttpOnly to false if HTTPS environment variable is not set', () => {
+      delete process.env.HTTPS
+      const authorizationStrategies = require('../../src/lib/authorization-strategies')
+      expect(authorizationStrategies.adminCookie.cookie.isHttpOnly).toBeFalsy()
     })
   })
 })

@@ -8,7 +8,6 @@
  * validation if exists
  */
 const { logger } = require('defra-logging-facade')
-const CryptoError = require('../lib/crypto').cryptoError
 const ResponseError = require('./response-error')
 
 module.exports = class BaseHandler {
@@ -37,12 +36,6 @@ module.exports = class BaseHandler {
         return await this.doPost(request, h, errors)
       }
     } catch (err) {
-      // Crypto error
-      if (err instanceof CryptoError) {
-        logger.error(err)
-        return h.redirect('/')
-      }
-
       // Response error
       if (err instanceof ResponseError.Error) {
         logger.debug(err)

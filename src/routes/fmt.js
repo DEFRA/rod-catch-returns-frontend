@@ -5,8 +5,6 @@ const id = Joi.string()
 /**
  * These routes are scanned automatically by the hapi-router
  */
-const LoginHandler = require('../handlers/login')
-const FailedLogin = require('../handlers/login-fail')
 const LicenceHandler = require('../handlers/licence')
 const ReportsHandler = require('../handlers/reports')
 const ReportDownloadHandler = require('../handlers/report-download')
@@ -20,17 +18,15 @@ const AgeWeightKeyConflictCheckHandler = require('../handlers/age-weight-key-con
 const AgeWeightKeyErrorBreakdownHandler = require('../handlers/age-weight-key-error-breakdown')
 const AgeWeightKeyCancel = require('../handlers/age-weight-key-cancel')
 const ExclusionsHandler = require('../handlers/exclusions')
+const AdminLoginHandler = require('../handlers/admin-login')
 
 // Define the validators
-const loginValidator = require('../validators/login')
 const licenceValidator = require('../validators/licence')
 const licenceFullValidator = require('../validators/licence-full')
 const ageWeightKeyValidator = require('../validators/age-weight-key')
 const ageWeightKeyConflictValidator = require('../validators/age-weight-key-conflict')
 
 // Define the handlers
-const loginHandler = new LoginHandler('login', loginValidator)
-const failedLogin = new FailedLogin('login', loginValidator)
 const reportsHandler = new ReportsHandler('reports')
 const reportDownloadHandler = new ReportDownloadHandler()
 const recordsHandler = new RecordsHandler('records', licenceFullValidator)
@@ -46,6 +42,7 @@ const ageWeightKeyErrorBreakdownHandler = new AgeWeightKeyErrorBreakdownHandler(
   null, 'ageWeightContext')
 const ageWeightKeyCancel = new AgeWeightKeyCancel(null, null, 'ageWeightContext')
 const exclusionsHandler = new ExclusionsHandler('exclusions')
+const adminLoginHandler = new AdminLoginHandler()
 
 const api = {
   host: process.env.API_HOSTNAME || 'localhost',
@@ -70,32 +67,26 @@ module.exports = [
   {
     path: '/login',
     method: 'GET',
-    handler: loginHandler.handler,
-    options: { auth: false }
+    handler: adminLoginHandler.handler,
+    options: {
+      auth: false,
+      plugins: {
+        crumb: false
+      }
+    }
   },
 
   // Login POST handler
   {
-    path: '/login',
+    path: '/oidc/signin',
     method: 'POST',
-    handler: loginHandler.handler,
-    options: { auth: { strategies: ['active-dir-strategy', 'session'] } }
-  },
-
-  // Failed Login GET handler
-  {
-    path: '/login-fail',
-    method: 'GET',
-    handler: failedLogin.handler,
-    options: { auth: false }
-  },
-
-  // Failed Login POST handler
-  {
-    path: '/login-fail',
-    method: 'POST',
-    handler: failedLogin.handler,
-    options: { auth: { strategies: ['active-dir-strategy', 'session'] } }
+    handler: adminLoginHandler.handler,
+    options: {
+      auth: false,
+      plugins: {
+        crumb: false
+      }
+    }
   },
 
   /*
