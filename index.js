@@ -13,6 +13,7 @@ const Nunjucks = require('nunjucks')
 const Uuid = require('uuid')
 const { logger } = require('defra-logging-facade')
 const HapiGapi = require('@defra/hapi-gapi')
+const figlet = require('figlet')
 
 const AuthorizationSchemes = require('./src/lib/authorization-schemes')
 const AuthorizationStrategies = require('./src/lib/authorization-strategies')
@@ -402,7 +403,7 @@ const options = {
     })
 
     // Print the banner
-    require('figlet')('Rod Catch Returns', function (err, data) {
+    figlet('Rod Catch Returns', function (err, data) {
       if (err) {
         return
       }
