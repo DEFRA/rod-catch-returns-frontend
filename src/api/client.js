@@ -58,7 +58,7 @@ function requestCallback (reject, method, uri, resolve, throwOnNotFound) {
       }
     } else {
       // All other errors are thrown 403 forbidden and server 500 errors
-      reject(new ResponseError.Error(response.statusMessage, response.statusCode, JSON.parse(body || undefined)))
+      reject(new ResponseError.Error(response.statusMessage, response.statusCode, JSON.parse(body || '{}')))
     }
   }
 }
