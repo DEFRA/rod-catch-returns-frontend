@@ -5,10 +5,11 @@
  * @type {module.UnauthorizedError}
  */
 class ResponseError extends Error {
-  constructor (message, status) {
+  constructor (message, status, body) {
     super(message)
     this._statusCode = status
     this._name = 'Request error'
+    this._body = body
   }
 
   get statusCode () {
@@ -17,6 +18,10 @@ class ResponseError extends Error {
 
   get name () {
     return this._name
+  }
+
+  get body () {
+    return this._body
   }
 }
 
