@@ -74,9 +74,9 @@ module.exports = class LoginHandler extends BaseHandler {
 
         return h.redirect('/')
       } catch (err) {
-        if (err.body.error === 'ACCOUNT_DISABLED') {
+        if (err?.body?.error === 'ACCOUNT_DISABLED') {
           return h.redirect('/oidc/account-disabled')
-        } else if (err.body.error === 'ACCOUNT_ROLE_REQUIRED') {
+        } else if (err?.body?.error === 'ACCOUNT_ROLE_REQUIRED') {
           return h.redirect('/oidc/account-role-required')
         } else {
           throw err
