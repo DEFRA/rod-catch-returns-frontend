@@ -92,7 +92,7 @@ module.exports = [
   {
     path: '/oidc/account-disabled',
     method: 'GET',
-    handler: async (request, h) => h.view('account-disabled'),
+    handler: async (_request, h) => h.view('account-disabled'),
     options: {
       auth: false,
       plugins: {
@@ -104,7 +104,7 @@ module.exports = [
   {
     path: '/oidc/account-role-required',
     method: 'GET',
-    handler: async (request, h) => h.view('account-role-required'),
+    handler: async (_request, h) => h.view('account-role-required'),
     options: {
       auth: false,
       plugins: {
