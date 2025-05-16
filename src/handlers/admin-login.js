@@ -57,21 +57,31 @@ module.exports = class LoginHandler extends BaseHandler {
         throw new Error('No access token in response from Microsoft')
       }
 
-      // call /profile, if the user is unauthorized it will return a 401
-      await Client.request(tokenResponse.accessToken, Client.method.GET, 'profile')
+      try {
+        // call /profile, if the user is unauthorized it will return a 401
+        await Client.request(tokenResponse.accessToken, Client.method.GET, 'profile')
 
-      // if /profile is successful, set token on authorization
-      request.app = {
-        authorization: {
-          name: tokenResponse.account.name,
-          token: tokenResponse.accessToken
+        // if /profile is successful, set token on authorization
+        request.app = {
+          authorization: {
+            name: tokenResponse.account.name,
+            token: tokenResponse.accessToken
+          }
+        }
+
+        // store session
+        await authenticateUser(request)
+
+        return h.redirect('/')
+      } catch (err) {
+        if (err.body.error === 'ACCOUNT_DISABLED') {
+          return h.redirect('/oidc/account-disabled')
+        } else if (err.body.error === 'ACCOUNT_ROLE_REQUIRED') {
+          return h.redirect('/oidc/account-role-required')
+        } else {
+          throw err
         }
       }
-
-      // store session
-      await authenticateUser(request)
-
-      return h.redirect('/')
     } catch (error) {
       logger.error('Auth error:', error)
       return Boom.unauthorized('Authentication failed')
