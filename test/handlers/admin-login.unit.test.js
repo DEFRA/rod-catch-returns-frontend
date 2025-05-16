@@ -118,5 +118,36 @@ describe('login', () => {
 
       expect(h.redirect).toHaveBeenCalledWith('/')
     })
+
+    it('should redirect to /oidc/account-disabled if /profile returns ACCOUNT_DISABLED error', async () => {
+      const h = getMockH()
+      msalClient.acquireTokenByCode.mockResolvedValue(getAcquireTokenByCodeResponse())
+      Client.request.mockRejectedValue({ body: { error: 'ACCOUNT_DISABLED' } })
+
+      await handler.doPost(getMockRequest('code'), h)
+
+      expect(h.redirect).toHaveBeenCalledWith('/oidc/account-disabled')
+    })
+
+    it('should redirect to /oidc/account-role-required if /profile returns ACCOUNT_ROLE_REQUIRED error', async () => {
+      const h = getMockH()
+      msalClient.acquireTokenByCode.mockResolvedValue(getAcquireTokenByCodeResponse())
+      Client.request.mockRejectedValue({ body: { error: 'ACCOUNT_ROLE_REQUIRED' } })
+
+      await handler.doPost(getMockRequest('code'), h)
+
+      expect(h.redirect).toHaveBeenCalledWith('/oidc/account-role-required')
+    })
+
+    it('should return an error if there is a problem when calling /profile', async () => {
+      const mockError = new Error('Error fetching client')
+      msalClient.acquireTokenByCode.mockResolvedValue(getAcquireTokenByCodeResponse())
+      Client.request.mockRejectedValue(mockError)
+
+      await handler.doPost(getMockRequest('abc123'), getMockH())
+
+      expect(logger.error).toHaveBeenCalledWith('Auth error:', mockError)
+      expect(Boom.unauthorized).toHaveBeenCalledWith('Authentication failed')
+    })
   })
 })

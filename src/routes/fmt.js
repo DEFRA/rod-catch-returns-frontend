@@ -89,6 +89,30 @@ module.exports = [
     }
   },
 
+  {
+    path: '/oidc/account-disabled',
+    method: 'GET',
+    handler: async (_request, h) => h.view('account-disabled'),
+    options: {
+      auth: false,
+      plugins: {
+        crumb: false
+      }
+    }
+  },
+
+  {
+    path: '/oidc/account-role-required',
+    method: 'GET',
+    handler: async (_request, h) => h.view('account-role-required'),
+    options: {
+      auth: false,
+      plugins: {
+        crumb: false
+      }
+    }
+  },
+
   /*
    * The remaining set of handlers are secured by the default authorization strategy -
    * using hapi-auth-cookie

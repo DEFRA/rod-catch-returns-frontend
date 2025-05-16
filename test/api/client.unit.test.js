@@ -5,6 +5,7 @@ const mockRequest = jest.fn((options, callback) => {
 })
 
 const Client = require('../../src/api/client')
+const ResponseError = require('../../src/handlers/response-error')
 
 jest.mock('request-etag', () => {
   return jest.fn().mockImplementation(() => {
@@ -50,6 +51,37 @@ describe('client', () => {
           }
         },
         expect.any(Function)
+      )
+    })
+
+    it('should reject with ResponseError on server error with response body', async () => {
+      const errorResponse = { message: 'Internal Server Error' }
+      const response = {
+        statusCode: 500,
+        statusMessage: 'Internal Server Error'
+      }
+
+      mockRequest.mockImplementationOnce((options, callback) => {
+        callback(null, response, JSON.stringify(errorResponse))
+      })
+
+      await expect(Client.request(undefined, Client.method.GET, 'profile')).rejects.toStrictEqual(
+        new ResponseError.Error('Internal Server Error', 500, errorResponse)
+      )
+    })
+
+    it('should reject with ResponseError on server error without response body', async () => {
+      const response = {
+        statusCode: 500,
+        statusMessage: 'Internal Server Error'
+      }
+
+      mockRequest.mockImplementationOnce((options, callback) => {
+        callback(null, response, undefined)
+      })
+
+      await expect(Client.request(undefined, Client.method.GET, 'profile')).rejects.toStrictEqual(
+        new ResponseError.Error('Internal Server Error', 500, {})
       )
     })
   })
