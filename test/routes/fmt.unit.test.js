@@ -26,4 +26,30 @@ describe('fmt', () => {
       })
     })
   })
+
+  describe('/oidc/account-disabled', () => {
+    const oidcSignIn = fmt.find(route => route.path === '/oidc/account-disabled')
+
+    it('should have a /oidc/account-disabled route with auth as false', () => {
+      expect(oidcSignIn.options).toStrictEqual({
+        auth: false,
+        plugins: {
+          crumb: false
+        }
+      })
+    })
+  })
+
+  describe('/oidc/account-role-required', () => {
+    const oidcSignIn = fmt.find(route => route.path === '/oidc/account-role-required')
+
+    it('should have a /oidc/account-role-required route with auth as false', () => {
+      expect(oidcSignIn.options).toStrictEqual({
+        auth: false,
+        plugins: {
+          crumb: false
+        }
+      })
+    })
+  })
 })
