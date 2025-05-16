@@ -69,5 +69,20 @@ describe('client', () => {
         new ResponseError.Error('Internal Server Error', 500, errorResponse)
       )
     })
+
+    it('should reject with ResponseError on server error without response body', async () => {
+      const response = {
+        statusCode: 500,
+        statusMessage: 'Internal Server Error'
+      }
+
+      mockRequest.mockImplementationOnce((options, callback) => {
+        callback(null, response, undefined)
+      })
+
+      await expect(Client.request(undefined, Client.method.GET, 'profile')).rejects.toStrictEqual(
+        new ResponseError.Error('Internal Server Error', 500, {})
+      )
+    })
   })
 })
