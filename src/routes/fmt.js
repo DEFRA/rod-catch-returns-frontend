@@ -271,17 +271,6 @@ module.exports = [
     }
   },
 
-  // End session handler
-  {
-    path: '/logout',
-    method: 'GET',
-    handler: async (request, h) => {
-      await request.cache().drop()
-      request.cookieAuth.clear()
-      return h.redirect('/')
-    }
-  },
-
   // The exclusions handler
   {
     path: '/exclusions',
