@@ -89,9 +89,9 @@ const internals = {
   createRequest: (path, search) => {
     try {
       const uriObj = {
-        protocol: 'http',
+        protocol: process.env.API_PROTOCOL || 'http',
         hostname: process.env.API_HOSTNAME || 'localhost',
-        port: Number.parseInt(process.env.API_PORT || 9580),
+        port: process.env.API_PORT ? Number.parseInt(process.env.API_PORT) : undefined,
         pathname: path ? process.env.API_PATH + '/' + path : process.env.API_PATH
       }
 
@@ -99,7 +99,11 @@ const internals = {
         uriObj.search = search
       }
 
-      return Url.format(uriObj)
+      const url = Url.format(uriObj)
+
+      console.log(url)
+
+      return url
     } catch (err) {
       logger.error(err)
       throw err
@@ -178,7 +182,9 @@ module.exports = {
    * @returns {Promise<*|Promise<void>>}
    */
   requestFromLink: async (auth, link) => {
-    return internals.makeRequest(auth, link, internals.method.GET,
+    // TODO see why app is putting http instead of https in link
+    const newLink = link.replace('http://', 'https://')
+    return internals.makeRequest(auth, newLink, internals.method.GET,
       null, true, internals.typeHeader.JSON)
   },
 

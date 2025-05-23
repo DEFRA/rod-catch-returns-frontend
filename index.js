@@ -47,13 +47,6 @@ const manifest = {
   register: {
     plugins: [
       /*
-       * Using the DEFRA logging package
-       * See: https://github.com/DEFRA/defra-logging-facade
-       */
-      {
-        plugin: require('defra-logging-facade').HapiErrorLoggerPlugin
-      },
-      /*
        * Static file and directory handlers plugin for hapi.js
        * See https://www.npmjs.com/package/inert
        */

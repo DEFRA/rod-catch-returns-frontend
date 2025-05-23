@@ -16,7 +16,7 @@ module.exports = Joi.object().keys({
   AIRBRAKE_HOST: Joi.string().uri(),
   AIRBRAKE_PROJECT_KEY: Joi.string(),
   API_HOSTNAME: Joi.string().required(),
-  API_PORT: Joi.number().port().required(),
+  API_PORT: Joi.number().port(),
   API_PATH: Joi.string().required(),
   API_REQUEST_TIMEOUT_MS: Joi.number().required(),
   AUTH_PW: Joi.string().length(16).required(),
