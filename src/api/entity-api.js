@@ -28,10 +28,13 @@ module.exports = class EntityApi {
     return cache.authorization ? cache.authorization.token : null
   }
 
-  // Calculate the object key from the link. Used in payloads
+  /*
+   * Calculate the object key from the link. Used in payloads
+   * E.g if the url is http://loclhost:5000/api/submissions/678, the key would be submissions/678
+   */
   static keyFromLink (obj) {
     const url = new URL(obj._links.self.href)
-    return url.pathname.replace(process.env.API_PATH + '/', '')
+    return url.pathname.replace('/api/', '')
   }
 
   /*

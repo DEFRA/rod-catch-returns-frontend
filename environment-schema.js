@@ -15,6 +15,7 @@ module.exports = Joi.object().keys({
   SESSION_TTL_MS: Joi.number().required(),
   AIRBRAKE_HOST: Joi.string().uri(),
   AIRBRAKE_PROJECT_KEY: Joi.string(),
+  JS_API_URL: Joi.string().required(),
   API_HOSTNAME: Joi.string().required(),
   API_PORT: Joi.number().port().required(),
   API_PATH: Joi.string().required(),
