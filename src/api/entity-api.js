@@ -31,7 +31,7 @@ module.exports = class EntityApi {
   // Calculate the object key from the link. Used in payloads
   static keyFromLink (obj) {
     const url = new URL(obj._links.self.href)
-    return url.pathname.replace(process.env.API_PATH + '/', '')
+    return url.pathname.replace('/api/', '')
   }
 
   /*

@@ -84,5 +84,38 @@ describe('client', () => {
         new ResponseError.Error('Internal Server Error', 500, {})
       )
     })
+
+    it('should set the url correctly', async () => {
+      await Client.request(undefined, Client.method.GET, 'profile')
+
+      expect(mockRequest).toHaveBeenCalledWith(
+        expect.objectContaining({
+          uri: 'http://localhost:5000/api/profile'
+        }),
+        expect.any(Function)
+      )
+    })
+
+    it('should set the url correctly, if no path is specified', async () => {
+      await Client.request(undefined, Client.method.GET, '')
+
+      expect(mockRequest).toHaveBeenCalledWith(
+        expect.objectContaining({
+          uri: 'http://localhost:5000/api'
+        }),
+        expect.any(Function)
+      )
+    })
+
+    it('should set the search paramter', async () => {
+      await Client.request(undefined, Client.method.GET, 'getByContactIdAndSeason', 'contact_id=123&season=2025')
+
+      expect(mockRequest).toHaveBeenCalledWith(
+        expect.objectContaining({
+          uri: 'http://localhost:5000/api/getByContactIdAndSeason?contact_id=123&season=2025'
+        }),
+        expect.any(Function)
+      )
+    })
   })
 })

@@ -28,11 +28,10 @@ describe('activities', () => {
 
   describe('mapper', () => {
     it.each([
-      ['http://example.com/path/to/somewhere', '/path', 'to/somewhere'],
-      ['http://example.com/unwise/path/to/the/dark/side', 'the', '/unwise/path/to/dark/side'],
-      ['http://example.com/unwise/path/to/the/dark/side/', 'side', '/unwise/path/to/the/dark/']
-    ])('sets id properly', async (href, apiPath, expectedValue) => {
-      process.env.API_PATH = apiPath
+      ['http://example.com/api/to/somewhere', 'to/somewhere'],
+      ['http://example.com/api/to/the/dark/side', 'to/the/dark/side']
+
+    ])('sets id properly', async (href, expectedValue) => {
       const activitiesApi = new ActivitiesApi()
       mockGetFromLink.mockImplementationOnce(() => ({ _links: { self: { href: href } } }))
       const mapped = await activitiesApi.doMap(({ }), createMockContext({ href }))
@@ -62,11 +61,9 @@ describe('activities', () => {
     })
 
     it.each([
-      ['http://example.com/path/to/somewhere', '/path', 'to/somewhere'],
-      ['http://example.com/unwise/path/to/the/dark/side', 'the', '/unwise/path/to/dark/side'],
-      ['http://example.com/unwise/path/to/the/dark/side/', 'side', '/unwise/path/to/the/dark/']
-    ])('sets river id to correct value', async (href, apiPath, expectedValue) => {
-      process.env.API_PATH = apiPath
+      ['http://example.com/api/to/somewhere', 'to/somewhere'],
+      ['http://example.com/api/to/the/dark/side', 'to/the/dark/side']
+    ])('sets river id to correct value', async (href, expectedValue) => {
       const activitiesApi = new ActivitiesApi()
       mockGetFromLink.mockImplementationOnce(() => ({ _links: { self: { href: href } } }))
       const mapped = await activitiesApi.doMap(({ }), createMockContext({ href }))

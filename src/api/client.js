@@ -3,7 +3,6 @@
 /**
  * This module is responsible for the API rest interface and is data agnostic.
  */
-const Url = require('url')
 const Hoek = require('@hapi/hoek')
 const ResponseError = require('../handlers/response-error')
 const ETagRequest = require('request-etag')
@@ -88,18 +87,16 @@ const internals = {
    */
   createRequest: (path, search) => {
     try {
-      const uriObj = {
-        protocol: 'http',
-        hostname: process.env.API_HOSTNAME || 'localhost',
-        port: Number.parseInt(process.env.API_PORT || 9580),
-        pathname: path ? process.env.API_PATH + '/' + path : process.env.API_PATH
-      }
+      const baseUrl = process.env.JS_API_URL
+      const url = new URL(baseUrl)
+
+      url.pathname = path ? `/api/${path}` : '/api'
 
       if (search) {
-        uriObj.search = search
+        url.search = search
       }
 
-      return Url.format(uriObj)
+      return url.toString()
     } catch (err) {
       logger.error(err)
       throw err

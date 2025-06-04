@@ -29,4 +29,18 @@ describe('entity-api', () => {
       expect(result).toBeNull()
     })
   })
+  describe('keyFromLink', () => {
+    it('should extract the key from a url', () => {
+      const mockRequest = {
+        _links: {
+          self: {
+            href: 'http://loclhost:5000/api/submissions/678'
+          }
+        }
+      }
+      const result = EntityApi.keyFromLink(mockRequest)
+
+      expect(result).toBe('submissions/678')
+    })
+  })
 })
