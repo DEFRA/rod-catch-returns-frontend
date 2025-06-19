@@ -4,12 +4,14 @@ const { getMockH } = require('../test-utils/server-test-utils')
 const Boom = require('@hapi/boom')
 const Client = require('../../src/api/client')
 const authenticateUser = require('../../src/lib/authenticate-user')
+const { calculateTokenTtl } = require('../../src/lib/date-utils')
 const { logger } = require('defra-logging-facade')
 
 jest.mock('../../src/lib/msal-client')
 jest.mock('@hapi/boom')
 jest.mock('../../src/api/client')
 jest.mock('../../src/lib/authenticate-user')
+jest.mock('../../src/lib/date-utils')
 jest.mock('defra-logging-facade')
 
 const handler = new AdminLoginHandler()
@@ -48,7 +50,7 @@ describe('login', () => {
     })
 
     const getAcquireTokenByCodeResponse = (overrides = {}) => ({
-      accessToken: 'token', account: { name: 'Bob Jones' }, ...overrides
+      accessToken: 'token', account: { name: 'Bob Jones' }, expiresOn: '2025-06-19T10:31:55.000Z', ...overrides
     })
 
     it('should return an error if code is missing from the body', async () => {
@@ -90,15 +92,17 @@ describe('login', () => {
       )
     })
 
-    it('should set the name and token on request.app', async () => {
+    it('should set the name, token and ttl on request.app', async () => {
       msalClient.acquireTokenByCode.mockResolvedValueOnce(getAcquireTokenByCodeResponse())
+      calculateTokenTtl.mockReturnValueOnce(6000)
       const mockRequest = getMockRequest('abc123')
       await handler.doPost(mockRequest, getMockH())
 
       expect(mockRequest.app.authorization).toStrictEqual(
         {
           name: 'Bob Jones',
-          token: 'token'
+          token: 'token',
+          ttlMs: 6000
         }
       )
     })
