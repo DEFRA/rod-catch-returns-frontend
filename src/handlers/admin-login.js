@@ -10,6 +10,7 @@ const { msalClient } = require('../lib/msal-client')
 const Boom = require('@hapi/boom')
 const Client = require('../api/client')
 const { logger } = require('defra-logging-facade')
+const { calculateTokenTtl } = require('../lib/date-utils')
 
 module.exports = class LoginHandler extends BaseHandler {
   constructor (...args) {
@@ -61,11 +62,14 @@ module.exports = class LoginHandler extends BaseHandler {
         // call /profile, if the user is unauthorized it will return a 401
         await Client.request(tokenResponse.accessToken, Client.method.GET, 'profile')
 
+        const ttlMs = calculateTokenTtl(tokenResponse.expiresOn)
+
         // if /profile is successful, set token on authorization
         request.app = {
           authorization: {
             name: tokenResponse.account.name,
-            token: tokenResponse.accessToken
+            token: tokenResponse.accessToken,
+            ttlMs
           }
         }
 
