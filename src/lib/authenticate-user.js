@@ -18,6 +18,7 @@ module.exports = async (request) => {
   request.cookieAuth.set({ sid: uuid() })
 
   if (request.app.authorization.token) {
+    request.cookieAuth.ttl(request.app.authorization.ttlMs)
     // If it is a user authentication then set the authorization details in the cache
     const cache = { authorization: request.app.authorization }
     await request.cache().set(cache)

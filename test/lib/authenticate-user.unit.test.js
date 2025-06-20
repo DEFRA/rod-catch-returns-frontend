@@ -22,6 +22,7 @@ describe('authenticate-user', () => {
     it('should set the authorization details in the cache if it is a user authentication', async () => {
       const mockCacheSet = jest.fn(() => ({}))
       const mockCookieAuthSet = jest.fn(() => ({}))
+      const mockTtlSet = jest.fn(() => ({}))
       uuid.mockImplementation(() => 'testid')
 
       const request = {
@@ -31,11 +32,13 @@ describe('authenticate-user', () => {
         app: {
           authorization: {
             token: 'abc123',
-            name: 'Bob Jones'
+            name: 'Bob Jones',
+            ttlMs: 60000
           }
         },
         cookieAuth: {
-          set: mockCookieAuthSet
+          set: mockCookieAuthSet,
+          ttl: mockTtlSet
         },
         server: {
           app: {
@@ -47,6 +50,7 @@ describe('authenticate-user', () => {
       await authenticateUser(request)
 
       expect(mockCookieAuthSet).toHaveBeenCalledWith({ sid: 'testid' })
+      expect(mockTtlSet).toHaveBeenCalledWith(60000)
       expect(mockCacheSet).toHaveBeenCalledTimes(1)
     })
 
