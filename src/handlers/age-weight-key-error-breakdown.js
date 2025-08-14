@@ -19,6 +19,12 @@ module.exports = class AgeWeightKeyErrorBreakdownHandler extends BaseHandler {
 
   static builder (err) {
     switch (err.errorType) {
+      case 'FILE_EMPTY':
+        return {
+          type: 'File empty',
+          message: 'The selected file is empty'
+        }
+
       case 'MISSING_WEIGHT_HEADER':
         return {
           type: 'Missing required',
