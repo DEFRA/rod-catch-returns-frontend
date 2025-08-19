@@ -22,7 +22,7 @@
 
                 {{ govukButton({
                     name: "continue",
-                    preventDoubleClick: true,
+                    attributes: { onclick: "var e=this;setTimeout(function(){e.disabled=true;},0);return true;" },
                     text: "Delete"
                 }) }}
 
