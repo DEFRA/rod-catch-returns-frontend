@@ -3,6 +3,9 @@
 const BaseHandler = require('./base')
 const { logger } = require('defra-logging-facade')
 
+const STATUS_CODE_200 = 200
+const STATUS_CODE_500 = 500
+
 module.exports = class LoginHandler extends BaseHandler {
   constructor (...args) {
     super(args)
@@ -18,12 +21,12 @@ module.exports = class LoginHandler extends BaseHandler {
     logger.info('Testing errbit integration')
     if (!process.env.ERRBIT_TEST_KEY) {
       logger.info('ERRBIT_TEST_KEY has not been set')
-      return h.response('').code(500)
+      return h.response('').code(STATUS_CODE_500)
     }
     if (request.headers.key === process.env.ERRBIT_TEST_KEY) {
       logger.info('Correct API KEY')
       logger.serverError('Test errbit integration')
     }
-    return h.response('').code(200)
+    return h.response('').code(STATUS_CODE_200)
   }
 }
