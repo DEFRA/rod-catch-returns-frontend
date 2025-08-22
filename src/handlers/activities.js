@@ -17,7 +17,7 @@ class ActivitiesHandler extends BaseHandler {
     super(args)
   }
 
-  async add (request, h, cache, activities, rivers) {
+  async add (request, h, cache, activities, rivers, maxDaysFished) {
     delete cache.activity
     cache.back = request.path
     await request.cache().set(cache)
@@ -29,12 +29,13 @@ class ActivitiesHandler extends BaseHandler {
       details: {
         licenceNumber: cache.licenceNumber,
         postcode: cache.postcode,
-        year: cache.year
+        year: cache.year,
+        maxDaysFished
       }
     })
   }
 
-  async change (request, h, cache, activities, rivers, submission) {
+  async change (request, h, cache, activities, rivers, maxDaysFished, submission) {
     let activity = await activitiesApi.getById(request, `activities/${request.params.id}`)
 
     if (!activity) {
@@ -73,7 +74,8 @@ class ActivitiesHandler extends BaseHandler {
       details: {
         licenceNumber: cache.licenceNumber,
         postcode: cache.postcode,
-        year: cache.year
+        year: cache.year,
+        maxDaysFished
       }
     })
   }
@@ -96,14 +98,17 @@ class ActivitiesHandler extends BaseHandler {
     const rivers = (await riversApi.list(request))
       .filter(r => process.env.CONTEXT === 'FMT' ? true : !r.internal).sort(riversApi.sort)
 
+    // If it's a leap year, set the max number of days fished to 168 instead of 167
+    const maxDaysFished = submission.season % 4 === 0 ? 168 : 167
+
     // Test if the submission is locked and if so redirect to the review screen
     if (await testLocked(request, cache, submission)) {
       return h.redirect('/review')
     }
 
     return (request.params.id === 'add')
-      ? this.add(request, h, cache, activities, rivers)
-      : this.change(request, h, cache, activities, rivers, submission)
+      ? this.add(request, h, cache, activities, rivers, maxDaysFished)
+      : this.change(request, h, cache, activities, rivers, maxDaysFished, submission)
   }
 
   /**

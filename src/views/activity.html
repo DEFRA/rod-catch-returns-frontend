@@ -31,9 +31,6 @@
 {% set daysMandatoryErrorMessage = null %}
 {% set daysOtherErrorMessage = null %}
 
-// If it's a leap year, set the number of days to 168 instead of 167
-{% set maxDays = 168 if details.year % 4 == 0 else 167 %}
-
 {% if errors %}
     {% for error in errors %}
         {% if error.Activity === 'ACTIVITY_RIVER_REQUIRED' %}
@@ -47,7 +44,7 @@
         {% if error.daysFishedWithMandatoryRelease === "NOT_A_NUMBER" or
             error.Activity === 'ACTIVITY_DAYS_FISHED_WITH_MANDATORY_RELEASE_MAX_EXCEEDED' or
             error.Activity === 'ACTIVITY_DAYS_FISHED_WITH_MANDATORY_RELEASE_NEGATIVE' %}
-            {% set daysMandatoryErrorMessage = { text: "Enter a number between 0 and " + maxDays } %}
+            {% set daysMandatoryErrorMessage = { text: "Enter a number between 0 and " + details.maxDaysFished } %}
             {{ errorList.push({
                 text: "You have not entered a valid number of days fished between 1 January and 16 June",
                 href: "#daysFishedWithMandatoryRelease"
@@ -66,7 +63,7 @@
 
         {% if error.Activity === 'ACTIVITY_DAYS_FISHED_NOT_GREATER_THAN_ZERO' %}
             {% set daysOtherErrorMessage = { text: "Enter a number between 0 and 198" } %}
-            {% set daysMandatoryErrorMessage = { text: "Enter a number between 0 and " + maxDays } %}
+            {% set daysMandatoryErrorMessage = { text: "Enter a number between 0 and " + details.maxDaysFished } %}
             {{ errorList.push({
                 text: "The number of days fished must be greater than 0",
                 href: "#daysFishedOther"
