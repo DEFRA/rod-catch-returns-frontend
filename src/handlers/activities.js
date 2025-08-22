@@ -12,6 +12,9 @@ const submissionsApi = new SubmissionsApi()
 const riversApi = new RiversApi()
 const activitiesApi = new ActivitiesApi()
 
+const MAX_DAYS_LEAP_YEAR = 168
+const MAX_DAYS_NON_LEAP_YEAR = 168
+
 class ActivitiesHandler extends BaseHandler {
   constructor (...args) {
     super(args)
@@ -98,7 +101,7 @@ class ActivitiesHandler extends BaseHandler {
       .filter(r => process.env.CONTEXT === 'FMT' ? true : !r.internal).sort(riversApi.sort)
 
     // If it's a leap year, set the max number of days fished to 168 instead of 167
-    const maxDaysFished = submission.season % 4 === 0 ? 168 : 167
+    const maxDaysFished = submission.season % 4 === 0 ? MAX_DAYS_LEAP_YEAR : MAX_DAYS_NON_LEAP_YEAR
 
     // Test if the submission is locked and if so redirect to the review screen
     if (await testLocked(request, cache, submission)) {
