@@ -21,7 +21,6 @@ class ActivitiesHandler extends BaseHandler {
     delete cache.activity
     cache.back = request.path
     await request.cache().set(cache)
-
     // Filter out the rivers already selected
     return this.readCacheAndDisplayView(request, h, {
       rivers: rivers.filter(r => !activities.map(a => a.river.id).includes(r.id)),
