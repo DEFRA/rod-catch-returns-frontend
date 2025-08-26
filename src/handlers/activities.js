@@ -13,7 +13,7 @@ const riversApi = new RiversApi()
 const activitiesApi = new ActivitiesApi()
 
 const MAX_DAYS_LEAP_YEAR = 168
-const MAX_DAYS_NON_LEAP_YEAR = 168
+const MAX_DAYS_NON_LEAP_YEAR = 167
 
 class ActivitiesHandler extends BaseHandler {
   constructor (...args) {
