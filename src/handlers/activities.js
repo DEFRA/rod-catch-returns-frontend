@@ -8,7 +8,7 @@ const ResponseError = require('./response-error')
 const isAllowedParam = require('./common').isAllowedParam
 const testLocked = require('./common').testLocked
 const { isLeapYear } = require('../lib/date-utils')
-const { filterAvailableRivers } = require('../lib/river-utils')
+const { filterRiversForAdd, filterRiversForChange } = require('../lib/river-utils')
 
 const submissionsApi = new SubmissionsApi()
 const riversApi = new RiversApi()
@@ -28,7 +28,7 @@ class ActivitiesHandler extends BaseHandler {
     await request.cache().set(cache)
     // Filter out the rivers already selected
     return this.readCacheAndDisplayView(request, h, {
-      rivers: rivers.filter(r => !activities.map(a => a.river.id).includes(r.id)),
+      rivers: filterRiversForAdd(rivers, activities),
       add: true,
       details: {
         licenceNumber: cache.licenceNumber,
@@ -67,7 +67,7 @@ class ActivitiesHandler extends BaseHandler {
     }
 
     return this.readCacheAndDisplayView(request, h, {
-      rivers: filterAvailableRivers(rivers, activities, activity),
+      rivers: filterRiversForChange(rivers, activities, activity),
       payload: payload,
       details: {
         licenceNumber: cache.licenceNumber,
