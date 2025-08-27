@@ -7,6 +7,8 @@ const ActivitiesApi = require('../api/activities')
 const ResponseError = require('./response-error')
 const isAllowedParam = require('./common').isAllowedParam
 const testLocked = require('./common').testLocked
+const { isLeapYear } = require('../lib/date-utils')
+const { filterAvailableRivers } = require('../lib/river-utils')
 
 const submissionsApi = new SubmissionsApi()
 const riversApi = new RiversApi()
@@ -20,7 +22,7 @@ class ActivitiesHandler extends BaseHandler {
     super(args)
   }
 
-  async add (request, h, cache, activities, rivers, maxDaysFished) {
+  async add (request, h, { cache, activities, rivers, maxDaysFished }) {
     delete cache.activity
     cache.back = request.path
     await request.cache().set(cache)
@@ -37,7 +39,7 @@ class ActivitiesHandler extends BaseHandler {
     })
   }
 
-  async change (request, h, cache, activities, rivers, maxDaysFished, submission) {
+  async change (request, h, { cache, activities, rivers, maxDaysFished, submission }) {
     let activity = await activitiesApi.getById(request, `activities/${request.params.id}`)
 
     if (!activity) {
@@ -64,14 +66,8 @@ class ActivitiesHandler extends BaseHandler {
       daysFishedWithMandatoryRelease: activity.daysFishedWithMandatoryRelease
     }
 
-    /*
-     * Do not allow to switch to a river that is already in the submission other than the
-     * one we are currently editing
-     */
     return this.readCacheAndDisplayView(request, h, {
-      rivers: rivers.filter(r => ![].concat(...activities.map(a => a.river))
-        .filter(r => r.id !== activity.river.id)
-        .map(r2 => r2.id).includes(r.id)).sort(riversApi.sort),
+      rivers: filterAvailableRivers(rivers, activities, activity),
       payload: payload,
       details: {
         licenceNumber: cache.licenceNumber,
@@ -101,7 +97,7 @@ class ActivitiesHandler extends BaseHandler {
       .filter(r => process.env.CONTEXT === 'FMT' ? true : !r.internal).sort(riversApi.sort)
 
     // If it's a leap year, set the max number of days fished to 168 instead of 167
-    const maxDaysFished = submission.season % 4 === 0 ? MAX_DAYS_LEAP_YEAR : MAX_DAYS_NON_LEAP_YEAR
+    const maxDaysFished = isLeapYear(submission.season) ? MAX_DAYS_LEAP_YEAR : MAX_DAYS_NON_LEAP_YEAR
 
     // Test if the submission is locked and if so redirect to the review screen
     if (await testLocked(request, cache, submission)) {
@@ -109,8 +105,8 @@ class ActivitiesHandler extends BaseHandler {
     }
 
     return (request.params.id === 'add')
-      ? this.add(request, h, cache, activities, rivers, maxDaysFished)
-      : this.change(request, h, cache, activities, rivers, maxDaysFished, submission)
+      ? this.add(request, h, { cache, activities, rivers, maxDaysFished })
+      : this.change(request, h, { cache, activities, rivers, maxDaysFished, submission })
   }
 
   /**

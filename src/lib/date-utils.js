@@ -21,6 +21,17 @@ function calculateTokenTtl (expiresOn) {
   return ttlMs
 }
 
+/**
+ * Check if the year entered is a leap year
+ *
+ * @param {number} year - The year to check as a number
+ * @returns {boolean} If the year is a leap year
+ */
+function isLeapYear (year) {
+  return ((year % 4 === 0) && (year % 100 !== 0)) || (year % 400 === 0)
+}
+
 module.exports = {
-  calculateTokenTtl
+  calculateTokenTtl,
+  isLeapYear
 }

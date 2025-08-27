@@ -1,4 +1,4 @@
-const { calculateTokenTtl } = require('../../src/lib/date-utils')
+const { calculateTokenTtl, isLeapYear } = require('../../src/lib/date-utils')
 
 describe('calculateTokenTtl', () => {
   it('should return a TTL for a date string', () => {
@@ -30,5 +30,15 @@ describe('calculateTokenTtl', () => {
 
   it.each(['invalid-date', undefined])('should throw an error if %s is passed in', (input) => {
     expect(() => calculateTokenTtl(input)).toThrow('Invalid expiration time provided')
+  })
+})
+
+describe('isLeapYear', () => {
+  it.each([2000, 2024, 2028, 2048, 2052, 2132, 2400])('should return true if the year is a leap year', (year) => {
+    expect(isLeapYear(year)).toBeTruthy()
+  })
+
+  it.each([2026, 2027, 2100, 2133, 2399])('should return false if the year is not a leap year', (year) => {
+    expect(isLeapYear(year)).toBeFalsy()
   })
 })
