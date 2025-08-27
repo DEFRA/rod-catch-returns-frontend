@@ -1,5 +1,7 @@
 'use strict'
 
+const DIVISIBLE_BY_400 = 400
+
 /**
  * Calculates the time-to-live (TTL) in milliseconds for an access token
  * based on its expiry time.
@@ -28,7 +30,7 @@ function calculateTokenTtl (expiresOn) {
  * @returns {boolean} If the year is a leap year
  */
 function isLeapYear (year) {
-  return ((year % 4 === 0) && (year % 100 !== 0)) || (year % 400 === 0)
+  return ((year % 4 === 0) && (year % 100 !== 0)) || (year % DIVISIBLE_BY_400 === 0)
 }
 
 module.exports = {
