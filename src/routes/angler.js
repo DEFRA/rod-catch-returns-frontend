@@ -19,7 +19,6 @@ const DeleteSmallCatchHandler = require('../handlers/delete-small-catch')
 const ConfirmationHandler = require('../handlers/confirmation')
 const ReviewHandler = require('../handlers/review')
 const SaveHandler = require('../handlers/save')
-const ErrbitTestHandler = require('../handlers/errbit-test')
 
 // Define the validators
 const loginValidator = require('../validators/login')
@@ -53,8 +52,6 @@ const deleteSmallCatchHandler = new DeleteSmallCatchHandler('delete-small-catch'
 const reviewHandler = new ReviewHandler('review')
 const confirmationHandler = new ConfirmationHandler('confirmation')
 const saveHandler = new SaveHandler('save')
-
-const errbitTestHandler = new ErrbitTestHandler('')
 
 module.exports = [
 
@@ -238,13 +235,5 @@ module.exports = [
     handler: (request, h) => {
       return h.view('privacy')
     }
-  },
-
-  // Test errbit integration
-  {
-    path: '/test/errbit',
-    method: 'GET',
-    options: { auth: false },
-    handler: errbitTestHandler.handler
   }
 ]
