@@ -21,6 +21,7 @@ const CacheDecorator = require('./src/lib/cache-decorator')
 const { checkTempDir } = require('./src/lib/misc')
 const manFishing = require('./manFishing')
 const { sessionIdProducer } = require('./src/lib/analytics')
+const { logRequest, logResponse } = require('./src/lib/logger-utils')
 
 const manifest = {
   // Configure Hapi server and server-caching subsystem
@@ -354,6 +355,10 @@ const options = {
         batchInterval: 15000
       }
     })
+
+    server.ext('onPreHandler', logRequest)
+
+    server.ext('onPreResponse', logResponse)
 
     // Register an onPreResponse handler so that errors can be properly trapped.
     server.ext('onPreResponse', (request, h) => {
