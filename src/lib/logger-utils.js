@@ -3,7 +3,7 @@ const { logger } = require('defra-logging-facade')
 const IGNORE_PATHS = ['/public/', '/robots.txt']
 
 function logRequest (request, h) {
-  if (IGNORE_PATHS.some(path => request.path.includes(path))) {
+  if (IGNORE_PATHS.some(ignorePath => request.path.includes(ignorePath))) {
     return h.continue
   }
 
@@ -17,7 +17,7 @@ function logRequest (request, h) {
 }
 
 function logResponse (request, h) {
-  if (IGNORE_PATHS.some(path => request.path.includes(path))) {
+  if (IGNORE_PATHS.some(ignorePath => request.path.includes(ignorePath))) {
     return h.continue
   }
 
