@@ -122,7 +122,7 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
     <h1 class="govuk-heading-l">Upload a Salmon age weight key</h1>
-    <form method="post" enctype="multipart/form-data">
+    <form method="post" enctype="multipart/form-data" action="#">
       {% if errors %}
         {{ govukErrorSummary({
           titleText: "There is a problem",

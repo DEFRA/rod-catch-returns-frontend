@@ -30,7 +30,7 @@
     <div class="govuk-grid-column-two-thirds">
         <h1 class="govuk-heading-l">{{ title }}</h1>
         {% if submissions | length %}
-            <form method="post">
+            <form method="post" action="#">
                 <ul class="govuk-list govuk-list--bullet">
                     {% for submission in submissions %}
                         <li>
