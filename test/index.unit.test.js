@@ -26,6 +26,7 @@ jest.mock('../src/lib/authorization-strategies', () => ({
   adminCookie: { strategy: 'admin' },
   sessionCookie: { strategy: 'session' }
 }))
+jest.mock('../src/lib/logger-utils')
 
 describe('auth.strategy setup', () => {
   beforeEach(() => {
@@ -56,5 +57,17 @@ describe('auth.strategy setup', () => {
       'cookie',
       AuthorizationStrategies.sessionCookie
     )
+  })
+
+  it('should add an interceptor to log all incoming requests', async () => {
+    await require('../index')
+
+    expect(mockServer.ext).toHaveBeenCalledWith('onPreHandler', expect.any(Function))
+  })
+
+  it('should add an interceptor to log all outgoing responses', async () => {
+    await require('../index')
+
+    expect(mockServer.ext).toHaveBeenCalledWith('onPreResponse', expect.any(Function))
   })
 })
