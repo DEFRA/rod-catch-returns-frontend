@@ -10,6 +10,8 @@ describe('authorization-schemes', () => {
     jest.clearAllMocks()
   })
 
+  // TODO clean up unit tests for this
+
   describe('licenceScheme', () => {
     it('should return options field', async () => {
       expect(authorizationSchemes.licenceScheme().options).toEqual({ payload: true })
