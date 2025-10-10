@@ -6,7 +6,7 @@ const Joi = require('@hapi/joi')
 const ukPostcodeRegex =
   /^([A-PR-UWYZ]\d{1,2}[A-HJKPSTUW]?|[A-PR-UWYZ][A-HK-Y]\d{1,2}[ABEHMNPRVWXY]?)\s{0,6}(\d[A-Z]{2})$/i
 
-const LICENCE_LENGTH = 6;
+const LICENCE_LENGTH = 6
 
 /**
  * Normalizes and formats a UK postcode
