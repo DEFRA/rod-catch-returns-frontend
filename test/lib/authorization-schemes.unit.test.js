@@ -1,16 +1,16 @@
 const LicenceApi = require('../../src/api/licence')
 const ResponseError = require('../../src/handlers/response-error')
+const { parsePostcode, parseLicence, licenceSchema } = require('../../src/lib/licence-utils')
 
 const authorizationSchemes = require('../../src/lib/authorization-schemes')
 
 jest.mock('../../src/api/licence')
+jest.mock('../../src/lib/licence-utils')
 
 describe('authorization-schemes', () => {
   beforeEach(() => {
     jest.clearAllMocks()
   })
-
-  // TODO clean up unit tests for this
 
   describe('licenceScheme', () => {
     it('should return options field', async () => {
@@ -49,6 +49,9 @@ describe('authorization-schemes', () => {
             id: '12345'
           }
         }
+        parsePostcode.mockReturnValueOnce('AB12 3CD')
+        parseLicence.mockReturnValueOnce('123456')
+        licenceSchema.validate.mockReturnValueOnce({ value: {} })
         LicenceApi.getContactFromLicenceKey.mockImplementation(() => contactResponse)
 
         await expect(authorizationSchemes.licenceScheme().payload(request, getMockH())).resolves.toEqual('response')
@@ -63,6 +66,9 @@ describe('authorization-schemes', () => {
           throw new Error()
         })
 
+        parsePostcode.mockReturnValueOnce('AB12 3CD')
+        parseLicence.mockReturnValueOnce('123456')
+        licenceSchema.validate.mockReturnValueOnce({ value: {} })
         await expect(authorizationSchemes.licenceScheme().payload(request, getMockH())).rejects
 
         expect(LicenceApi.getContactFromLicenceKey).toHaveBeenCalledWith(request, '123456', 'AB12 3CD')
@@ -74,49 +80,14 @@ describe('authorization-schemes', () => {
         LicenceApi.getContactFromLicenceKey.mockImplementation(() => {
           throw new ResponseError.Error('Error', ResponseError.status.UNAUTHORIZED)
         })
+        parsePostcode.mockReturnValueOnce('AB12 3CD')
+        parseLicence.mockReturnValueOnce('123456')
+        licenceSchema.validate.mockReturnValueOnce({ value: {} })
 
         await expect(authorizationSchemes.licenceScheme().payload(request, getMockH())).resolves.toEqual('response')
 
         expect(LicenceApi.getContactFromLicenceKey).toHaveBeenCalledWith(request, '123456', 'AB12 3CD')
         expect(request.app.authorization).toBeUndefined()
-      })
-
-      it.each([
-        ['ba21nw', 'BA2 1NW'],
-        [' AB12    3CD ', 'AB12 3CD'],
-        ['AB123CD ', 'AB12 3CD'],
-        ['A99AA', 'A9 9AA']
-      ])('formats the UK postcode %s successfully as %s', async (postcode, replacedValue) => {
-        const request = getMockLicenceRequest(postcode)
-
-        await authorizationSchemes.licenceScheme().payload(request, getMockH())
-
-        expect(LicenceApi.getContactFromLicenceKey).toHaveBeenCalledWith(request, '123456', replacedValue)
-      })
-
-      it.each([
-        ['BS1 5AH'],
-        ['WA4 1HT'],
-        ['NE4 7AR'],
-        ['A9 9AA']
-      ])('does not change the format of the UK postcode %s', async (postcode) => {
-        const request = getMockLicenceRequest(postcode)
-
-        await authorizationSchemes.licenceScheme().payload(request, getMockH())
-
-        expect(LicenceApi.getContactFromLicenceKey).toHaveBeenCalledWith(request, '123456', postcode)
-      })
-
-      it.each([
-        ['22041'],
-        ['D24 CK66'],
-        ['6011']
-      ])('does not change the format of the non-UK postcode %s', async (postcode) => {
-        const request = getMockLicenceRequest(postcode)
-
-        await authorizationSchemes.licenceScheme().payload(request, getMockH())
-
-        expect(LicenceApi.getContactFromLicenceKey).toHaveBeenCalledWith(request, '123456', postcode)
       })
     })
 

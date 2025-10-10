@@ -20,8 +20,12 @@ module.exports = {
           return h.continue
         }
 
+        console.log('bob')
+
         const licence = parseLicence(request.payload.licence)
         const postcode = parsePostcode(request.payload.postcode)
+
+        console.log(licence, postcode)
 
         const result = licenceSchema.validate({ licence, postcode }, { allowUnknown: true, abortEarly: true })
 
