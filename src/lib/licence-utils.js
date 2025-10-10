@@ -6,6 +6,8 @@ const Joi = require('@hapi/joi')
 const ukPostcodeRegex =
   /^([A-PR-UWYZ]\d{1,2}[A-HJKPSTUW]?|[A-PR-UWYZ][A-HK-Y]\d{1,2}[ABEHMNPRVWXY]?)\s{0,6}(\d[A-Z]{2})$/i
 
+const LICENCE_LENGTH = 6;
+
 /**
  * Normalizes and formats a UK postcode
  * @param {string} postcode - Raw postcode string
@@ -22,12 +24,12 @@ const parsePostcode = (postcode) => {
  * @returns {string} The licence number (no spaces, all uppercase).
  */
 const parseLicence = (licence) => {
-  return licence.replace(/\s+/g, '').toUpperCase()
+  return licence.replaceAll(/\s+/g, '').toUpperCase()
 }
 
 // Joi schema to validate a licence payload
 const licenceSchema = Joi.object().keys({
-  licence: Joi.string().alphanum().min(6).max(6).required(),
+  licence: Joi.string().alphanum().length(LICENCE_LENGTH).required(),
   postcode: Joi.string().required()
 })
 

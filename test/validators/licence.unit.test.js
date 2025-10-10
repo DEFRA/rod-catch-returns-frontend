@@ -1,9 +1,11 @@
 const licenceValidator = require('../../src/validators/licence')
 const { parsePostcode, parseLicence, licenceSchema } = require('../../src/lib/licence-utils')
 const LicenceApi = require('../../src/api/licence')
+const { logger } = require('defra-logging-facade')
 
 jest.mock('../../src/api/licence')
 jest.mock('../../src/lib/licence-utils')
+jest.mock('defra-logging-facade')
 
 describe('licence.unit', () => {
   beforeEach(() => {
@@ -73,6 +75,22 @@ describe('licence.unit', () => {
     const result = await licenceValidator(request)
 
     expect(result).toStrictEqual([{ licence: 'NOT_FOUND' }])
+  })
+
+  it('should log and return null if API throws any other error', async () => {
+    parseLicence.mockReturnValueOnce('123456')
+    parsePostcode.mockReturnValueOnce('A9 9AA')
+    licenceSchema.validate.mockReturnValueOnce({ value: {} })
+
+    const error = new Error('API error')
+    error.statusCode = 500
+    LicenceApi.getContactFromLicenceKey.mockRejectedValueOnce(error)
+
+    const request = { payload: { licence: '123456', postcode: 'A9 9AA' } }
+    const result = await licenceValidator(request)
+
+    expect(result).toBe(null)
+    expect(logger.error).toHaveBeenCalledTimes(1)
   })
 
   it('should return null if validation and API call succeed', async () => {

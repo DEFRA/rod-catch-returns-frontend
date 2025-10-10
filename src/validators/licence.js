@@ -3,6 +3,7 @@
 const LicenceApi = require('../api/licence')
 const ResponseError = require('../handlers/response-error')
 const { parsePostcode, parseLicence, licenceSchema } = require('../lib/licence-utils')
+const { logger } = require('defra-logging-facade')
 
 /**
  * Validate the licence number and postcode
@@ -36,6 +37,7 @@ module.exports = async (request) => {
     if (err.statusCode === ResponseError.status.NOT_FOUND || err.statusCode === ResponseError.status.FORBIDDEN) {
       return [{ licence: 'NOT_FOUND' }]
     }
+    logger.error(err)
   }
 
   return null
