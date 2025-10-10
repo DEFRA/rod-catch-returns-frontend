@@ -18,8 +18,8 @@ describe('licence-utils.unit', () => {
     it.each([
       [{ licence: undefined, postcode: 'AB12 3CD' }, '"licence" is required'],
       [{ licence: '', postcode: 'AB12 3CD' }, '"licence" is not allowed to be empty'],
-      [{ licence: 'ABC12', postcode: 'AB12 3CD' }, '"licence" length must be at least 6 characters long'],
-      [{ licence: 'ABC1234', postcode: 'AB12 3CD' }, '"licence" length must be less than or equal to 6 characters long'],
+      [{ licence: 'ABC12', postcode: 'AB12 3CD' }, '"licence" length must be 6 characters long'],
+      [{ licence: 'ABC1234', postcode: 'AB12 3CD' }, '"licence" length must be 6 characters long'],
       [{ licence: 'ABC12$', postcode: 'AB12 3CD' }, '"licence" must only contain alpha-numeric characters']
     ])('should return an error when licence is invalid (%j)', (data, expectedMsg) => {
       const { error } = licenceSchema.validate(data)
