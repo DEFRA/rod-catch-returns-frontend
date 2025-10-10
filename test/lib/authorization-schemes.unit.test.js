@@ -1,11 +1,36 @@
 const LicenceApi = require('../../src/api/licence')
 const ResponseError = require('../../src/handlers/response-error')
 const { parsePostcode, parseLicence, licenceSchema } = require('../../src/lib/licence-utils')
+const { getMockH } = require('../test-utils/server-test-utils')
 
 const authorizationSchemes = require('../../src/lib/authorization-schemes')
 
 jest.mock('../../src/api/licence')
 jest.mock('../../src/lib/licence-utils')
+
+const getMockLicenceRequest = ({ postcode = 'AB12 3CD', licence = '123456' } = {}) => ({
+  payload: {
+    licence,
+    postcode
+  },
+  app: {}
+})
+
+const setupMocks = ({
+  postcode = 'AB12 3CD',
+  licence = '123456',
+  licenceApiResponse = () => ({
+    contact: {
+      id: '12345'
+    }
+  }),
+  licenceSchemaResponse = { value: {} }
+} = {}) => {
+  parsePostcode.mockReturnValueOnce(postcode)
+  parseLicence.mockReturnValueOnce(licence)
+  LicenceApi.getContactFromLicenceKey.mockImplementation(licenceApiResponse)
+  licenceSchema.validate.mockReturnValueOnce(licenceSchemaResponse)
+}
 
 describe('authorization-schemes', () => {
   beforeEach(() => {
@@ -44,15 +69,7 @@ describe('authorization-schemes', () => {
 
       it('should return h.continue and calls LicenceApi.getContactFromLicenceKey if call is successful', async () => {
         const request = getMockLicenceRequest()
-        const contactResponse = {
-          contact: {
-            id: '12345'
-          }
-        }
-        parsePostcode.mockReturnValueOnce('AB12 3CD')
-        parseLicence.mockReturnValueOnce('123456')
-        licenceSchema.validate.mockReturnValueOnce({ value: {} })
-        LicenceApi.getContactFromLicenceKey.mockImplementation(() => contactResponse)
+        setupMocks()
 
         await expect(authorizationSchemes.licenceScheme().payload(request, getMockH())).resolves.toEqual('response')
 
@@ -62,13 +79,11 @@ describe('authorization-schemes', () => {
 
       it('should return an error and auth should not be present if LicenceApi.getContactFromLicenceKey call fails', async () => {
         const request = getMockLicenceRequest()
-        LicenceApi.getContactFromLicenceKey.mockImplementation(() => {
-          throw new Error()
+        setupMocks({
+          licenceApiResponse: () => {
+            throw new Error()
+          }
         })
-
-        parsePostcode.mockReturnValueOnce('AB12 3CD')
-        parseLicence.mockReturnValueOnce('123456')
-        licenceSchema.validate.mockReturnValueOnce({ value: {} })
         await expect(authorizationSchemes.licenceScheme().payload(request, getMockH())).rejects
 
         expect(LicenceApi.getContactFromLicenceKey).toHaveBeenCalledWith(request, '123456', 'AB12 3CD')
@@ -77,12 +92,11 @@ describe('authorization-schemes', () => {
 
       it('should return h.continue and auth should not be present if LicenceApi.getContactFromLicenceKey call fails with a statusCode beginning with 4', async () => {
         const request = getMockLicenceRequest()
-        LicenceApi.getContactFromLicenceKey.mockImplementation(() => {
-          throw new ResponseError.Error('Error', ResponseError.status.UNAUTHORIZED)
+        setupMocks({
+          licenceApiResponse: () => {
+            throw new ResponseError.Error('Error', ResponseError.status.UNAUTHORIZED)
+          }
         })
-        parsePostcode.mockReturnValueOnce('AB12 3CD')
-        parseLicence.mockReturnValueOnce('123456')
-        licenceSchema.validate.mockReturnValueOnce({ value: {} })
 
         await expect(authorizationSchemes.licenceScheme().payload(request, getMockH())).resolves.toEqual('response')
 
@@ -104,17 +118,5 @@ describe('authorization-schemes', () => {
         await expect(authorizationSchemes.licenceScheme().authenticate(request, h)).resolves.toEqual('response')
       })
     })
-  })
-
-  const getMockLicenceRequest = (postcode = 'AB12 3CD') => ({
-    payload: {
-      licence: '123456',
-      postcode
-    },
-    app: {}
-  })
-
-  const getMockH = () => ({
-    continue: 'response'
   })
 })
