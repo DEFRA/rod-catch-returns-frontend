@@ -186,8 +186,8 @@
 {% else %}
     {% set suffix = "" %}
 {% endif %}
-{% set action = "Add" if add else "Edit" %}
-{% set title = action + " a small adult sea trout catch " + suffix %}
+{% set actionSmallCatch = "Add" if add else "Edit" %}
+{% set title = actionSmallCatch + " a small adult sea trout catch " + suffix %}
 
 {% block pageTitle %}{{ formatPageTitle(title) }}{% endblock %}
 

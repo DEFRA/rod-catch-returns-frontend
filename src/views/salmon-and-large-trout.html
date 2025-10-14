@@ -246,9 +246,8 @@
 {% else %}
     {% set suffix = "" %}
 {% endif %}
-
-{% set action = "Add" if add else "Edit" %}
-{% set title = action + " a salmon or large adult sea trout " + suffix %}
+{% set actionLargeCatch = "Add" if add else "Edit" %}
+{% set title = actionLargeCatch + " a salmon or large adult sea trout " + suffix %}
 
 {% block pageTitle %}{{ formatPageTitle(title) }}{% endblock %}
 
