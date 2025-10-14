@@ -1,8 +1,11 @@
 {% extends "layout.html" %}
 
 {% from "navigation.njk" import navigationHeaderBlock %}
+{% from "format-page-title.njk" import formatPageTitle %}
 
-{% block pageTitle %}Reports - GOV.UK{% endblock %}
+{% set title = "Reports" %}
+
+{% block pageTitle %}{{ formatPageTitle(title) }}{% endblock %}
 
 {% block header %}
   {% if fmt %}
@@ -15,7 +18,7 @@
 {% block content %}
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
-        <h1 class="govuk-heading-l">Reports</h1>
+        <h1 class="govuk-heading-l">{{ title }}</h1>
         <ul class="download-list">
         {% for report in reports %}
             <li  class="govuk-!-margin-bottom-9">

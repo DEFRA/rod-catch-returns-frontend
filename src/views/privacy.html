@@ -1,7 +1,10 @@
 {% extends "layout.html" %}
 {% from "back-link/macro.njk" import govukBackLink %}
+{% from "format-page-title.njk" import formatPageTitle %}
 
-{% block pageTitle %}Privacy - GOV.UK{% endblock %}
+{% set title ="Privacy Notice: How we use your personal information" %}
+
+{% block pageTitle %}{{ formatPageTitle(title) }}{% endblock %}
 
 {% block beforeContent %}
 <div class="hide-if-js-disabled">
@@ -16,7 +19,7 @@
 {% block content %}
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
-        <h1 class="govuk-heading-l">Privacy Notice: How we use your personal information</h1>
+        <h1 class="govuk-heading-l">{{ title }}</h1>
 
         <p class="govuk-body-m">
             We are the Environment Agency and we run the rod catch returns service. We are the data controller for this service. A data controller determines how and why personal data (personal information) is processed.

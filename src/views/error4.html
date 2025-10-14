@@ -1,6 +1,9 @@
 {% extends "layout.html" %}
+{% from "format-page-title.njk" import formatPageTitle %}
 
-{% block pageTitle %}You request could not be processed - GOV.UK{% endblock %}
+{% set title ="You request could not be processed" %}
+
+{% block pageTitle %}{{ formatPageTitle(title) }}{% endblock %}
 
 {% block content %}
 <div class="govuk-grid-row">
