@@ -7,7 +7,7 @@
 {% from "select/macro.njk" import govukSelect %}
 {% from "navigation.njk" import navigationHeaderBlock %}
 {% from "label/macro.njk" import govukLabel %}
-{% from "format-page-title.njk" import formatPageTitle %}
+{% from "format-page-title.njk" import formatPageTitle, formatFishTitle %}
 
 {% block header %}
     {% if fmt %}
@@ -181,13 +181,7 @@
     {% endfor %}
 {% endif %}
 
-{% if rivers.length === 1 %}
-    {% set suffix = "caught on river " + rivers[0].name %}
-{% else %}
-    {% set suffix = "" %}
-{% endif %}
-{% set actionSmallCatch = "Add" if add else "Edit" %}
-{% set title = actionSmallCatch + " a small adult sea trout catch " + suffix %}
+{% set title = formatFishTitle(add, rivers, "a small adult sea trout catch") %}
 
 {% block pageTitle %}{{ formatPageTitle(title) }}{% endblock %}
 

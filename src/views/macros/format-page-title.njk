@@ -1,3 +1,14 @@
 {% macro formatPageTitle(title) %}
   {{ title }} - Report your salmon or sea trout catch - GOV.UK
 {% endmacro %}
+
+{% macro formatFishTitle(add, rivers, speciesDescription) %}
+  {% if rivers.length === 1 %}
+    {% set suffix = "caught on river " + rivers[0].name %}
+  {% else %}
+    {% set suffix = "" %}
+  {% endif %}
+
+  {% set action = "Add" if add else "Edit" %}
+  {{ action + " " + speciesDescription + " " + suffix }}
+{% endmacro %}
