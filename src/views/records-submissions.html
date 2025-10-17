@@ -3,10 +3,11 @@
 {% from "navigation.njk" import navigationHeaderBlock %}
 {% from "review.njk" import review %}
 {% from "back-link/macro.njk" import govukBackLink %}
+{% from "format-page-title.njk" import formatPageTitle %}
 
 {% set title =  "Catch returns for " + fullName + " in " + year %}
 
-{% block pageTitle %}Enter a licence number - GOV.UK{% endblock %}
+{% block pageTitle %}{{ formatPageTitle(title) }}{% endblock %}
 
 {% block beforeContent %}
 <div class="hide-if-js-disabled">

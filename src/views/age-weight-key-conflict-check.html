@@ -7,6 +7,7 @@
 {% from "fieldset/macro.njk" import govukFieldset %}
 {% from "radios/macro.njk" import govukRadios %}
 {% from "warning-text/macro.njk" import govukWarningText %}
+{% from "format-page-title.njk" import formatPageTitle %}
 
 {% block header %}
   {% if fmt %}
@@ -46,12 +47,15 @@
   }) }}
 {% endif %}
 
-{% block pageTitle %}Upload a Salmon age weight key - GOV.UK{% endblock %}
+{% set title ="An age weight key already exists for the river " + gate + " in " + year %}
+
+{% block pageTitle %}{{ formatPageTitle(title) }}{% endblock %}
 
 {% block content %}
 <div class="govuk-grid-row">
+  {{ this | dump }}
   <div class="govuk-grid-column-two-thirds">
-    <h1 class="govuk-heading-l">An age weight key already exists for the river {{ gate }} in {{ year }}</h1>
+    <h1 class="govuk-heading-l">{{ title }}</h1>
     <form method="post" enctype="multipart/form-data" action="#">
       {% if errors %}
         {{ govukErrorSummary({

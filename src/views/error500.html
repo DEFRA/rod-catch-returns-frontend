@@ -1,11 +1,14 @@
 {% extends "layout.html" %}
+{% from "format-page-title.njk" import formatPageTitle %}
 
-{% block pageTitle %}Sorry, there is a problem with the service - GOV.UK{% endblock %}
+{% set title ="Sorry, there is a problem with the service" %}
+
+{% block pageTitle %}{{ formatPageTitle(title) }}{% endblock %}
 
 {% block content %}
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-        <h1 class="govuk-heading-xl">Sorry, there is a problem with the service</h1>
+        <h1 class="govuk-heading-xl">{{ title }}</h1>
         <p class="govuk-body">Try again later. If you need help with your catch return, contact the Environment Agency helpline on <a href=\"tel:03708506506\">03708 506 506</a> (Monday to Friday 8am to 6pm).</p>
         {{ extra() }}
     </div>

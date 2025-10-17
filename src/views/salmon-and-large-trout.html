@@ -9,6 +9,7 @@
 {% from "error-message/macro.njk" import govukErrorMessage %}
 {% from "navigation.njk" import navigationHeaderBlock %}
 {% from "label/macro.njk" import govukLabel %}
+{% from "format-page-title.njk" import formatPageTitle, formatFishTitle %}
 {% from "checkboxes/macro.njk" import govukCheckboxes %}
 
 {% block header %}
@@ -240,19 +241,11 @@
     }) }}
 {% endset -%}
 
-{% block pageTitle %}{% if add %}Add{% else %}Edit{% endif %} a salmon or large adult sea trout {{ suffix }} - GOV.UK{% endblock %}
+{% set title = formatFishTitle(add, rivers, "a salmon or large adult sea trout") %}
 
-{% if rivers.length === 1 %}
-    {% set suffix = "caught on river " + rivers[0].name %}
-{% else %}
-    {% set suffix = "" %}
-{% endif %}
+{% block pageTitle %}{{ formatPageTitle(title) }}{% endblock %}
 
-{% if add %}
-    {% set leg = '<h1 class="govuk-heading-l">Add a salmon or large adult sea trout ' + suffix + '</h1>' %}
-{% else %}
-    {% set leg = '<h1 class="govuk-heading-l">Edit a salmon or large adult sea trout ' + suffix + '</h1>' %}
-{% endif %}
+{% set leg = '<h1 class="govuk-heading-l">' + title + '</h1>' %}
 
 {% block content %}
 <div class="govuk-grid-row">

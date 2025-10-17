@@ -6,6 +6,7 @@
 {% from "select/macro.njk" import govukSelect %}
 {% from "input/macro.njk" import govukInput %}
 {% from "navigation.njk" import navigationHeaderBlock %}
+{% from "format-page-title.njk" import formatPageTitle %}
 
 {% block header %}
     {% if fmt %}
@@ -15,7 +16,9 @@
     {% endif %}
 {% endblock %}
 
-{% block pageTitle %}{% if add %}Add{% else %}Edit{% endif %} a river where you fished - GOV.UK{% endblock %}
+{% set title ="Add a river where you fished in " + details.year if add else "Edit a river" %}
+
+{% block pageTitle %}{{ formatPageTitle(title) }}{% endblock %}
 
 {% set items = [] %}
 {% for river in rivers %}
@@ -80,11 +83,8 @@
     {% endfor %}
 {% endif %}
 
-{% if add %}
-    {% set leg = '<h1 class="govuk-heading-l">Add a river where you fished in ' + details.year + '</h1><p class="govuk-body-m">If you fished in more than one river, you can add another afterwards</p>' %}
-{% else %}
-    {% set leg = '<h1 class="govuk-heading-l">Edit a river</h1>' %}
-{% endif %}
+{% set extraText = '<p class="govuk-body-m">If you fished in more than one river, you can add another afterwards</p>' if add else '' %}
+{% set leg = '<h1 class="govuk-heading-l">' + title + '</h1>' + extraText %}
 
 
 {% block content %}

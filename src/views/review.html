@@ -4,6 +4,7 @@
 {% from "review.njk" import review %}
 {% from "warning-text/macro.njk" import govukWarningText %}
 {% from "navigation.njk" import navigationHeaderBlock %}
+{% from "format-page-title.njk" import formatPageTitle %}
 
 {% block header %}
     {% if fmt %}
@@ -19,7 +20,7 @@
     {% set title = "Your " + year + " catch return report" %}
 {% endif %}
 
-{% block pageTitle %}{{ title }} - GOV.UK{% endblock %}
+{% block pageTitle %}{{ formatPageTitle(title) }}{% endblock %}
 
 {% block content %}
 <div class="govuk-grid-row">

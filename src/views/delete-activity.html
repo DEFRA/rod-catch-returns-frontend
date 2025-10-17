@@ -3,8 +3,11 @@
 {% from "fieldset/macro.njk" import govukFieldset %}
 {% from "button/macro.njk" import govukButton %}
 {% from "inset-text/macro.njk" import govukInsetText %}
+{% from "format-page-title.njk" import formatPageTitle %}
 
-{% block pageTitle %}Do you want to delete river {{ river.name }}? - GOV.UK{% endblock %}
+{% set title = "Do you want to delete river " + river.name + " from your " + details.year + " catch return?" %}
+
+{% block pageTitle %}{{ formatPageTitle(title) }}{% endblock %}
 
 {% block content %}
 <div class="govuk-grid-row">
@@ -13,7 +16,7 @@
 
             {% call govukFieldset({
                 legend: {
-                    html: '<span class="govuk-heading-l">Do you want to delete river ' + river.name + ' from your ' + details.year + ' catch return?</span><p class="govuk-body-l">Deleting a river will also delete all the fish added to it.</p>',
+                    html: '<span class="govuk-heading-l">' + title + '</span><p class="govuk-body-l">Deleting a river will also delete all the fish added to it.</p>',
                     isPageHeading: true,
                     classes: "govuk-heading-l"
                 }

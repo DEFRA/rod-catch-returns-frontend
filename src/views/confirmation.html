@@ -4,6 +4,7 @@
 {% from "review.njk" import review %}
 {% from "navigation.njk" import navigationHeaderBlock %}
 {% from "button/macro.njk" import govukButton %}
+{% from "format-page-title.njk" import formatPageTitle %}
 
 {% block header %}
     {% if fmt %}
@@ -13,15 +14,15 @@
     {% endif %}
 {% endblock %}
 
-{% set title = "Catch return complete" %}
-{% block pageTitle %}{{ title }} - GOV.UK{% endblock %}
+{% set title = year + " catch return complete"%}
+{% block pageTitle %}{{ formatPageTitle(title) }}{% endblock %}
 
 {% block content %}
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-full no-print-area">
 
         {{ govukPanel({
-            titleText: year + " catch return complete"
+            titleText: title
         }) }}
 
         <p class="govuk-body-m govuk-!-margin-top-7">Thank you for completing your salmon and sea trout catch return.</p>

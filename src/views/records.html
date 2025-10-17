@@ -4,8 +4,11 @@
 {% from "input/macro.njk" import govukInput %}
 {% from "button/macro.njk" import govukButton %}
 {% from "error-summary/macro.njk" import govukErrorSummary %}
+{% from "format-page-title.njk" import formatPageTitle %}
 
-{% block pageTitle %}Enter a licence number - GOV.UK{% endblock %}
+{% set title = "Enter a licence number" %}
+
+{% block pageTitle %}{{ formatPageTitle(title) }}{% endblock %}
 
 {% set licenceNumberErrorMessage = null %}
 
@@ -36,7 +39,7 @@
 
         {{ govukInput({
             label: {
-                text: "Enter a licence number",
+                text: title,
                 classes: "govuk-label--l"
             },
             id: "licenceNumber",
