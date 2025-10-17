@@ -4,20 +4,8 @@
  * This file contains the handlers for the authorization strategies used by hapi
  */
 
-const Joi = require('@hapi/joi')
 const LicenceApi = require('../api/licence')
-
-// Joi schema to validate a licence payload
-const licenceSchema = Joi.object().keys({
-  licence: Joi.string().alphanum().min(6).max(6).required(),
-  postcode: Joi.string().required()
-})
-
-const ukPostcodeRegex = /^([A-PR-UWYZ]\d{1,2}[A-HJKPSTUW]?|[A-PR-UWYZ][A-HK-Y]\d{1,2}[ABEHMNPRVWXY]?)\s{0,6}(\d[A-Z]{2})$/i
-
-const parsePostcode = (postcode) => {
-  return postcode.trim().replace(ukPostcodeRegex, '$1 $2').toUpperCase()
-}
+const { parsePostcode, parseLicence, licenceSchema } = require('./licence-utils')
 
 module.exports = {
   licenceScheme: () => {
@@ -32,7 +20,7 @@ module.exports = {
           return h.continue
         }
 
-        const licence = request.payload.licence.replace(/\s+/g, '').toUpperCase()
+        const licence = parseLicence(request.payload.licence)
         const postcode = parsePostcode(request.payload.postcode)
 
         const result = licenceSchema.validate({ licence, postcode }, { allowUnknown: true, abortEarly: true })
