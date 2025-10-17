@@ -14,6 +14,7 @@ jest.mock('request-etag', () => {
   })
 })
 jest.mock('defra-logging-facade')
+jest.mock('fs')
 
 describe('client', () => {
   const OLD_ENV = process.env
@@ -247,7 +248,7 @@ describe('client', () => {
   })
 
   describe('requestAssociationChange', () => {
-    it('should call Request() with the correct parameters', async () => {
+    it('should call ETagRequest with the correct parameters', async () => {
       const payload = 'entity1'
 
       await Client.requestAssociationChange('12345', 'link-path', payload)
@@ -268,7 +269,7 @@ describe('client', () => {
       )
     })
 
-    it('should propagate errors from Request()', async () => {
+    it('should propagate errors from ETagRequest', async () => {
       const response = { statusCode: 500, statusMessage: 'association change failed' }
 
       mockRequest.mockImplementationOnce((options, callback) => {
@@ -282,7 +283,7 @@ describe('client', () => {
   })
 
   describe('requestFromLink', () => {
-    it('should call Request() with the GET method and return its result', async () => {
+    it('should call ETagRequest with the GET method and return its result', async () => {
       await Client.requestFromLink('12345', 'link/to/resource')
 
       expect(mockRequest).toHaveBeenCalledWith(
@@ -300,7 +301,7 @@ describe('client', () => {
       )
     })
 
-    it('should propagate errors from request()', async () => {
+    it('should propagate errors from Request()', async () => {
       const response = { statusCode: 500, statusMessage: 'failed to fetch link' }
 
       mockRequest.mockImplementationOnce((options, callback) => {
@@ -309,6 +310,40 @@ describe('client', () => {
 
       await expect(
         Client.requestFromLink('12345', 'link/to/resource')
+      ).rejects.toThrow('failed to fetch link')
+    })
+  })
+
+  describe('requestFileUpload', () => {
+    it('should call ETagRequest with PUT and the correct content type', async () => {
+      const payload = Buffer.from('file content')
+
+      await Client.requestFileUpload('12345', 'upload/123', payload)
+
+      expect(mockRequest).toHaveBeenCalledWith(
+        {
+          headers: {
+            'Content-Type': 'text/csv',
+            token: '12345'
+          },
+          json: false,
+          method: 'POST',
+          timeout: expect.any(Number),
+          uri: expect.stringContaining('upload/123')
+        },
+        expect.any(Function)
+      )
+    })
+
+    it('should propagate errors from ETagRequest', async () => {
+      const response = { statusCode: 500, statusMessage: 'failed to fetch link' }
+
+      mockRequest.mockImplementationOnce((options, callback) => {
+        callback(null, response, JSON.stringify({}))
+      })
+
+      await expect(
+        Client.requestFileUpload('12345', 'upload/123', Buffer.from('file content'))
       ).rejects.toThrow('failed to fetch link')
     })
   })
