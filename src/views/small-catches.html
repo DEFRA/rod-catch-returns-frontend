@@ -186,7 +186,7 @@
 {% block pageTitle %}{{ formatPageTitle(title) }}{% endblock %}
 
 {% set extraText = '<p class="govuk-body-l">Add details of small adult sea trout (1lb and under) catches by month</p>' if add else '' %}
-{% set leg = '<h1 class="govuk-heading-l">' + title + '</h1>' + extraText %}
+{% set leg = '<span class="govuk-heading-l">' + title + '</span>' + extraText %}
 
 {% block content %}
 <div class="govuk-grid-row">
