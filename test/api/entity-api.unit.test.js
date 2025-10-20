@@ -3,25 +3,25 @@ const Client = require('../../src/api/client')
 
 jest.mock('../../src/api/client')
 
+const getMockRequest = (getValue = {
+  authorization: {
+    token: 'test-token',
+    name: 'Test User'
+  }
+}) => ({
+  cache: jest.fn().mockReturnValue({
+    get: jest.fn().mockResolvedValue(getValue)
+  })
+})
+
 describe('entity-api', () => {
   describe('getAuth', () => {
-    const getMockRequest = (getValue) => ({
-      cache: jest.fn().mockReturnValue({
-        get: jest.fn().mockResolvedValue(getValue)
-      })
-    })
-
     test('should return the authorization token when it exists in cache', async () => {
-      const mockRequest = getMockRequest({
-        authorization: {
-          token: 'test-auth-token',
-          name: 'test-user'
-        }
-      })
+      const mockRequest = getMockRequest()
 
       const result = await EntityApi.getAuth(mockRequest)
 
-      expect(result).toBe('test-auth-token')
+      expect(result).toBe('test-token')
     })
 
     test('should return null when authorization does not exist in cache', async () => {
@@ -50,14 +50,7 @@ describe('entity-api', () => {
 
   describe('add', () => {
     it('should call Client.request with POST and set id if no errors', async () => {
-      const mockToken = 'test-token'
-      const mockRequest = {
-        cache: jest.fn().mockReturnValue({
-          get: jest.fn().mockResolvedValue({
-            authorization: { token: mockToken, name: 'Test User' }
-          })
-        })
-      }
+      const mockRequest = getMockRequest()
       const entityApi = new EntityApi('submissions')
       const mockResponse = {
         _links: { self: { href: 'http://localhost:5000/api/submissions/1' } }
@@ -67,7 +60,7 @@ describe('entity-api', () => {
       const result = await entityApi.add(mockRequest, { name: 'Test' })
 
       expect(Client.request).toHaveBeenCalledWith(
-        mockToken,
+        'test-token',
         'POST',
         'submissions',
         null,
@@ -75,23 +68,49 @@ describe('entity-api', () => {
       )
       expect(result.id).toBe('submissions/1')
     })
+
+    it('should return result with errors, if there are any errors', async () => {
+      const entityApi = new EntityApi('submissions')
+      const mockResponse = { errors: ['Bad Request'] }
+      const mockRequest = getMockRequest()
+      Client.request.mockResolvedValue(mockResponse)
+
+      const result = await entityApi.add(mockRequest, { invalid: true })
+
+      expect(result).toEqual(mockResponse)
+    })
   })
 
-  it('should return result with errors, if there are any errors', async () => {
-    const mockToken = 'test-token'
-    const entityApi = new EntityApi('submissions')
-    const mockResponse = { errors: ['Bad Request'] }
-    const mockRequest = {
-      cache: jest.fn().mockReturnValue({
-        get: jest.fn().mockResolvedValue({
-          authorization: { token: mockToken, name: 'Test User' }
-        })
-      })
-    }
-    Client.request.mockResolvedValue(mockResponse)
+  describe('change', () => {
+    it('should call Client.request with PATCH and set id if no errors', async () => {
+      const mockRequest = getMockRequest()
+      const entityApi = new EntityApi('submissions')
+      const mockResponse = {
+        _links: { self: { href: 'http://localhost:5000/api/submissions/1' } }
+      }
+      Client.request.mockResolvedValue(mockResponse)
 
-    const result = await entityApi.add(mockRequest, { invalid: true })
+      const result = await entityApi.change(mockRequest, 'submissions/1', { name: 'Test' })
 
-    expect(result).toEqual(mockResponse)
+      expect(Client.request).toHaveBeenCalledWith(
+        'test-token',
+        'PATCH',
+        'submissions/1',
+        null,
+        { name: 'Test' }
+      )
+      expect(result.id).toBe('submissions/1')
+    })
+
+    it('should return result with errors, if there are any errors', async () => {
+      const entityApi = new EntityApi('submissions')
+      const mockResponse = { errors: ['Bad Request'] }
+      const mockRequest = getMockRequest()
+      Client.request.mockResolvedValue(mockResponse)
+
+      const result = await entityApi.change(mockRequest, { invalid: true })
+
+      expect(result).toEqual(mockResponse)
+    })
   })
 })
