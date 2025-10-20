@@ -2,6 +2,7 @@
 ​
 {% from "navigation.njk" import navigationHeaderBlock %}
 {% from "panel/macro.njk" import govukPanel %}
+{% from "format-page-title.njk" import formatPageTitle %}
 ​
 {% block header %}
   {% if fmt %}
@@ -11,13 +12,15 @@
   {% endif %}
 {% endblock %}
 ​
-{% block pageTitle %}Your age weight key upload has completed - GOV.UK{% endblock %}
+{% set title ="Upload complete" %}
+
+{% block pageTitle %}{{ formatPageTitle(title) }}{% endblock %}
 ​
 {% block content %}
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-full">
     {{ govukPanel({
-      titleText: "Upload complete",
+      titleText: title,
       html: "<strong>" + ageWeightKey.filename + "</strong><div class='govuk-!-padding-bottom-4'></div><strong>" + ageWeightKey.gateName + ", " + ageWeightKey.year + "</strong>",
       classes: "govuk-!-margin-bottom-6"
     }) }}

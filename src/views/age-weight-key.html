@@ -9,6 +9,7 @@
 {% from "file-upload/macro.njk" import govukFileUpload %}
 {% from "input/macro.njk" import govukInput %}
 {% from "radios/macro.njk" import govukRadios %}
+{% from "format-page-title.njk" import formatPageTitle %}
 
 {% block header %}
   {% if fmt %}
@@ -117,11 +118,13 @@
   {% endfor %}
 {% endif %}
 
-{% block pageTitle %}Upload a Salmon age weight key - GOV.UK{% endblock %}
+{% set title ="Upload a Salmon age weight key" %}
+
+{% block pageTitle %}{{ formatPageTitle(title) }}{% endblock %}
 {% block content %}
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
-    <h1 class="govuk-heading-l">Upload a Salmon age weight key</h1>
+    <h1 class="govuk-heading-l">{{ title }}</h1>
     <form method="post" enctype="multipart/form-data" action="#">
       {% if errors %}
         {{ govukErrorSummary({

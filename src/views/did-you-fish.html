@@ -5,6 +5,7 @@
 {% from "radios/macro.njk" import govukRadios %}
 {% from "error-summary/macro.njk" import govukErrorSummary %}
 {% from "navigation.njk" import navigationHeaderBlock %}
+{% from "format-page-title.njk" import formatPageTitle %}
 
 {% block header %}
     {% if fmt %}
@@ -16,7 +17,7 @@
 
 {% set title = "Did you fish for salmon or sea trout in " + details.year + "?" %}
 
-{% block pageTitle %}{{ title }} - GOV.UK{% endblock %}
+{% block pageTitle %}{{ formatPageTitle(title) }}{% endblock %}
 
 {% set errorList = [] %}
 

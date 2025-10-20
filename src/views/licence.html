@@ -7,8 +7,11 @@
 {% from "details/macro.njk" import govukDetails %}
 {% from "error-summary/macro.njk" import govukErrorSummary %}
 {% from "navigation.njk" import navigationHeaderBlock %}
+{% from "format-page-title.njk" import formatPageTitle %}
 
-{% block pageTitle %}Enter your licence details and postcode - GOV.UK{% endblock %}
+{% set title ="Enter your licence details and postcode" %}
+
+{% block pageTitle %}{{ formatPageTitle(title) }}{% endblock %}
 
 {% set licenceErrorMessage = null %}
 {% set postcodeErrorMessage = null %}
@@ -42,7 +45,7 @@
 
             {% call govukFieldset({
                 legend: {
-                    text: "Enter your licence details and postcode",
+                    text: title,
                     classes: "govuk-fieldset__legend--l govuk-!-margin-bottom-6",
                     isPageHeading: true
                 }
