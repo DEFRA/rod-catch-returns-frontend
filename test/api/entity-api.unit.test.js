@@ -113,4 +113,117 @@ describe('entity-api', () => {
       expect(result).toEqual(mockResponse)
     })
   })
+
+  describe('changeAssoc', () => {
+    it('should call Client.requestAssociationChange with token, key and payload', async () => {
+      const entityApi = new EntityApi('submissions')
+      Client.requestAssociationChange.mockResolvedValue('assoc-ok')
+      const result = await entityApi.changeAssoc(getMockRequest(), 'submissions/3', { key: 'val' })
+
+      expect(Client.requestAssociationChange).toHaveBeenCalledWith('test-token', 'submissions/3', { key: 'val' })
+      expect(result).toBe('assoc-ok')
+    })
+  })
+
+  describe('list', () => {
+    it('should return mapped list of entities', async () => {
+      const entityApi = new EntityApi('submissions')
+      const mockResponse = {
+        _embedded: {
+          submissions: [
+            { name: 'A', _links: { self: { href: 'http://localhost/api/submissions/1' } } },
+            { name: 'B', _links: { self: { href: 'http://localhost/api/submissions/2' } } }
+          ]
+        }
+      }
+      Client.request.mockResolvedValue(mockResponse)
+
+      const result = await entityApi.list(getMockRequest())
+
+      expect(Client.request).toHaveBeenCalledWith('test-token', 'GET', 'submissions')
+      expect(result).toEqual([
+        { id: 'submissions/1', name: 'A' },
+        { id: 'submissions/2', name: 'B' }
+      ])
+    })
+  })
+
+  describe('getFromLink', () => {
+    it('should return a mapped list when _embedded is present', async () => {
+      const entityApi = new EntityApi('submissions')
+      const mockResponse = {
+        _embedded: {
+          submissions: [
+            { name: 'A', _links: { self: { href: 'http://localhost/api/submissions/1' } } }
+          ]
+        }
+      }
+      Client.requestFromLink.mockResolvedValue(mockResponse)
+
+      const result = await entityApi.getFromLink(getMockRequest(), 'link')
+      expect(Client.requestFromLink).toHaveBeenCalledWith('test-token', 'link')
+      expect(result).toEqual([{ id: 'submissions/1', name: 'A' }])
+    })
+
+    it('should return single entity with id when _embedded is missing', async () => {
+      const entityApi = new EntityApi('submissions')
+      const mockResponse = {
+        name: 'Solo',
+        _links: { self: { href: 'http://localhost/api/submissions/10' } }
+      }
+      Client.requestFromLink.mockResolvedValue(mockResponse)
+
+      const result = await entityApi.getFromLink(getMockRequest(), 'link')
+      expect(result).toEqual({
+        name: 'Solo',
+        _links: { self: { href: 'http://localhost/api/submissions/10' } },
+        id: 'submissions/10'
+      })
+    })
+  })
+
+  describe('getAllChildren', () => {
+    it('should aggregate child entities from parentObjects', async () => {
+      const entityApi = new EntityApi('submissions')
+      const parents = [
+        { _links: { child: { href: 'child1' } } },
+        { _links: { child: { href: 'child2' } } }
+      ]
+
+      jest.spyOn(entityApi, 'getFromLink').mockResolvedValueOnce([{ id: 'c1' }]).mockResolvedValueOnce([{ id: 'c2' }])
+
+      const result = await entityApi.getAllChildren(getMockRequest(), parents, '_links.child.href')
+      expect(entityApi.getFromLink).toHaveBeenCalledTimes(2)
+      expect(result).toEqual([{ id: 'c1' }, { id: 'c2' }])
+    })
+
+    it('should return empty array if no parentObjects', async () => {
+      const entityApi = new EntityApi('submissions')
+      const result = await entityApi.getAllChildren(getMockRequest(), [], '_links.child.href')
+      expect(result).toEqual([])
+    })
+  })
+
+  describe('getById', () => {
+    it('should call Client.request with GET and set id', async () => {
+      const entityApi = new EntityApi('submissions')
+      const mockResponse = {
+        name: 'Submission',
+        _links: { self: { href: 'http://localhost/api/submissions/9' } }
+      }
+      Client.request.mockResolvedValue(mockResponse)
+
+      const result = await entityApi.getById(getMockRequest(), 'submissions/9')
+
+      expect(Client.request).toHaveBeenCalledWith('test-token', 'GET', 'submissions/9', null, null, false)
+      expect(result.id).toBe('submissions/9')
+    })
+
+    it('should return null if no result', async () => {
+      const entityApi = new EntityApi('submissions')
+      Client.request.mockResolvedValue(null)
+      const result = await entityApi.getById(getMockRequest(), 'missing')
+      expect(result).toBeNull()
+    })
+  })
 })
