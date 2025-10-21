@@ -5,6 +5,7 @@
 {% from "button/macro.njk" import govukButton %}
 {% from "error-summary/macro.njk" import govukErrorSummary %}
 {% from "navigation.njk" import navigationHeaderBlock %}
+{% from "format-page-title.njk" import formatPageTitle %}
 
 {% block header %}
     {% if fmt %}
@@ -14,7 +15,7 @@
     {% endif %}
 {% endblock %}
 
-{% block pageTitle %}Which season does your catch return cover? - GOV.UK{% endblock %}
+{% block pageTitle %}{{ formatPageTitle('Which season does your catch return cover?') }}{% endblock %}
 
 {% if errors %}
     {% set errorMessage = { text: "Tell us which season you are submitting a catch return for" } %}

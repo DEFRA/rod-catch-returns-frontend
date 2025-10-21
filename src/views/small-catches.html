@@ -6,6 +6,7 @@
 {% from "error-summary/macro.njk" import govukErrorSummary %}
 {% from "select/macro.njk" import govukSelect %}
 {% from "navigation.njk" import navigationHeaderBlock %}
+{% from "format-page-title.njk" import formatPageTitle, formatFishTitle %}
 {% from "label/macro.njk" import govukLabel %}
 
 {% block header %}
@@ -180,19 +181,9 @@
     {% endfor %}
 {% endif %}
 
-{% block pageTitle %}{% if add %}Add{% else %}Edit{% endif %} a small adult sea trout catch {{ suffix }} - GOV.UK{% endblock %}
+{% set title = formatFishTitle(add, rivers, "a small adult sea trout catch") %}
 
-{% if rivers.length === 1 %}
-    {% set suffix = "caught on river " + rivers[0].name %}
-{% else %}
-    {% set suffix = "" %}
-{% endif %}
-
-{% if add %}
-    {% set leg = '<span class="govuk-heading-l">Add a small adult sea trout catch ' + suffix + '</span><p class="govuk-body-l">Add details of small adult sea trout (1lb and under) catches by month</p>' %}
-{% else %}
-    {% set leg = '<span class="govuk-heading-l">Edit a small adult sea trout catch ' + suffix + '</span>' %}
-{% endif %}
+{% block pageTitle %}{{ formatPageTitle(title) }}{% endblock %}
 
 {% block content %}
 <div class="govuk-grid-row">
@@ -207,11 +198,15 @@
 
             {% call govukFieldset({
                 legend: {
-                    html: leg,
-                    classes: "govuk-heading-l",
+                    classes: "govuk-fieldset__legend--l",
+                    text: title,
                     isPageHeading: true
                 }
             }) %}
+
+            {% if add %}
+                <p class="govuk-body-l">Add details of small adult sea trout (1lb and under) catches by month</p>
+            {% endif %}
 
                 {% if rivers.length > 1 %}
                     {{ govukSelect({

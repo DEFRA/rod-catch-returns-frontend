@@ -2,10 +2,11 @@
 
 {% from "navigation.njk" import navigationHeaderBlock %}
 {% from "back-link/macro.njk" import govukBackLink %}
+{% from "format-page-title.njk" import formatPageTitle %}
 
 {% set title = "Catch returns for " + fullName %}
 
-{% block pageTitle %}{{title}} - GOV.UK{% endblock %}
+{% block pageTitle %}{{ formatPageTitle(title) }}{% endblock %}
 
 {% block header %}
     {% if fmt %}

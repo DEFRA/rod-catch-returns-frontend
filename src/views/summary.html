@@ -6,6 +6,7 @@
 {% from "checkboxes/macro.njk" import govukCheckboxes %}
 {% from "navigation.njk" import navigationHeaderBlock %}
 {% from "govuk-table-grouped.njk" import govukTableGrouped %}
+{% from "format-page-title.njk" import formatPageTitle %}
 
 {% block header %}
     {% if fmt %}
@@ -15,7 +16,9 @@
     {% endif %}
 {% endblock %}
 
-{% block pageTitle %}Your {{ year }} catch return - GOV.UK{% endblock %}
+{% set title = "Your " + year + " catch return" %}
+
+{% block pageTitle %}{{ formatPageTitle(title) }}{% endblock %}
 
 {% set riverRows = [] %}
 {% set salmonAndLargeTroutItems = [] %}
@@ -215,7 +218,7 @@
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
         <form method="post" action="#">
-            <h1 class="govuk-heading-l">Your {{ year }} catch return</h1>
+            <h1 class="govuk-heading-l">{{ title }}</h1>
 
             {{ govukTable({
                 classes: "rcr-responsive-summary-table",
