@@ -26,8 +26,9 @@ module.exports = class AgeWeightKeyConflictCheck extends BaseHandler {
    */
   async doGet (request, h) {
     const cacheContext = await this.getCacheContext(request)
-    const gate = cacheContext.gate
-    const year = cacheContext.year
+
+    const gate = cacheContext.ageWeightKey.gateName
+    const year = cacheContext.ageWeightKey.year
 
     return this.readCacheAndDisplayView(request, h, { gate, year })
   }

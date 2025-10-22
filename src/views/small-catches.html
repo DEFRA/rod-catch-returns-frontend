@@ -185,9 +185,6 @@
 
 {% block pageTitle %}{{ formatPageTitle(title) }}{% endblock %}
 
-{% set extraText = '<p class="govuk-body-l">Add details of small adult sea trout (1lb and under) catches by month</p>' if add else '' %}
-{% set leg = '<h1 class="govuk-heading-l">' + title + '</h1>' + extraText %}
-
 {% block content %}
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
@@ -201,11 +198,15 @@
 
             {% call govukFieldset({
                 legend: {
-                    html: leg,
-                    classes: "govuk-heading-l",
+                    classes: "govuk-fieldset__legend--l",
+                    text: title,
                     isPageHeading: true
                 }
             }) %}
+
+            {% if add %}
+                <p class="govuk-body-l">Add details of small adult sea trout (1lb and under) catches by month</p>
+            {% endif %}
 
                 {% if rivers.length > 1 %}
                     {{ govukSelect({

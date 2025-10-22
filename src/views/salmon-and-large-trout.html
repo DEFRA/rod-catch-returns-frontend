@@ -245,8 +245,6 @@
 
 {% block pageTitle %}{{ formatPageTitle(title) }}{% endblock %}
 
-{% set leg = '<h1 class="govuk-heading-l">' + title + '</h1>' %}
-
 {% block content %}
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
@@ -259,8 +257,11 @@
             {% endif %}
 
             {% call govukFieldset({
-                legend: { html: leg },
-                isPageHeading: true
+                legend: {
+                    text: title,
+                    isPageHeading: true,
+                    classes: "govuk-fieldset__legend--l"
+                }
             }) %}
 
                 {% if rivers.length > 1 %}
