@@ -226,4 +226,60 @@ describe('entity-api', () => {
       expect(result).toBeNull()
     })
   })
+
+  describe('deleteById', () => {
+    it('should call Client.request with DELETE', async () => {
+      const entityApi = new EntityApi('submissions')
+      Client.request.mockResolvedValue()
+      await entityApi.deleteById(getMockRequest(), 'submissions/5')
+      expect(Client.request).toHaveBeenCalledWith('test-token', 'DELETE', 'submissions/5', null, null, true)
+    })
+  })
+
+  describe('searchFunction', () => {
+    it('should return mapped results when _embedded is present', async () => {
+      const entityApi = new EntityApi('submissions')
+      const mockResponse = {
+        _embedded: {
+          submissions: [
+            { name: 'X', _links: { self: { href: 'http://localhost/api/submissions/11' } } }
+          ]
+        }
+      }
+      Client.request.mockResolvedValue(mockResponse)
+
+      const result = await entityApi.searchFunction(getMockRequest(), 'byName', { name: 'X' })
+      expect(result).toEqual([{ id: 'submissions/11', name: 'X' }])
+    })
+
+    it('should return single result with id when no _embedded', async () => {
+      const entityApi = new EntityApi('submissions')
+      const mockResponse = {
+        name: 'Y',
+        _links: { self: { href: 'http://localhost/api/submissions/12' } }
+      }
+      Client.request.mockResolvedValue(mockResponse)
+
+      const result = await entityApi.searchFunction(getMockRequest(), 'byId', { id: '12' })
+      expect(result.id).toBe('submissions/12')
+    })
+
+    it('should return null when result is null', async () => {
+      const entityApi = new EntityApi('submissions')
+      Client.request.mockResolvedValue(null)
+      const result = await entityApi.searchFunction(getMockRequest(), 'byMissing', { name: 'none' })
+      expect(result).toBeNull()
+    })
+  })
+
+  describe('doMap', () => {
+    it('should call the mapper function with request and object', async () => {
+      const mapper = jest.fn().mockResolvedValue('mapped')
+      const entityApi = new EntityApi('submissions', mapper)
+      const request = getMockRequest()
+      const result = await entityApi.doMap(request, { test: true })
+      expect(mapper).toHaveBeenCalledWith(request, { test: true })
+      expect(result).toBe('mapped')
+    })
+  })
 })
