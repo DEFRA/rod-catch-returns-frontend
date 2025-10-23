@@ -7,6 +7,7 @@ describe('licence', () => {
   beforeEach(() => {
     jest.clearAllMocks()
   })
+
   describe('getContactFromLicenceKey', () => {
     it('should call Client.request with correct parameters', async () => {
       const mockResponse = {
