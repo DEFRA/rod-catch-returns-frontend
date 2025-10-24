@@ -6,7 +6,7 @@ const EntityApi = require('./cached-entity-api')
  * Rivers entity handler
  *
  */
-module.exports = class SpeciesApi extends EntityApi {
+module.exports = class RiversApi extends EntityApi {
   constructor () {
     super('rivers', async (request, e) => {
       return {

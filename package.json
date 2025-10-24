@@ -90,7 +90,8 @@
     "collectCoverage": true,
     "coverageReporters": [
       "lcov",
-      "text"
+      "text",
+      "html"
     ],
     "setupFiles": [
       "<rootDir>/test/setEnvVars.js"
