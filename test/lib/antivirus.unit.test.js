@@ -1,10 +1,9 @@
 const NodeClam = require('clamscan')
-const { logger } = require('defra-logging-facade')
-
 const antivirus = require('../../src/lib/antivirus')
+const logger = require('../../src/lib/logger-utils')
 
 jest.mock('clamscan')
-jest.mock('defra-logging-facade')
+jest.mock('../../src/lib/logger-utils')
 
 describe('antivirus', () => {
   beforeEach(() => {

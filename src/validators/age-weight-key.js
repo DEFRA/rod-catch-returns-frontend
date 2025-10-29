@@ -1,6 +1,6 @@
 'use strict'
 
-const { logger } = require('defra-logging-facade')
+const logger = require('../lib/logger-utils')
 const moment = require('moment')
 
 const AgeWeightKeyApi = require('../api/age-weight-key')

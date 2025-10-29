@@ -3,7 +3,7 @@
 const LicenceApi = require('../api/licence')
 const ResponseError = require('../handlers/response-error')
 const { parsePostcode, parseLicence, licenceSchema } = require('../lib/licence-utils')
-const { logger } = require('defra-logging-facade')
+const logger = require('../lib/logger-utils')
 
 /**
  * Validate the licence number and postcode

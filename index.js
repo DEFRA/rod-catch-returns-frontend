@@ -10,7 +10,6 @@ require('dotenv').config()
 const Glue = require('@hapi/glue')
 const Nunjucks = require('nunjucks')
 const Uuid = require('uuid')
-const { logger } = require('defra-logging-facade')
 const HapiGapi = require('@defra/hapi-gapi')
 const figlet = require('figlet')
 
@@ -21,7 +20,8 @@ const CacheDecorator = require('./src/lib/cache-decorator')
 const { checkTempDir } = require('./src/lib/misc')
 const manFishing = require('./manFishing')
 const { sessionIdProducer } = require('./src/lib/analytics')
-const { logRequest, logResponse } = require('./src/lib/logger-utils')
+const logger = require('./src/lib/logger-utils')
+const AirbrakeClient = require('./src/lib/airbrake')
 
 const manifest = {
   // Configure Hapi server and server-caching subsystem
@@ -207,6 +207,7 @@ const options = {
 };
 
 (async () => {
+  const airbrake = new AirbrakeClient()
   try {
     /**
      * Test that the environment is set up correctly
@@ -216,6 +217,8 @@ const options = {
         throw new Error('Schema validation error: ' + err.message)
       }
     })
+
+    logger.error = airbrake.attachAirbrakeToDebugLogger(logger.error)
 
     const server = await Glue.compose(manifest, options)
     /*
@@ -356,9 +359,9 @@ const options = {
       }
     })
 
-    server.ext('onPreHandler', logRequest)
+    server.ext('onPreHandler', logger.logRequest)
 
-    server.ext('onPreResponse', logResponse)
+    server.ext('onPreResponse', logger.logResponse)
 
     // Register an onPreResponse handler so that errors can be properly trapped.
     server.ext('onPreResponse', (request, h) => {
@@ -371,7 +374,7 @@ const options = {
           return h.view('error4', { status: statusCode }).code(statusCode)
         } else {
           // 5xx Server failure, log an error to airbrake/errbit - the response object is actually an instanceof Error
-          logger.serverError(request.response, request)
+          logger.error(request.response, request)
           // Return a 500 to the client (avoid propagating other 5xx codes to the client)
           return h.view('error500').code(500)
         }
@@ -410,6 +413,7 @@ const options = {
     })
   } catch (err) {
     logger.error(err)
+    await airbrake.flush()
     process.exit(1)
   }
 })()

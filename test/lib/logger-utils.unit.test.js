@@ -1,15 +1,63 @@
+const mockInfo = jest.fn()
+const mockError = jest.fn()
+const mockDebug = jest.fn()
+const mockEnable = jest.fn()
+
+jest.mock('debug', () => {
+  const mockCreateDebug = jest.fn((namespace) => {
+    switch (namespace) {
+      case 'rcr-frontend:info':
+        return mockInfo
+      case 'rcr-frontend:error':
+        return mockError
+      case 'rcr-frontend:debug':
+        return mockDebug
+      default:
+        return jest.fn()
+    }
+  })
+  mockCreateDebug.inspectOpts = {}
+  mockCreateDebug.enable = mockEnable
+
+  return mockCreateDebug
+})
+
 const { logRequest, logResponse } = require('../../src/lib/logger-utils')
 const { getMockH } = require('../test-utils/server-test-utils')
-const { logger } = require('defra-logging-facade')
-
-jest.mock('defra-logging-facade')
 
 describe('logger-utils.unit', () => {
-  describe('logRequest', () => {
-    beforeEach(() => {
-      jest.clearAllMocks()
+  const OLD_ENV = process.env
+
+  beforeEach(() => {
+    jest.resetModules()
+    process.env = { ...OLD_ENV }
+    jest.clearAllMocks()
+  })
+
+  afterEach(() => {
+    process.env = OLD_ENV
+  })
+
+  describe('default', () => {
+    it('should call createDebug.enable() with correct defaults if DEBUG is not set', () => {
+      delete process.env.DEBUG
+
+      // re-import the module (forces top-level execution again)
+      require('../../src/lib/logger-utils')
+
+      expect(mockEnable).toHaveBeenCalledWith('rcr-frontend:error,rcr-frontend:info')
     })
 
+    it('should not call createDebug.enable() if DEBUG is already set', () => {
+      process.env.DEBUG = 'some:value'
+
+      require('../../src/lib/logger-utils')
+
+      expect(mockEnable).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('logRequest', () => {
     const getMockRequest = (overrides = {}) => ({
       method: 'get',
       path: '/test',
@@ -19,7 +67,7 @@ describe('logger-utils.unit', () => {
     it('should log the request', () => {
       logRequest(getMockRequest(), getMockH())
 
-      expect(logger.info).toHaveBeenCalledWith('GET /test')
+      expect(mockInfo).toHaveBeenCalledWith('GET /test')
     })
 
     it('should log the request if it contains a body', () => {
@@ -31,7 +79,7 @@ describe('logger-utils.unit', () => {
       })
       logRequest(request, getMockH())
 
-      expect(logger.info).toHaveBeenCalledWith('POST /test - {"a":"b"}')
+      expect(mockInfo).toHaveBeenCalledWith('POST /test - {"a":"b"}')
     })
 
     it('should return h.continue', () => {
@@ -52,7 +100,7 @@ describe('logger-utils.unit', () => {
 
       logRequest(request, getMockH())
 
-      expect(logger.info).not.toHaveBeenCalled()
+      expect(mockInfo).not.toHaveBeenCalled()
     })
   })
 
@@ -73,7 +121,7 @@ describe('logger-utils.unit', () => {
     it('should log the response', () => {
       logResponse(getMockRequest(), getMockH())
 
-      expect(logger.info).toHaveBeenCalledWith('GET /test -> 200')
+      expect(mockInfo).toHaveBeenCalledWith('GET /test -> 200')
     })
 
     it('should return h.continue', () => {
@@ -94,7 +142,7 @@ describe('logger-utils.unit', () => {
 
       logResponse(request, getMockH())
 
-      expect(logger.info).not.toHaveBeenCalled()
+      expect(mockInfo).not.toHaveBeenCalled()
     })
   })
 })

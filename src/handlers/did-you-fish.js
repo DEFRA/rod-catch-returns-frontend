@@ -11,7 +11,7 @@ const testLocked = require('./common').testLocked
 const submissionsApi = new SubmissionsApi()
 const activitiesApi = new ActivitiesApi()
 
-const { logger } = require('defra-logging-facade')
+const logger = require('../lib/logger-utils')
 
 module.exports = class DidYouFishHandler extends BaseHandler {
   constructor (...args) {

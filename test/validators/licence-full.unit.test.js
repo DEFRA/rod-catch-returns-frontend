@@ -1,10 +1,10 @@
-const { logger } = require('defra-logging-facade')
+const logger = require('../../src/lib/logger-utils')
 
 const licenceFullValidator = require('../../src/validators/licence-full')
 const LicenceApi = require('../../src/api/licence')
 const ResponseError = require('../../src/handlers/response-error')
 
-jest.mock('defra-logging-facade')
+jest.mock('../../src/lib/logger-utils')
 jest.mock('../../src/api/licence')
 
 describe('licence-full', () => {

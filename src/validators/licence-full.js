@@ -1,6 +1,6 @@
 'use strict'
 
-const { logger } = require('defra-logging-facade')
+const logger = require('../lib/logger-utils')
 
 const LicenceApi = require('../api/licence')
 const ResponseError = require('../handlers/response-error')

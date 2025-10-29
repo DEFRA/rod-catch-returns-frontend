@@ -7,7 +7,7 @@
  * The async preValidateFunction can be used to operate on the payload before
  * validation if exists
  */
-const { logger } = require('defra-logging-facade')
+const logger = require('../lib/logger-utils')
 const ResponseError = require('./response-error')
 
 module.exports = class BaseHandler {

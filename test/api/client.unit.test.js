@@ -6,14 +6,14 @@ const mockRequest = jest.fn((options, callback) => {
 
 const Client = require('../../src/api/client')
 const ResponseError = require('../../src/handlers/response-error')
-const { logger } = require('defra-logging-facade')
+const logger = require('../../src/lib/logger-utils')
 
 jest.mock('request-etag', () => {
   return jest.fn().mockImplementation(() => {
     return mockRequest
   })
 })
-jest.mock('defra-logging-facade')
+jest.mock('../../src/lib/logger-utils')
 jest.mock('fs')
 
 describe('client', () => {

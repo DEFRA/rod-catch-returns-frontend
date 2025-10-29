@@ -89,12 +89,13 @@ describe('authorization-schemes', () => {
 
       it('should return an error and auth should not be present if LicenceApi.getContactFromLicenceKey call fails', async () => {
         const request = getMockLicenceRequest()
+        const error = new Error('error')
         setupMocks({
           licenceApiResponse: () => {
-            throw new Error()
+            throw error
           }
         })
-        await expect(authorizationSchemes.licenceScheme().payload(request, getMockH())).rejects
+        await expect(authorizationSchemes.licenceScheme().payload(request, getMockH())).rejects.toEqual(error)
 
         expect(LicenceApi.getContactFromLicenceKey).toHaveBeenCalledWith(request, '123456', 'AB12 3CD')
         expect(request.app.authorization).toBeUndefined()
