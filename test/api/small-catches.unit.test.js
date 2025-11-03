@@ -196,8 +196,7 @@ describe('small-catches.unit', () => {
       month: 6,
       noMonthRecorded: false,
       activity: {
-        river: { name: 'Default River' },
-        ...(overrides.activity || {})
+        river: { name: 'Default River' }
       },
       ...overrides
     })
