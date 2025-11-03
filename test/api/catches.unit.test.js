@@ -172,4 +172,64 @@ describe('catches.unit', () => {
       expect(result).toBe(mockResult)
     })
   })
+
+  describe('changeExclusion', () => {
+    it('calls super.change with reportingExclude', async () => {
+      EntityApi.prototype.change = jest.fn()
+      const request = {}
+
+      const catchesApi = new CatchesApi()
+      await catchesApi.changeExclusion(request, 'C1', true)
+
+      expect(EntityApi.prototype.change).toHaveBeenCalledWith(
+        request,
+        'C1',
+        { reportingExclude: true }
+      )
+    })
+  })
+
+  describe('sort', () => {
+    const buildCatch = (overrides = {}) => ({
+      dateCaught: '2025-01-01',
+      onlyMonthRecorded: false,
+      noDateRecorded: false,
+      activity: {
+        river: { name: 'Default River' }
+      },
+      ...overrides
+    })
+
+    it('returns -1 when a.dateCaught < b.dateCaught', () => {
+      const a = buildCatch({ dateCaught: '2025-01-01' })
+      const b = buildCatch({ dateCaught: '2025-01-02' })
+
+      const catchesApi = new CatchesApi()
+      expect(catchesApi.sort(a, b)).toBe(-1)
+    })
+
+    it('returns 1 when a.dateCaught > b.dateCaught', () => {
+      const a = buildCatch({ dateCaught: '2025-01-02' })
+      const b = buildCatch({ dateCaught: '2025-01-01' })
+
+      const catchesApi = new CatchesApi()
+      expect(catchesApi.sort(a, b)).toBe(1)
+    })
+
+    it('returns -1 when river name a < b', () => {
+      const a = buildCatch({ activity: { river: { name: 'Amazon' } } })
+      const b = buildCatch({ activity: { river: { name: 'Zambezi' } } })
+
+      const catchesApi = new CatchesApi()
+      expect(catchesApi.sort(a, b)).toBe(-1)
+    })
+
+    it('returns 1 when river name a > b', () => {
+      const a = buildCatch({ activity: { river: { name: 'Zambezi' } } })
+      const b = buildCatch({ activity: { river: { name: 'Amazon' } } })
+
+      const catchesApi = new CatchesApi()
+      expect(catchesApi.sort(a, b)).toBe(1)
+    })
+  })
 })
