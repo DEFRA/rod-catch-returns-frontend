@@ -6,6 +6,7 @@ const mockActivitiesDoMap = jest.fn()
 const mockSubmissionsGetFromLink = jest.fn()
 
 const { ActivitiesHandler } = require('../../src/handlers/activities')
+const BaseHandler = require('../../src/handlers/base')
 const { isAllowedParam, testLocked } = require('../../src/handlers/common')
 const { getMockH } = require('../test-utils/server-test-utils')
 const { Error: ResponseError, status: ResponseStatus } = require('../../src/handlers/response-error')
@@ -115,6 +116,7 @@ describe('activities.unit', () => {
   describe('ActivitiesHandler', () => {
     describe('doGet', () => {
       describe('add', () => {
+        // TODO check all scenarios covered
         it('should throw a ResponseError if id param is not present', async () => {
           setupCommonFlags({ allowed: false })
 
@@ -181,6 +183,23 @@ describe('activities.unit', () => {
 
           expectMaxDaysFished(h, 168)
         })
+      })
+    })
+
+    describe('doPost', () => {
+      it('it should call writeCacheAndRedirect', async () => {
+        const request = {
+          params: {
+            id: '1'
+          }
+        }
+        const h = getMockH()
+        const errors = []
+        const superWriteCacheAndRedirect = BaseHandler.prototype.writeCacheAndRedirect = jest.fn()
+
+        await handler.doPost(request, h, errors)
+
+        expect(superWriteCacheAndRedirect).toHaveBeenCalledWith(request, h, errors, '/summary', '/activities/1')
       })
     })
   })
