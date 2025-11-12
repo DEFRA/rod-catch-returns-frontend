@@ -55,6 +55,28 @@ describe('logger-utils.unit', () => {
 
       expect(mockEnable).not.toHaveBeenCalled()
     })
+
+    it('should bind info.log to console.log', () => {
+      const mockConsoleLog = jest.spyOn(console, 'log').mockImplementation(() => {})
+
+      const { info } = require('../../src/lib/logger-utils')
+
+      info.log('hello world')
+
+      expect(mockConsoleLog).toHaveBeenCalledWith('hello world')
+      mockConsoleLog.mockRestore()
+    })
+
+    it('should bind debug.log to console.log', () => {
+      const mockConsoleLog = jest.spyOn(console, 'log').mockImplementation(() => {})
+
+      const { debug } = require('../../src/lib/logger-utils')
+
+      debug.log('hello world')
+
+      expect(mockConsoleLog).toHaveBeenCalledWith('hello world')
+      mockConsoleLog.mockRestore()
+    })
   })
 
   describe('logRequest', () => {

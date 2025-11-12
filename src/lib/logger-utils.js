@@ -12,11 +12,6 @@ if (!process.env.DEBUG) {
   createDebug.enable('rcr-frontend:error,rcr-frontend:info')
 }
 
-// We do not want to enable ANSI colours in prod as CloudWatch will not render them
-if (process.env.NODE_ENV === 'development') {
-  createDebug.inspectOpts.colors = true
-}
-
 const info = createDebug('rcr-frontend:info')
 info.log = console.log.bind(console)
 info.color = COLORS.GREEN
