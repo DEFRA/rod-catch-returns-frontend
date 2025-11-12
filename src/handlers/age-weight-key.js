@@ -1,5 +1,5 @@
 'use strict'
-const { logger } = require('defra-logging-facade')
+const logger = require('../lib/logger-utils')
 const Fs = require('fs')
 const moment = require('moment')
 /**

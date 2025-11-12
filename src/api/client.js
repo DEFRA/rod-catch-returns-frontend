@@ -16,7 +16,7 @@ const Request = new ETagRequest({
   max: process.env.LRU_ITEMS || 200000
 })
 
-const { logger } = require('defra-logging-facade')
+const logger = require('../lib/logger-utils')
 
 function requestCallback (reject, method, uri, resolve, throwOnNotFound) {
   return (err, response, body) => {

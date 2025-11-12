@@ -24,6 +24,7 @@
     "docker:services-dev": "docker stack deploy -c docker/services.dev.yml rcrfs"
   },
   "dependencies": {
+    "@airbrake/node": "2.1.9",
     "@aws-sdk/client-s3": "3.316.0",
     "@azure/msal-node": "3.4.1",
     "@defra/hapi-gapi": "1.2.1",

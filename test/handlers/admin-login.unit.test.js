@@ -5,14 +5,14 @@ const Boom = require('@hapi/boom')
 const Client = require('../../src/api/client')
 const authenticateUser = require('../../src/lib/authenticate-user')
 const { calculateTokenTtl } = require('../../src/lib/date-utils')
-const { logger } = require('defra-logging-facade')
+const logger = require('../../src/lib/logger-utils')
 
 jest.mock('../../src/lib/msal-client')
 jest.mock('@hapi/boom')
 jest.mock('../../src/api/client')
 jest.mock('../../src/lib/authenticate-user')
 jest.mock('../../src/lib/date-utils')
-jest.mock('defra-logging-facade')
+jest.mock('../../src/lib/logger-utils')
 
 const handler = new AdminLoginHandler()
 

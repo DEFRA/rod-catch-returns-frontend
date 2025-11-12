@@ -5,7 +5,7 @@ const mockS3 = Object.freeze({
   getObjectTagging: jest.fn()
 })
 process.env.https_proxy = 'https-proxy'
-const { logger } = require('defra-logging-facade')
+const logger = require('../../src/lib/logger-utils')
 const aws = require('../../src/lib/aws')
 const s3Client = require('@aws-sdk/client-s3')
 const { NodeHttpHandler } = require('@smithy/node-http-handler')
@@ -14,7 +14,7 @@ const Proxy = require('proxy-agent')
 jest.mock('@aws-sdk/client-s3', () => ({
   S3: jest.fn(() => mockS3)
 }))
-jest.mock('defra-logging-facade')
+jest.mock('../../src/lib/logger-utils')
 jest.mock('proxy-agent')
 jest.mock('@smithy/node-http-handler', () => ({
   NodeHttpHandler: jest.fn()

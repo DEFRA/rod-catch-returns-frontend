@@ -1,4 +1,4 @@
-const { logger } = require('defra-logging-facade')
+const logger = require('../lib/logger-utils')
 const NodeClam = require('clamscan')
 
 const wait = interval => new Promise(resolve => setTimeout(resolve, interval))

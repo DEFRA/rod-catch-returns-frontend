@@ -1,15 +1,14 @@
 const mockMkDir = jest.fn()
 
-const { logger } = require('defra-logging-facade')
-
 const misc = require('../../src/lib/misc')
+const logger = require('../../src/lib/logger-utils')
 
 jest.mock('fs', () => {
   return {
     mkdir: mockMkDir
   }
 })
-jest.mock('defra-logging-facade')
+jest.mock('../../src/lib/logger-utils')
 
 describe('misc', () => {
   beforeEach(() => {
