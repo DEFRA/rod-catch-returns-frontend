@@ -5,7 +5,7 @@ const mockActivitiesGetById = jest.fn()
 const mockActivitiesDoMap = jest.fn()
 const mockSubmissionsGetFromLink = jest.fn()
 
-const { ActivitiesHandler } = require('../../src/handlers/activities')
+const { ActivitiesHandler, ActivitiesHandlerClear } = require('../../src/handlers/activities')
 const BaseHandler = require('../../src/handlers/base')
 const { isAllowedParam, testLocked } = require('../../src/handlers/common')
 const { getMockH } = require('../test-utils/server-test-utils')
@@ -109,14 +109,69 @@ const expectMaxDaysFished = (h, expected) => {
 }
 
 describe('activities.unit', () => {
+  const OLD_ENV = process.env
+
   beforeEach(() => {
+    jest.clearAllMocks()
+    jest.resetAllMocks()
     jest.resetModules()
+    process.env = { ...OLD_ENV }
+  })
+
+  afterAll(() => {
+    process.env = OLD_ENV
   })
 
   describe('ActivitiesHandler', () => {
     describe('doGet', () => {
       describe('add', () => {
-        // TODO check all scenarios covered
+        it('should include all rivers if CONTEXT is FMT', async () => {
+          process.env.CONTEXT = 'FMT'
+          setupCommonFlags()
+          setupApis({
+            listRivers: [
+              { id: 'river-2', internal: false },
+              { id: 'river-3', internal: true }
+            ]
+          })
+          const h = getMockH()
+
+          await handler.doGet(getMockAddRequest(), h)
+
+          expect(h.view).toHaveBeenCalledWith(
+            'activity',
+            expect.objectContaining({
+              rivers: [
+                { id: 'river-2', internal: false },
+                { id: 'river-3', internal: true }
+              ]
+            })
+          )
+        })
+
+        it('should exclude internal rivers if CONTEXT is ANGLER', async () => {
+          process.env.CONTEXT = 'ANGLER'
+          setupCommonFlags()
+          setupApis({
+            listRivers: [
+              { id: 'river-2', internal: false },
+              { id: 'river-3', internal: true }
+            ]
+          })
+          const h = getMockH()
+
+          await handler.doGet(getMockAddRequest(), h)
+
+          expect(h.view).toHaveBeenCalledWith(
+            'activity',
+            expect.objectContaining({
+              rivers: [
+                { id: 'river-2', internal: false }
+              ]
+            })
+          )
+        })
+
         it('should throw a ResponseError if id param is not present', async () => {
           setupCommonFlags({ allowed: false })
 
@@ -164,6 +219,32 @@ describe('activities.unit', () => {
       })
 
       describe('change', () => {
+        it('should throw an error if activity is empty', async () => {
+          setupApis({ activitiesGetById: null })
+          setupCommonFlags()
+          const h = getMockH()
+
+          await expect(handler.doGet(getMockChangeRequest(), h)).rejects.toMatchObject({
+            message: 'unknown activity',
+            statusCode: ResponseStatus.UNAUTHORIZED
+          })
+        })
+
+        it('should throw an error if the submission id of activity is not equal to the submission id', async () => {
+          setupCommonFlags()
+          setupApis({
+            submissionGetById: { id: 1, season: 2025, _links: { activities: { href: '/activities/1' } } },
+            activitiesGetById: getMockActivities()[0],
+            submissionsGetFromLink: { id: 999 } // mismatched submission id
+          })
+          const h = getMockH()
+
+          await expect(handler.doGet(getMockChangeRequest(), h)).rejects.toMatchObject({
+            message: 'Action attempted on not owned submission',
+            statusCode: ResponseStatus.UNAUTHORIZED
+          })
+        })
+
         it('should return maxDaysFished as 167, if the year is a non leap year', async () => {
           setupApis({ submissionGetById: { id: 1, season: 2025, _links: { activities: { href: '/activities/1' } } } })
           setupCommonFlags()
@@ -200,6 +281,36 @@ describe('activities.unit', () => {
         await handler.doPost(request, h, errors)
 
         expect(superWriteCacheAndRedirect).toHaveBeenCalledWith(request, h, errors, '/summary', '/activities/1')
+      })
+    })
+  })
+
+  describe('ActivitiesHandlerClear', () => {
+    describe('doGet', () => {
+      it('should call super.clearCacheErrorsAndPayload', async () => {
+        jest.spyOn(ActivitiesHandler.prototype, 'doGet').mockResolvedValue('super-doGet-result')
+        const superClearCacheErrorsAndPayload = BaseHandler.prototype.clearCacheErrorsAndPayload = jest.fn()
+        const request = getMockAddRequest()
+        const h = getMockH()
+        const handlerClear = new ActivitiesHandlerClear('activity')
+
+        await handlerClear.doGet(request, h)
+
+        expect(superClearCacheErrorsAndPayload).toHaveBeenCalledWith(request)
+      })
+
+      it('should call and return super.doGet', async () => {
+        const superDoGetSpy = jest
+          .spyOn(ActivitiesHandler.prototype, 'doGet')
+          .mockResolvedValue('super-doGet-result')
+        const request = getMockAddRequest()
+        const h = getMockH()
+        const handlerClear = new ActivitiesHandlerClear('activity')
+
+        const result = await handlerClear.doGet(request, h)
+
+        expect(superDoGetSpy).toHaveBeenCalledWith(request, h)
+        expect(result).toBe('super-doGet-result')
       })
     })
   })
