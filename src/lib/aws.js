@@ -3,7 +3,7 @@
 /**
  * Handle the s3 bucket functions used for the FMT reports
  */
-const { logger } = require('defra-logging-facade')
+const logger = require('../lib/logger-utils')
 const { S3 } = require('@aws-sdk/client-s3')
 const Mime = require('./mime-desc')
 const { NodeHttpHandler } = require('@smithy/node-http-handler')

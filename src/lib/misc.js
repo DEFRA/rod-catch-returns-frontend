@@ -2,7 +2,7 @@
 
 const Fs = require('fs')
 const TEMP = require('../../defaults').TEMP
-const { logger } = require('defra-logging-facade')
+const logger = require('../lib/logger-utils')
 
 module.exports = {
   /**

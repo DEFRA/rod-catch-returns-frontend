@@ -9,7 +9,7 @@ const authenticateUser = require('../lib/authenticate-user')
 const { msalClient } = require('../lib/msal-client')
 const Boom = require('@hapi/boom')
 const Client = require('../api/client')
-const { logger } = require('defra-logging-facade')
+const logger = require('../lib/logger-utils')
 const { calculateTokenTtl } = require('../lib/date-utils')
 
 module.exports = class LoginHandler extends BaseHandler {

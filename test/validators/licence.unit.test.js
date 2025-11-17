@@ -2,11 +2,11 @@ const licenceValidator = require('../../src/validators/licence')
 const ResponseError = require('../../src/handlers/response-error')
 const { parsePostcode, parseLicence, licenceSchema } = require('../../src/lib/licence-utils')
 const LicenceApi = require('../../src/api/licence')
-const { logger } = require('defra-logging-facade')
+const logger = require('../../src/lib/logger-utils')
 
 jest.mock('../../src/api/licence')
 jest.mock('../../src/lib/licence-utils')
-jest.mock('defra-logging-facade')
+jest.mock('../../src/lib/logger-utils')
 
 const getMockRequest = ({ postcode = 'A9 9AA', licence = '123456' } = {}) => ({
   payload: {

@@ -2,7 +2,7 @@
 
 const { v4: uuid } = require('uuid')
 
-const { logger } = require('defra-logging-facade')
+const logger = require('../lib/logger-utils')
 /**
  * Sets up the cache and the session cookies for an authenticated user
  * @param request
