@@ -112,7 +112,6 @@ describe('activities.unit', () => {
   const OLD_ENV = process.env
 
   beforeEach(() => {
-    jest.clearAllMocks()
     jest.resetAllMocks()
     jest.resetModules()
     process.env = { ...OLD_ENV }
