@@ -6,11 +6,11 @@ describe('submissions.unit', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
-    process.env = { ...OLD_ENV } // make a copy
+    process.env = { ...OLD_ENV }
   })
 
   afterEach(() => {
-    process.env = OLD_ENV // restore old env
+    process.env = OLD_ENV
   })
 
   describe('constructor', () => {
@@ -38,9 +38,9 @@ describe('submissions.unit', () => {
 
   describe('add', () => {
     it.each([
-      ['ANGLER', 'angler', 'WEB'],
-      ['FMT', 'admin', 'PAPER']
-    ])('calls super.add with source as %s if it is the %s frontend', async (context, _, source) => {
+      ['WEB', 'angler', 'ANGLER'],
+      ['PAPER', 'admin', 'FMT']
+    ])('calls super.add with source as %s if it is the %s frontend', async (source, _, context) => {
       process.env.CONTEXT = context
       const superAddMock = EntityApi.prototype.add = jest.fn()
       const request = {}
