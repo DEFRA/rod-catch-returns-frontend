@@ -66,7 +66,7 @@ describe('age-weight-key-error-breakdown', () => {
   })
 
   describe('doPost', () => {
-    it('should clear cache errors', async () => {
+    it('should call clearCacheErrors with request', async () => {
       const handler = new AgeWeightKeyErrorBreakdownHandler('age-weight-key-error-breakdown', null, 'ageWeightContext')
       const mockRequest = Symbol('mockRequest')
       const h = getMockH()
