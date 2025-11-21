@@ -68,37 +68,6 @@ describe('age-weight-key-conflict-check.unit', () => {
         expect(h.redirect).toHaveBeenCalledWith('/age-weight-key-conflict-check')
       })
 
-      it('should post new file, clear cache, and redirect to ok when overwrite is true', async () => {
-        const handler = new AgeWeightKeyConflictCheck('age-weight-key-conflict-check')
-        const h = getMockH()
-        const request = getMockRequest({ payload: { overwrite: 'true' } })
-        const cacheContext = {
-          ageWeightKey: {
-            year: '2025',
-            gateId: 'g1',
-            tempfile: '/tmp/file.tmp',
-            filename: 'file.csv'
-          }
-        }
-        BaseHandler.prototype.getCacheContext = jest.fn().mockResolvedValue(cacheContext)
-        BaseHandler.prototype.clearCachePayload = jest.fn()
-        BaseHandler.prototype.clearCacheErrors = jest.fn()
-
-        await handler.doPost(request, h, null)
-
-        expect(AgeWeightKeyApi.postNew).toHaveBeenCalledWith(
-          request,
-          '2025',
-          'g1',
-          '/tmp/file.tmp',
-          true
-        )
-        expect(Fs.unlinkSync).toHaveBeenCalledWith('/tmp/file.tmp')
-        expect(BaseHandler.prototype.clearCachePayload).toHaveBeenCalledWith(request)
-        expect(BaseHandler.prototype.clearCacheErrors).toHaveBeenCalledWith(request)
-        expect(h.redirect).toHaveBeenCalledWith('/age-weight-key-ok')
-      })
-
       it('should post new file when overwrite is true', async () => {
         const handler = new AgeWeightKeyConflictCheck('age-weight-key-conflict-check')
         const h = getMockH()
