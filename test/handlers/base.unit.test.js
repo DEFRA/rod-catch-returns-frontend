@@ -159,7 +159,6 @@ describe('BaseHandler', () => {
     })
 
     it('should call h.view with path if pageObj is undefined', async () => {
-      const BaseHandler = require('../../src/handlers/base')
       const handler = new BaseHandler(['viewpath', null, 'testContext'])
       const mockRequest = getMockRequest({ cacheObj: {} })
       const h = getMockH()
@@ -169,7 +168,6 @@ describe('BaseHandler', () => {
     })
 
     it('should return h.view result if pageObj is undefined', async () => {
-      const BaseHandler = require('../../src/handlers/base')
       const handler = new BaseHandler(['viewpath', null, 'testContext'])
       const mockRequest = getMockRequest({ cacheObj: {} })
       const h = getMockH()
@@ -179,7 +177,6 @@ describe('BaseHandler', () => {
     })
 
     it('should throw if pageObj is an array', async () => {
-      const BaseHandler = require('../../src/handlers/base')
       const handler = new BaseHandler(['viewpath', null, 'testContext'])
       const mockRequest = getMockRequest({ cacheObj: {} })
       const h = getMockH()
@@ -187,7 +184,6 @@ describe('BaseHandler', () => {
     })
 
     it('should throw if pageObj is not an object', async () => {
-      const BaseHandler = require('../../src/handlers/base')
       const handler = new BaseHandler(['viewpath', null, 'testContext'])
       const mockRequest = getMockRequest({ cacheObj: {} })
       const h = getMockH()
@@ -281,7 +277,6 @@ describe('BaseHandler', () => {
     })
 
     it('should throw non-ResponseError errors', async () => {
-      const BaseHandler = require('../../src/handlers/base')
       const handler = new BaseHandler(['viewpath', null, 'testContext'])
       const mockRequest = getMockRequest({ method: 'GET' })
       const h = getMockH()
