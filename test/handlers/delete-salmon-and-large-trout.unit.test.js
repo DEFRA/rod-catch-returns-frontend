@@ -44,13 +44,13 @@ describe('delete-river-handler.unit', () => {
     params: { id: '123' },
     path: '/delete-river',
     cache: jest.fn(() => ({
-      get: jest.fn().mockResolvedValue({
+      get: jest.fn().mockResolvedValueOnce({
         submissionId: 'sub1',
         licenceNumber: 'LN123',
         postcode: 'AB12CD',
         year: '2025'
       }),
-      set: jest.fn().mockResolvedValue()
+      set: jest.fn().mockResolvedValueOnce()
     })),
     ...overrides
   })
@@ -59,7 +59,7 @@ describe('delete-river-handler.unit', () => {
     it('should throw ResponseError if id param is not allowed', async () => {
       const request = getMockRequest()
       const h = getMockH()
-      mockIsAllowedParam.mockReturnValue(false)
+      mockIsAllowedParam.mockReturnValueOnce(false)
       const handler = new DeleteSalmonAndLargeTroutHandler('delete-river')
 
       await expect(handler.doGet(request, h)).rejects.toThrow('Unknown activity')
@@ -68,8 +68,8 @@ describe('delete-river-handler.unit', () => {
     it('should throw ResponseError if largeCatch is not found', async () => {
       const request = getMockRequest()
       const h = getMockH()
-      mockIsAllowedParam.mockReturnValue(true)
-      mockGetByIdCatch.mockResolvedValue(null)
+      mockIsAllowedParam.mockReturnValueOnce(true)
+      mockGetByIdCatch.mockResolvedValueOnce(null)
       const handler = new DeleteSalmonAndLargeTroutHandler('delete-river')
 
       await expect(handler.doGet(request, h)).rejects.toThrow('Unauthorized access to large catch')
@@ -78,10 +78,10 @@ describe('delete-river-handler.unit', () => {
     it('should throw ResponseError if activityEntity not in activities', async () => {
       const request = getMockRequest()
       const h = getMockH()
-      mockIsAllowedParam.mockReturnValue(true)
-      mockGetByIdCatch.mockResolvedValue({ _links: { activityEntity: { href: 'bad-link' } }, id: 'c1' })
-      mockGetByIdSubmission.mockResolvedValue({ _links: { activities: { href: 'activities-link' } } })
-      mockGetFromLink.mockResolvedValue([{ _links: { self: { href: 'other-link' } } }])
+      mockIsAllowedParam.mockReturnValueOnce(true)
+      mockGetByIdCatch.mockResolvedValueOnce({ _links: { activityEntity: { href: 'bad-link' } }, id: 'c1' })
+      mockGetByIdSubmission.mockResolvedValueOnce({ _links: { activities: { href: 'activities-link' } } })
+      mockGetFromLink.mockResolvedValueOnce([{ _links: { self: { href: 'other-link' } } }])
       const handler = new DeleteSalmonAndLargeTroutHandler('delete-river')
 
       await expect(handler.doGet(request, h)).rejects.toThrow('Unauthorized access to large catch')
@@ -90,11 +90,11 @@ describe('delete-river-handler.unit', () => {
     it('should redirect to review if testLocked returns true', async () => {
       const request = getMockRequest()
       const h = getMockH()
-      mockIsAllowedParam.mockReturnValue(true)
-      mockGetByIdCatch.mockResolvedValue({ _links: { activityEntity: { href: 'good-link' } }, id: 'c1' })
-      mockGetByIdSubmission.mockResolvedValue({ _links: { activities: { href: 'activities-link' } } })
-      mockGetFromLink.mockResolvedValue([{ _links: { self: { href: 'good-link' } } }])
-      mockTestLocked.mockResolvedValue(true)
+      mockIsAllowedParam.mockReturnValueOnce(true)
+      mockGetByIdCatch.mockResolvedValueOnce({ _links: { activityEntity: { href: 'good-link' } }, id: 'c1' })
+      mockGetByIdSubmission.mockResolvedValueOnce({ _links: { activities: { href: 'activities-link' } } })
+      mockGetFromLink.mockResolvedValueOnce([{ _links: { self: { href: 'good-link' } } }])
+      mockTestLocked.mockResolvedValueOnce(true)
       const handler = new DeleteSalmonAndLargeTroutHandler('delete-river')
 
       const result = await handler.doGet(request, h)
@@ -104,13 +104,13 @@ describe('delete-river-handler.unit', () => {
     it('should render view with mapped catch when all checks pass', async () => {
       const request = getMockRequest()
       const h = getMockH()
-      mockIsAllowedParam.mockReturnValue(true)
+      mockIsAllowedParam.mockReturnValueOnce(true)
       const largeCatch = { _links: { activityEntity: { href: 'good-link' } }, id: 'c1' }
-      mockGetByIdCatch.mockResolvedValue(largeCatch)
-      mockGetByIdSubmission.mockResolvedValue({ _links: { activities: { href: 'activities-link' } } })
-      mockGetFromLink.mockResolvedValue([{ _links: { self: { href: 'good-link' } } }])
-      mockTestLocked.mockResolvedValue(false)
-      mockDoMap.mockResolvedValue({ dateCaught: '2025-11-20', mass: { type: 'IMPERIAL', oz: 160 } })
+      mockGetByIdCatch.mockResolvedValueOnce(largeCatch)
+      mockGetByIdSubmission.mockResolvedValueOnce({ _links: { activities: { href: 'activities-link' } } })
+      mockGetFromLink.mockResolvedValueOnce([{ _links: { self: { href: 'good-link' } } }])
+      mockTestLocked.mockResolvedValueOnce(false)
+      mockDoMap.mockResolvedValueOnce({ dateCaught: '2025-11-20', mass: { type: 'IMPERIAL', oz: 160 } })
       const handler = new DeleteSalmonAndLargeTroutHandler('delete-river')
 
       await handler.doGet(request, h)
@@ -143,8 +143,8 @@ describe('delete-river-handler.unit', () => {
       const h = getMockH()
       const cacheObj = { delete: 'c1' }
       request.cache = jest.fn(() => ({
-        get: jest.fn().mockResolvedValue(cacheObj),
-        set: jest.fn().mockResolvedValue()
+        get: jest.fn().mockResolvedValueOnce(cacheObj),
+        set: jest.fn().mockResolvedValueOnce()
       }))
       const handler = new DeleteSalmonAndLargeTroutHandler('delete-river')
 
@@ -159,8 +159,8 @@ describe('delete-river-handler.unit', () => {
       const handler = new DeleteSalmonAndLargeTroutHandler('delete-river')
       const cacheObj = { delete: 'c1' }
       request.cache = jest.fn(() => ({
-        get: jest.fn().mockResolvedValue(cacheObj),
-        set: jest.fn().mockResolvedValue()
+        get: jest.fn().mockResolvedValueOnce(cacheObj),
+        set: jest.fn().mockResolvedValueOnce()
       }))
 
       await handler.doPost(request, h)
