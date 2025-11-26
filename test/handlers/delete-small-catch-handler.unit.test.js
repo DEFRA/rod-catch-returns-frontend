@@ -49,13 +49,13 @@ describe('delete-small-catch-handler.unit', () => {
     params: { id: '123' },
     path: '/delete-small-catch',
     cache: jest.fn(() => ({
-      get: jest.fn().mockResolvedValue({
+      get: jest.fn().mockResolvedValueOnce({
         submissionId: 'sub1',
         licenceNumber: 'LN123',
         postcode: 'AB12CD',
         year: '2025'
       }),
-      set: jest.fn().mockResolvedValue()
+      set: jest.fn().mockResolvedValueOnce()
     })),
     ...overrides
   })
@@ -64,7 +64,7 @@ describe('delete-small-catch-handler.unit', () => {
     it('should throw ResponseError if id param is not allowed', async () => {
       const request = getMockRequest()
       const h = getMockH()
-      mockIsAllowedParam.mockReturnValue(false)
+      mockIsAllowedParam.mockReturnValueOnce(false)
       const handler = new DeleteSmallCatchHandler('delete-small-catch')
 
       await expect(handler.doGet(request, h)).rejects.toThrow('Unknown activity')
@@ -73,8 +73,8 @@ describe('delete-small-catch-handler.unit', () => {
     it('should throw ResponseError if smallCatch is not found', async () => {
       const request = getMockRequest()
       const h = getMockH()
-      mockIsAllowedParam.mockReturnValue(true)
-      mockGetByIdSmallCatch.mockResolvedValue(null)
+      mockIsAllowedParam.mockReturnValueOnce(true)
+      mockGetByIdSmallCatch.mockResolvedValueOnce(null)
       const handler = new DeleteSmallCatchHandler('delete-small-catch')
 
       await expect(handler.doGet(request, h)).rejects.toThrow('Unauthorized access to small catch')
@@ -83,10 +83,10 @@ describe('delete-small-catch-handler.unit', () => {
     it('should throw ResponseError if activityEntity not in activities', async () => {
       const request = getMockRequest()
       const h = getMockH()
-      mockIsAllowedParam.mockReturnValue(true)
-      mockGetByIdSmallCatch.mockResolvedValue({ _links: { activityEntity: { href: 'bad-link' } }, id: 'c1' })
-      mockGetByIdSubmission.mockResolvedValue({ _links: { activities: { href: 'activities-link' } } })
-      mockGetFromLink.mockResolvedValue([{ _links: { self: { href: 'other-link' } } }])
+      mockIsAllowedParam.mockReturnValueOnce(true)
+      mockGetByIdSmallCatch.mockResolvedValueOnce({ _links: { activityEntity: { href: 'bad-link' } }, id: 'c1' })
+      mockGetByIdSubmission.mockResolvedValueOnce({ _links: { activities: { href: 'activities-link' } } })
+      mockGetFromLink.mockResolvedValueOnce([{ _links: { self: { href: 'other-link' } } }])
       const handler = new DeleteSmallCatchHandler('delete-small-catch')
 
       await expect(handler.doGet(request, h)).rejects.toThrow('Unauthorized access to small catch')
@@ -95,11 +95,11 @@ describe('delete-small-catch-handler.unit', () => {
     it('should redirect to review if testLocked returns true', async () => {
       const request = getMockRequest()
       const h = getMockH()
-      mockIsAllowedParam.mockReturnValue(true)
-      mockGetByIdSmallCatch.mockResolvedValue({ _links: { activityEntity: { href: 'good-link' } }, id: 'c1' })
-      mockGetByIdSubmission.mockResolvedValue({ _links: { activities: { href: 'activities-link' } } })
-      mockGetFromLink.mockResolvedValue([{ _links: { self: { href: 'good-link' } } }])
-      mockTestLocked.mockResolvedValue(true)
+      mockIsAllowedParam.mockReturnValueOnce(true)
+      mockGetByIdSmallCatch.mockResolvedValueOnce({ _links: { activityEntity: { href: 'good-link' } }, id: 'c1' })
+      mockGetByIdSubmission.mockResolvedValueOnce({ _links: { activities: { href: 'activities-link' } } })
+      mockGetFromLink.mockResolvedValueOnce([{ _links: { self: { href: 'good-link' } } }])
+      mockTestLocked.mockResolvedValueOnce(true)
       const handler = new DeleteSmallCatchHandler('delete-small-catch')
 
       await handler.doGet(request, h)
@@ -110,14 +110,14 @@ describe('delete-small-catch-handler.unit', () => {
     it('should render view with mapped catch when all checks pass', async () => {
       const request = getMockRequest()
       const h = getMockH()
-      mockIsAllowedParam.mockReturnValue(true)
+      mockIsAllowedParam.mockReturnValueOnce(true)
       const smallCatch = { _links: { activityEntity: { href: 'good-link' } }, id: 'c1' }
-      mockGetByIdSmallCatch.mockResolvedValue(smallCatch)
-      mockGetByIdSubmission.mockResolvedValue({ _links: { activities: { href: 'activities-link' } } })
-      mockGetFromLink.mockResolvedValue([{ _links: { self: { href: 'good-link' } } }])
-      mockTestLocked.mockResolvedValue(false)
-      mockDoMap.mockResolvedValue({ month: 5 })
-      mockTextFromNum.mockReturnValue('May')
+      mockGetByIdSmallCatch.mockResolvedValueOnce(smallCatch)
+      mockGetByIdSubmission.mockResolvedValueOnce({ _links: { activities: { href: 'activities-link' } } })
+      mockGetFromLink.mockResolvedValueOnce([{ _links: { self: { href: 'good-link' } } }])
+      mockTestLocked.mockResolvedValueOnce(false)
+      mockDoMap.mockResolvedValueOnce({ month: 5 })
+      mockTextFromNum.mockReturnValueOnce('May')
       const handler = new DeleteSmallCatchHandler('delete-small-catch')
 
       await handler.doGet(request, h)
@@ -144,8 +144,8 @@ describe('delete-small-catch-handler.unit', () => {
       const h = getMockH()
       const cacheObj = { delete: 'c1' }
       request.cache = jest.fn(() => ({
-        get: jest.fn().mockResolvedValue(cacheObj),
-        set: jest.fn().mockResolvedValue()
+        get: jest.fn().mockResolvedValueOnce(cacheObj),
+        set: jest.fn().mockResolvedValueOnce()
       }))
       const handler = new DeleteSmallCatchHandler('delete-small-catch')
 
@@ -159,8 +159,8 @@ describe('delete-small-catch-handler.unit', () => {
       const h = getMockH()
       const cacheObj = { delete: 'c1' }
       request.cache = jest.fn(() => ({
-        get: jest.fn().mockResolvedValue(cacheObj),
-        set: jest.fn().mockResolvedValue()
+        get: jest.fn().mockResolvedValueOnce(cacheObj),
+        set: jest.fn().mockResolvedValueOnce()
       }))
       const handler = new DeleteSmallCatchHandler('delete-small-catch')
 
