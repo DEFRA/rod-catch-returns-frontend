@@ -7,9 +7,14 @@ describe('licence.unit', () => {
     jest.resetAllMocks()
   })
 
-  const getMockRequest = (cacheObj = {}, payload = {}) => ({
+  const getMockRequest = (cacheObj = {}, payload = {
+    contact: {
+      contact: { id: 'contact-123', postcode: 'AB12 3CD' },
+      licenceNumber: 'LIC-456'
+    }
+  }) => ({
     cache: jest.fn(() => ({
-      get: jest.fn().mockResolvedValue(cacheObj)
+      get: jest.fn().mockResolvedValueOnce(cacheObj)
     })),
     payload
   })
@@ -33,16 +38,7 @@ describe('licence.unit', () => {
       const request = getMockRequest(cacheObj)
       const h = getMockH()
       const handler = new LicenceHandler('licence')
-
-      // payload shape expected by handler
-      request.payload = {
-        contact: {
-          contact: { id: 'contact-123', postcode: 'AB12 3CD' },
-          licenceNumber: 'LIC-456'
-        }
-      }
-
-      BaseHandler.prototype.writeCacheAndRedirect = jest.fn().mockReturnValue('written')
+      BaseHandler.prototype.writeCacheAndRedirect = jest.fn().mockReturnValueOnce('written')
 
       await handler.doPost(request, h, null)
 
@@ -55,16 +51,10 @@ describe('licence.unit', () => {
 
     it('should call writeCacheAndRedirect when there are no errors', async () => {
       const cacheObj = { submissionId: 'submissions/1', locked: true }
-      const payload = {
-        contact: {
-          contact: { id: 'contact-123', postcode: 'AB12 3CD' },
-          licenceNumber: 'LIC-456'
-        }
-      }
-      const request = getMockRequest(cacheObj, payload)
+      const request = getMockRequest(cacheObj)
       const h = getMockH()
       const handler = new LicenceHandler('licence')
-      const mockWrite = BaseHandler.prototype.writeCacheAndRedirect = jest.fn().mockReturnValue('written')
+      const mockWrite = BaseHandler.prototype.writeCacheAndRedirect = jest.fn().mockReturnValueOnce('written')
 
       const result = await handler.doPost(request, h, null)
 
@@ -81,16 +71,10 @@ describe('licence.unit', () => {
 
     it('should not modify cache when there are errors', async () => {
       const cacheObj = { submissionId: 'submissions/1', locked: true }
-      const payload = {
-        contact: {
-          contact: { id: 'contact-123', postcode: 'AB12 3CD' },
-          licenceNumber: 'LIC-456'
-        }
-      }
-      const request = getMockRequest(cacheObj, payload)
+      const request = getMockRequest(cacheObj)
       const h = getMockH()
       const handler = new LicenceHandler('licence')
-      BaseHandler.prototype.writeCacheAndRedirect = jest.fn().mockReturnValue('written')
+      BaseHandler.prototype.writeCacheAndRedirect = jest.fn().mockReturnValueOnce('written')
       const errors = [{ field: 'contact', message: 'invalid' }]
 
       await handler.doPost(request, h, errors)
@@ -104,16 +88,10 @@ describe('licence.unit', () => {
 
     it('should call writeCacheAndRedirect when there are errors', async () => {
       const cacheObj = { submissionId: 'submissions/1', locked: true }
-      const payload = {
-        contact: {
-          contact: { id: 'contact-123', postcode: 'AB12 3CD' },
-          licenceNumber: 'LIC-456'
-        }
-      }
-      const request = getMockRequest(cacheObj, payload)
+      const request = getMockRequest(cacheObj)
       const h = getMockH()
       const handler = new LicenceHandler('licence')
-      const mockWrite = BaseHandler.prototype.writeCacheAndRedirect = jest.fn().mockReturnValue('written')
+      const mockWrite = BaseHandler.prototype.writeCacheAndRedirect = jest.fn().mockReturnValueOnce('written')
       const errors = [{ field: 'contact', message: 'invalid' }]
 
       const result = await handler.doPost(request, h, errors)
