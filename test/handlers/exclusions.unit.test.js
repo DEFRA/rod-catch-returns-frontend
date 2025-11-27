@@ -44,8 +44,8 @@ describe('exclusions-handler.unit', () => {
   const getMockRequest = (payload = {}) => ({
     payload,
     cache: jest.fn(() => ({
-      get: jest.fn().mockResolvedValue({ submissionId: 'submissions/1' }),
-      set: jest.fn().mockResolvedValue()
+      get: jest.fn().mockResolvedValueOnce({ submissionId: 'submissions/1' }),
+      set: jest.fn().mockResolvedValueOnce()
     }))
   })
 
@@ -61,10 +61,10 @@ describe('exclusions-handler.unit', () => {
   describe('doPost', () => {
     it('should change submission exclusion when payloadKey is exclude-1 and setting differs', async () => {
       const submission = getMockSubmission({ reportingExclude: false })
-      mockGetByIdSubmission.mockResolvedValue(submission)
-      mockGetFromLink.mockResolvedValue(getMockActivities())
-      mockGetAllChildrenCatches.mockResolvedValue([])
-      mockGetAllChildrenSmallCatches.mockResolvedValue([])
+      mockGetByIdSubmission.mockResolvedValueOnce(submission)
+      mockGetFromLink.mockResolvedValueOnce(getMockActivities())
+      mockGetAllChildrenCatches.mockResolvedValueOnce([])
+      mockGetAllChildrenSmallCatches.mockResolvedValueOnce([])
       const request = getMockRequest({ 'exclude-1': 'true' })
       const handler = new ExclusionsHandler('exclusions')
 
@@ -75,10 +75,10 @@ describe('exclusions-handler.unit', () => {
 
     it('should not call changeExclusion on submission when payloadKey is exclude-1 and setting is same', async () => {
       const submission = getMockSubmission({ reportingExclude: true })
-      mockGetByIdSubmission.mockResolvedValue(submission)
-      mockGetFromLink.mockResolvedValue(getMockActivities())
-      mockGetAllChildrenCatches.mockResolvedValue([])
-      mockGetAllChildrenSmallCatches.mockResolvedValue([])
+      mockGetByIdSubmission.mockResolvedValueOnce(submission)
+      mockGetFromLink.mockResolvedValueOnce(getMockActivities())
+      mockGetAllChildrenCatches.mockResolvedValueOnce([])
+      mockGetAllChildrenSmallCatches.mockResolvedValueOnce([])
       const request = getMockRequest({ 'exclude-1': 'true' })
       const handler = new ExclusionsHandler('exclusions')
 
@@ -89,11 +89,11 @@ describe('exclusions-handler.unit', () => {
 
     it('should change small catch exclusion when payloadKey includes smallCatches and is different', async () => {
       const submission = getMockSubmission()
-      mockGetByIdSubmission.mockResolvedValue(submission)
-      mockGetFromLink.mockResolvedValue(getMockActivities())
+      mockGetByIdSubmission.mockResolvedValueOnce(submission)
+      mockGetFromLink.mockResolvedValueOnce(getMockActivities())
       const smallCatch = { id: 'smallCatches/1', reportingExclude: false }
-      mockGetAllChildrenCatches.mockResolvedValue([])
-      mockGetAllChildrenSmallCatches.mockResolvedValue([smallCatch])
+      mockGetAllChildrenCatches.mockResolvedValueOnce([])
+      mockGetAllChildrenSmallCatches.mockResolvedValueOnce([smallCatch])
       const request = getMockRequest({ 'exclude-smallCatches/1': 'true' })
       const handler = new ExclusionsHandler('exclusions')
 
@@ -104,10 +104,10 @@ describe('exclusions-handler.unit', () => {
 
     it('should not call smallCatches.changeExclusion if small catch not found', async () => {
       const submission = getMockSubmission()
-      mockGetByIdSubmission.mockResolvedValue(submission)
-      mockGetFromLink.mockResolvedValue(getMockActivities())
-      mockGetAllChildrenCatches.mockResolvedValue([])
-      mockGetAllChildrenSmallCatches.mockResolvedValue([])
+      mockGetByIdSubmission.mockResolvedValueOnce(submission)
+      mockGetFromLink.mockResolvedValueOnce(getMockActivities())
+      mockGetAllChildrenCatches.mockResolvedValueOnce([])
+      mockGetAllChildrenSmallCatches.mockResolvedValueOnce([])
       const request = getMockRequest({ 'smallCatches/1': 'true' })
       const handler = new ExclusionsHandler('exclusions')
 
@@ -118,11 +118,11 @@ describe('exclusions-handler.unit', () => {
 
     it('should not call smallCatches.changeExclusion if setting is same', async () => {
       const submission = getMockSubmission()
-      mockGetByIdSubmission.mockResolvedValue(submission)
-      mockGetFromLink.mockResolvedValue(getMockActivities())
+      mockGetByIdSubmission.mockResolvedValueOnce(submission)
+      mockGetFromLink.mockResolvedValueOnce(getMockActivities())
       const smallCatch = { id: 'smallCatches/1', reportingExclude: true }
-      mockGetAllChildrenCatches.mockResolvedValue([])
-      mockGetAllChildrenSmallCatches.mockResolvedValue([smallCatch])
+      mockGetAllChildrenCatches.mockResolvedValueOnce([])
+      mockGetAllChildrenSmallCatches.mockResolvedValueOnce([smallCatch])
 
       const request = getMockRequest({ 'exclude-smallCatches/1': 'true' })
       const handler = new ExclusionsHandler('exclusions')
@@ -134,11 +134,11 @@ describe('exclusions-handler.unit', () => {
 
     it('should change large catch exclusion when payloadKey includes catches and is different', async () => {
       const submission = getMockSubmission()
-      mockGetByIdSubmission.mockResolvedValue(submission)
-      mockGetFromLink.mockResolvedValue(getMockActivities())
+      mockGetByIdSubmission.mockResolvedValueOnce(submission)
+      mockGetFromLink.mockResolvedValueOnce(getMockActivities())
       const largeCatch = { id: 'catches/1', reportingExclude: false }
-      mockGetAllChildrenCatches.mockResolvedValue([largeCatch])
-      mockGetAllChildrenSmallCatches.mockResolvedValue([])
+      mockGetAllChildrenCatches.mockResolvedValueOnce([largeCatch])
+      mockGetAllChildrenSmallCatches.mockResolvedValueOnce([])
       const request = getMockRequest({ 'exclude-catches/1': 'true' })
       const handler = new ExclusionsHandler('exclusions')
 
@@ -150,10 +150,10 @@ describe('exclusions-handler.unit', () => {
 
     it('should not call catches.changeExclusion if large catch not found', async () => {
       const submission = getMockSubmission()
-      mockGetByIdSubmission.mockResolvedValue(submission)
-      mockGetFromLink.mockResolvedValue(getMockActivities())
-      mockGetAllChildrenCatches.mockResolvedValue([])
-      mockGetAllChildrenSmallCatches.mockResolvedValue([])
+      mockGetByIdSubmission.mockResolvedValueOnce(submission)
+      mockGetFromLink.mockResolvedValueOnce(getMockActivities())
+      mockGetAllChildrenCatches.mockResolvedValueOnce([])
+      mockGetAllChildrenSmallCatches.mockResolvedValueOnce([])
       const request = getMockRequest({ 'exclude-catches/1': 'true' })
       const handler = new ExclusionsHandler('exclusions')
 
@@ -164,11 +164,11 @@ describe('exclusions-handler.unit', () => {
 
     it('should not call catches.changeExclusion if setting is same', async () => {
       const submission = getMockSubmission()
-      mockGetByIdSubmission.mockResolvedValue(submission)
-      mockGetFromLink.mockResolvedValue(getMockActivities())
+      mockGetByIdSubmission.mockResolvedValueOnce(submission)
+      mockGetFromLink.mockResolvedValueOnce(getMockActivities())
       const largeCatch = { id: 'catches/1', reportingExclude: true }
-      mockGetAllChildrenCatches.mockResolvedValue([largeCatch])
-      mockGetAllChildrenSmallCatches.mockResolvedValue([])
+      mockGetAllChildrenCatches.mockResolvedValueOnce([largeCatch])
+      mockGetAllChildrenSmallCatches.mockResolvedValueOnce([])
       const request = getMockRequest({ 'exclude-catches/1': 'true' })
       const handler = new ExclusionsHandler('exclusions')
 
@@ -179,10 +179,10 @@ describe('exclusions-handler.unit', () => {
 
     it('should return an empty response object in all cases', async () => {
       const submission = getMockSubmission()
-      mockGetByIdSubmission.mockResolvedValue(submission)
-      mockGetFromLink.mockResolvedValue(getMockActivities())
-      mockGetAllChildrenCatches.mockResolvedValue([])
-      mockGetAllChildrenSmallCatches.mockResolvedValue([])
+      mockGetByIdSubmission.mockResolvedValueOnce(submission)
+      mockGetFromLink.mockResolvedValueOnce(getMockActivities())
+      mockGetAllChildrenCatches.mockResolvedValueOnce([])
+      mockGetAllChildrenSmallCatches.mockResolvedValueOnce([])
       const request = getMockRequest({ 'exclude-1': 'false' })
       const handler = new ExclusionsHandler('exclusions')
 
