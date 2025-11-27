@@ -76,9 +76,9 @@ describe('display-data.unit', () => {
     process.env.CONTEXT = 'ANGLER'
     const request = getMockRequest()
     const submission = getMockSubmission()
-    mockGetFromLink.mockResolvedValue(getMockActivities())
-    mockGetAllChildrenCatches.mockResolvedValue(getMockCatches())
-    mockGetAllChildrenSmallCatches.mockResolvedValue(getMockSmallCatches())
+    mockGetFromLink.mockResolvedValueOnce(getMockActivities())
+    mockGetAllChildrenCatches.mockResolvedValueOnce(getMockCatches())
+    mockGetAllChildrenSmallCatches.mockResolvedValueOnce(getMockSmallCatches())
 
     const result = await displayData(request, submission)
 
@@ -103,9 +103,9 @@ describe('display-data.unit', () => {
     process.env.CONTEXT = 'ANGLER'
     const request = getMockRequest()
     const submission = getMockSubmission()
-    mockGetFromLink.mockResolvedValue(getMockActivities())
-    mockGetAllChildrenCatches.mockResolvedValue(getMockCatches())
-    mockGetAllChildrenSmallCatches.mockResolvedValue(getMockSmallCatches())
+    mockGetFromLink.mockResolvedValueOnce(getMockActivities())
+    mockGetAllChildrenCatches.mockResolvedValueOnce(getMockCatches())
+    mockGetAllChildrenSmallCatches.mockResolvedValueOnce(getMockSmallCatches())
 
     const result = await displayData(request, submission)
 
@@ -132,9 +132,9 @@ describe('display-data.unit', () => {
     process.env.CONTEXT = 'ANGLER'
     const request = getMockRequest()
     const submission = getMockSubmission()
-    mockGetFromLink.mockResolvedValue(getMockActivities())
-    mockGetAllChildrenCatches.mockResolvedValue(getMockCatches())
-    mockGetAllChildrenSmallCatches.mockResolvedValue(getMockSmallCatches())
+    mockGetFromLink.mockResolvedValueOnce(getMockActivities())
+    mockGetAllChildrenCatches.mockResolvedValueOnce(getMockCatches())
+    mockGetAllChildrenSmallCatches.mockResolvedValueOnce(getMockSmallCatches())
 
     const result = await displayData(request, submission)
 
@@ -161,9 +161,9 @@ describe('display-data.unit', () => {
     process.env.CONTEXT = 'ANGLER'
     const request = getMockRequest()
     const submission = getMockSubmission()
-    mockGetFromLink.mockResolvedValue(getMockActivities())
-    mockGetAllChildrenCatches.mockResolvedValue(getMockCatches())
-    mockGetAllChildrenSmallCatches.mockResolvedValue(getMockSmallCatches())
+    mockGetFromLink.mockResolvedValueOnce(getMockActivities())
+    mockGetAllChildrenCatches.mockResolvedValueOnce(getMockCatches())
+    mockGetAllChildrenSmallCatches.mockResolvedValueOnce(getMockSmallCatches())
 
     const result = await displayData(request, submission)
 
@@ -174,9 +174,9 @@ describe('display-data.unit', () => {
     process.env.CONTEXT = 'ANGLER'
     const request = getMockRequest()
     const submission = getMockSubmission()
-    mockGetFromLink.mockResolvedValue(getMockActivities())
-    mockGetAllChildrenCatches.mockResolvedValue(getMockCatches())
-    mockGetAllChildrenSmallCatches.mockResolvedValue([{
+    mockGetFromLink.mockResolvedValueOnce(getMockActivities())
+    mockGetAllChildrenCatches.mockResolvedValueOnce(getMockCatches())
+    mockGetAllChildrenSmallCatches.mockResolvedValueOnce([{
       id: 's1',
       month: 5,
       activity: { id: 'a1', river: { id: 'r1', name: 'River A' } },
@@ -192,9 +192,9 @@ describe('display-data.unit', () => {
     process.env.CONTEXT = 'ANGLER'
     const request = getMockRequest()
     const submission = getMockSubmission()
-    mockGetFromLink.mockResolvedValue(getMockActivities())
-    mockGetAllChildrenCatches.mockResolvedValue([])
-    mockGetAllChildrenSmallCatches.mockResolvedValue([{
+    mockGetFromLink.mockResolvedValueOnce(getMockActivities())
+    mockGetAllChildrenCatches.mockResolvedValueOnce([])
+    mockGetAllChildrenSmallCatches.mockResolvedValueOnce([{
       id: 's1',
       month: 5,
       activity: { id: 'a1', river: { id: 'r1', name: 'River A' } },
@@ -224,7 +224,7 @@ describe('display-data.unit', () => {
     process.env.CONTEXT = 'ADMIN'
     const request = getMockRequest()
     const submission = getMockSubmission()
-    mockGetFromLink.mockResolvedValue(getMockActivities())
+    mockGetFromLink.mockResolvedValueOnce(getMockActivities())
     const catches = [{
       id: 'c1',
       dateCaught: '2025-11-20',
@@ -236,8 +236,8 @@ describe('display-data.unit', () => {
       noDateRecorded: true,
       activity: { id: 'a1', river: { id: 'r1' } }
     }]
-    mockGetAllChildrenCatches.mockResolvedValue(catches)
-    mockGetAllChildrenSmallCatches.mockResolvedValue([])
+    mockGetAllChildrenCatches.mockResolvedValueOnce(catches)
+    mockGetAllChildrenSmallCatches.mockResolvedValueOnce([])
 
     const result = await displayData(request, submission)
 
@@ -282,8 +282,8 @@ describe('display-data.unit', () => {
     process.env.CONTEXT = 'ADMIN'
     const request = getMockRequest()
     const submission = getMockSubmission()
-    mockGetFromLink.mockResolvedValue(getMockActivities())
-    mockGetAllChildrenCatches.mockResolvedValue([])
+    mockGetFromLink.mockResolvedValueOnce(getMockActivities())
+    mockGetAllChildrenCatches.mockResolvedValueOnce([])
     const smallCatches = [{
       id: 's1',
       month: 5,
@@ -297,7 +297,7 @@ describe('display-data.unit', () => {
       activity: { id: 'a1', river: { id: 'r1', name: 'River A' } },
       counts: [{ name: 'Trout', count: 1 }]
     }]
-    mockGetAllChildrenSmallCatches.mockResolvedValue(smallCatches)
+    mockGetAllChildrenSmallCatches.mockResolvedValueOnce(smallCatches)
 
     const result = await displayData(request, submission)
 
