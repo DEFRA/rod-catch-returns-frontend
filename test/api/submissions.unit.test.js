@@ -38,9 +38,9 @@ describe('submissions.unit', () => {
 
   describe('add', () => {
     it.each([
-      ['WEB', 'angler', 'ANGLER'],
-      ['PAPER', 'admin', 'FMT']
-    ])('calls super.add with source as %s if it is the %s frontend', async (source, _, context) => {
+      { source: 'WEB', frontend: 'angler', context: 'ANGLER' },
+      { source: 'PAPER', frontend: 'admin', context: 'FMT' }
+    ])('calls super.add with source as $source if it is the $frontend frontend', async ({ source, context }) => {
       process.env.CONTEXT = context
       const superAddMock = EntityApi.prototype.add = jest.fn()
       const request = {}
