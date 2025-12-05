@@ -23,7 +23,7 @@ describe('reports-handler.unit', () => {
       const h = getMockH()
       mockReportLocationExists.mockResolvedValueOnce()
       mockListReports.mockResolvedValueOnce(getMockReports())
-      BaseHandler.prototype.readCacheAndDisplayView = jest.fn().mockReturnValue('view-result')
+      BaseHandler.prototype.readCacheAndDisplayView = jest.fn().mockReturnValueOnce('view-result')
       const handler = new ReportsHandler('reports')
 
       await handler.doGet(request, h)
@@ -36,7 +36,7 @@ describe('reports-handler.unit', () => {
       const h = getMockH()
       mockReportLocationExists.mockResolvedValueOnce()
       mockListReports.mockResolvedValueOnce(getMockReports())
-      BaseHandler.prototype.readCacheAndDisplayView = jest.fn().mockReturnValue('view-result')
+      BaseHandler.prototype.readCacheAndDisplayView = jest.fn().mockReturnValueOnce('view-result')
       const handler = new ReportsHandler('reports')
 
       await handler.doGet(request, h)
@@ -50,7 +50,7 @@ describe('reports-handler.unit', () => {
       mockReportLocationExists.mockResolvedValueOnce()
       const reports = getMockReports()
       mockListReports.mockResolvedValueOnce(reports)
-      BaseHandler.prototype.readCacheAndDisplayView = jest.fn().mockReturnValue('view-result')
+      BaseHandler.prototype.readCacheAndDisplayView = jest.fn().mockReturnValueOnce('view-result')
       const handler = new ReportsHandler('reports')
 
       const result = await handler.doGet(request, h)
