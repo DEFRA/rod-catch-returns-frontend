@@ -77,9 +77,9 @@ describe('licence.unit', () => {
   })
 
   it.each([
-    ['NOT_FOUND', 404],
-    ['FORBIDDEN', 403]
-  ])('should return NOT_FOUND if API throws %s', async (_, statusCode) => {
+    { error: 'NOT_FOUND', statusCode: 404 },
+    { error: 'FORBIDDEN', statusCode: 403 }
+  ])('should return NOT_FOUND if API throws $error', async ({ statusCode }) => {
     setupMocks({
       licenceApiResponse: () => {
         throw new ResponseError.Error('Error', statusCode)

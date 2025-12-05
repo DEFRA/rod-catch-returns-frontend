@@ -1,6 +1,8 @@
 const fmt = require('../../src/routes/fmt')
 const { getMockH } = require('../test-utils/server-test-utils')
 
+jest.mock('../../src/lib/antivirus')
+
 describe('fmt', () => {
   describe('/login', () => {
     const loginRoute = fmt.find(route => route.path === '/login')
