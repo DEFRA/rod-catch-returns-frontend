@@ -38,7 +38,36 @@ describe('save-handler.unit', () => {
       await expect(handler.doGet(request, h)).rejects.toThrow('Bad submission request')
     })
 
-    it('should update cache and redirect to activityId if present', async () => {
+    it('should get the submission by id with the correct parameters', async () => {
+      const cacheObj = {}
+      const request = getMockRequest({ submissionId: 'submissions/1', activityId: '/activity/123' }, cacheObj)
+      const h = getMockH()
+      mockGetById.mockResolvedValueOnce(getMockSubmission())
+      const handler = new LookupHandler('lookup')
+
+      await handler.doGet(request, h)
+
+      expect(mockGetById).toHaveBeenCalledWith(request, 'submissions/1')
+    })
+
+    it('should update cache', async () => {
+      const cacheObj = {}
+      const request = getMockRequest({ submissionId: 'submissions/1', activityId: '/activity/123' }, cacheObj)
+      const h = getMockH()
+      mockGetById.mockResolvedValueOnce(getMockSubmission())
+      const handler = new LookupHandler('lookup')
+
+      await handler.doGet(request, h)
+
+      expect(cacheObj).toEqual({
+        contactId: 'c1',
+        year: '2025',
+        submissionId: 'submissions/1',
+        back: '/summary'
+      })
+    })
+
+    it('should redirect to the activity if present', async () => {
       const cacheObj = {}
       const request = getMockRequest({ submissionId: 'submissions/1', activityId: '/activity/123' }, cacheObj)
       const h = getMockH()
@@ -56,7 +85,7 @@ describe('save-handler.unit', () => {
       expect(h.redirect).toHaveBeenCalledWith('/activity/123')
     })
 
-    it('should redirect to smallCatchId if present', async () => {
+    it('should redirect to the small catch if present', async () => {
       const cacheObj = {}
       const request = getMockRequest({ submissionId: 'submissions/1', smallCatchId: 'small-catches/2' }, cacheObj)
       const h = getMockH()
@@ -68,7 +97,7 @@ describe('save-handler.unit', () => {
       expect(h.redirect).toHaveBeenCalledWith('/small-catches/2')
     })
 
-    it('should redirect to catchId if present', async () => {
+    it('should redirect to the catch if present', async () => {
       const cacheObj = {}
       const request = getMockRequest({ submissionId: 'submissions/1', catchId: 'catches/3' }, cacheObj)
       const h = getMockH()
