@@ -1,3 +1,7 @@
+/**
+ * @jest-environment jsdom
+ */
+
 const populateResultsMock = jest.fn(rivers => rivers)
 
 describe('.getRiversSuggestions', () => {
