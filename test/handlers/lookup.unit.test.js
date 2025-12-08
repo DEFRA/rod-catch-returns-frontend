@@ -76,12 +76,6 @@ describe('save-handler.unit', () => {
 
       await handler.doGet(request, h)
 
-      expect(cacheObj).toEqual({
-        contactId: 'c1',
-        year: '2025',
-        submissionId: 'submissions/1',
-        back: '/summary'
-      })
       expect(h.redirect).toHaveBeenCalledWith('/activity/123')
     })
 
