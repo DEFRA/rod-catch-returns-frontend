@@ -8,6 +8,11 @@ jest.mock('../../src/api/client')
 describe('CachedEntityApi', () => {
   beforeEach(() => {
     jest.resetAllMocks()
+    jest.useFakeTimers()
+  })
+
+  afterEach(() => {
+    jest.useRealTimers()
   })
 
   const getMockRequest = () => ({ headers: { authorization: 'Bearer token' } })
@@ -69,8 +74,6 @@ describe('CachedEntityApi', () => {
   })
 
   it('should clear cache after TTL and refetch data', async () => {
-    jest.useFakeTimers()
-
     const mockRequest = getMockRequest()
     const mockEntities = getMockEntities()
     Client.request.mockResolvedValue({
@@ -93,7 +96,5 @@ describe('CachedEntityApi', () => {
     const result = await instance.list(mockRequest)
     expect(Client.request).toHaveBeenCalledTimes(2)
     expect(result).toEqual([{ id: 3, label: 'C-mapped' }])
-
-    jest.useRealTimers()
   })
 })
