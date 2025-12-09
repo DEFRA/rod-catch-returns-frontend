@@ -140,7 +140,6 @@ class SalmonAndLargeTroutHandler extends BaseHandler {
     cache.back = request.path
     const submission = await submissionsApi.getById(request, cache.submissionId)
     const activities = await activitiesApi.getFromLink(request, submission._links.activities.href)
-
     const rivers = activities.map(a => a.river)
       .filter(r => process.env.CONTEXT === 'FMT' ? true : !r.internal)
 
