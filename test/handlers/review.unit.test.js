@@ -19,10 +19,6 @@ describe('review-handler.unit', () => {
     process.env = { ...OLD_ENV }
   })
 
-  afterEach(() => {
-    process.env = OLD_ENV
-  })
-
   const getMockRequest = (cacheObj, payload = {}) => ({
     path: '/review',
     payload,
