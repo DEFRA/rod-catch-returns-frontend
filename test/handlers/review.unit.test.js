@@ -1,21 +1,15 @@
 const mockGetById = jest.fn()
-const mockSetSubmitted = jest.fn()
-const mockSetIncomplete = jest.fn()
 const mockDisplayData = jest.fn()
 
 const ReviewHandler = require('../../src/handlers/review')
-
-jest.mock('../../src/api/submissions', () => {
-  return jest.fn().mockImplementation(() => ({
-    getById: mockGetById,
-    setSubmitted: mockSetSubmitted,
-    setIncomplete: mockSetIncomplete
-  }))
-})
-
-jest.mock('../../src/handlers/display-data', () => mockDisplayData)
-
 const { getMockH } = require('../test-utils/server-test-utils')
+
+jest.mock('../../src/api/submissions', () => jest.fn(() => ({
+  getById: mockGetById,
+  setSubmitted: jest.fn(),
+  setIncomplete: jest.fn()
+})))
+jest.mock('../../src/handlers/display-data', () => mockDisplayData)
 
 describe('review-handler.unit', () => {
   const OLD_ENV = process.env
@@ -29,7 +23,7 @@ describe('review-handler.unit', () => {
     process.env = OLD_ENV
   })
 
-  const getMockRequest = (cacheObj = {}, payload = {}) => ({
+  const getMockRequest = (cacheObj, payload = {}) => ({
     path: '/review',
     payload,
     cache: jest.fn(() => ({
