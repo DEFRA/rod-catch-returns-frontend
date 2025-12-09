@@ -45,10 +45,18 @@ jest.mock('../../src/handlers/common', () => ({
   isAllowedParam: (...args) => mockIsAllowedParam(...args)
 }))
 
+// TODO fix
+
 describe('salmon-large-trout-handler.unit', () => {
+  const OLD_ENV = process.env
+
   beforeEach(() => {
     jest.clearAllMocks()
-    process.env.CONTEXT = ''
+    process.env = { ...OLD_ENV }
+  })
+
+  afterEach(() => {
+    process.env = OLD_ENV
   })
 
   const getMockRequest = (cacheObj = {}, payload = {}, params = { id: 'add' }) => ({
@@ -56,8 +64,8 @@ describe('salmon-large-trout-handler.unit', () => {
     params,
     payload,
     cache: jest.fn(() => ({
-      get: jest.fn().mockResolvedValue(cacheObj),
-      set: jest.fn().mockResolvedValue()
+      get: jest.fn().mockResolvedValueOnce(cacheObj),
+      set: jest.fn().mockResolvedValueOnce()
     }))
   })
 
@@ -66,7 +74,7 @@ describe('salmon-large-trout-handler.unit', () => {
       it('should throw ResponseError if param not allowed', async () => {
         const request = getMockRequest({}, {}, { id: 'bad' })
         const h = getMockH()
-        mockIsAllowedParam.mockReturnValue(false)
+        mockIsAllowedParam.mockReturnValueOnce(false)
         const handler = new SalmonAndLargeTroutHandler('catches')
 
         await expect(handler.doGet(request, h)).rejects.toThrow(ResponseError.Error)
@@ -75,11 +83,11 @@ describe('salmon-large-trout-handler.unit', () => {
       it('should redirect to review if submission locked', async () => {
         const request = getMockRequest({ submissionId: 'sub-1' })
         const h = getMockH()
-        mockIsAllowedParam.mockReturnValue(true)
-        mockGetById.mockResolvedValue({ _links: { activities: { href: '/activities' } } })
-        mockGetActivitiesFromLink.mockResolvedValue([{ river: { id: 'r1', internal: false } }])
-        mockListMethods.mockResolvedValue([{ id: 'm1', internal: false }])
-        mockTestLocked.mockResolvedValue(true)
+        mockIsAllowedParam.mockReturnValueOnce(true)
+        mockGetById.mockResolvedValueOnce({ _links: { activities: { href: '/activities' } } })
+        mockGetActivitiesFromLink.mockResolvedValueOnce([{ river: { id: 'r1', internal: false } }])
+        mockListMethods.mockResolvedValueOnce([{ id: 'm1', internal: false }])
+        mockTestLocked.mockResolvedValueOnce(true)
         const handler = new SalmonAndLargeTroutHandler('catches')
 
         await handler.doGet(request, h)
@@ -91,14 +99,14 @@ describe('salmon-large-trout-handler.unit', () => {
         const handler = new SalmonAndLargeTroutHandler('catches')
         const request = getMockRequest({ submissionId: 'submissions/1', licenceNumber: 'AAA-111', postcode: 'AA11 1AA', year: 2025 })
         const h = getMockH()
-        mockIsAllowedParam.mockReturnValue(true)
-        mockGetById.mockResolvedValue({ _links: { activities: { href: '/activities' } } })
-        mockGetActivitiesFromLink.mockResolvedValue([{ river: { id: 'r1', internal: false } }])
-        mockListMethods.mockResolvedValue([{ id: 'm1', internal: false }])
-        mockListSpecies.mockResolvedValue([{ id: 's1' }])
-        mockTestLocked.mockResolvedValue(false)
+        mockIsAllowedParam.mockReturnValueOnce(true)
+        mockGetById.mockResolvedValueOnce({ _links: { activities: { href: '/activities' } } })
+        mockGetActivitiesFromLink.mockResolvedValueOnce([{ river: { id: 'r1', internal: false } }])
+        mockListMethods.mockResolvedValueOnce([{ id: 'm1', internal: false }])
+        mockListSpecies.mockResolvedValueOnce([{ id: 's1' }])
+        mockTestLocked.mockResolvedValueOnce(false)
 
-        BaseHandler.prototype.readCacheAndDisplayView = jest.fn().mockReturnValue('view-result')
+        BaseHandler.prototype.readCacheAndDisplayView = jest.fn().mockReturnValueOnce('view-result')
 
         await handler.doGet(request, h)
 
@@ -131,13 +139,13 @@ describe('salmon-large-trout-handler.unit', () => {
         const handler = new SalmonAndLargeTroutHandler('catches')
         const request = getMockRequest({ submissionId: 'submissions/1', licenceNumber: 'AAA-111', postcode: 'AA11 1AA', year: 2025 }, {}, { id: '123' })
         const h = getMockH()
-        mockIsAllowedParam.mockReturnValue(true)
-        mockGetById.mockResolvedValue({ _links: { activities: { href: '/activities' } } })
-        mockGetActivitiesFromLink.mockResolvedValue([{ river: { id: 'r1', internal: false }, _links: { self: { href: 'act1' } } }])
-        mockListMethods.mockResolvedValue([{ id: 'm1', internal: false }])
-        mockListSpecies.mockResolvedValue([{ id: 's1' }])
-        mockTestLocked.mockResolvedValue(false)
-        mockGetCatchById.mockResolvedValue({
+        mockIsAllowedParam.mockReturnValueOnce(true)
+        mockGetById.mockResolvedValueOnce({ _links: { activities: { href: '/activities' } } })
+        mockGetActivitiesFromLink.mockResolvedValueOnce([{ river: { id: 'r1', internal: false }, _links: { self: { href: 'act1' } } }])
+        mockListMethods.mockResolvedValueOnce([{ id: 'm1', internal: false }])
+        mockListSpecies.mockResolvedValueOnce([{ id: 's1' }])
+        mockTestLocked.mockResolvedValueOnce(false)
+        mockGetCatchById.mockResolvedValueOnce({
           id: 'c1',
           dateCaught: '2025-05-01',
           activity: { river: { id: 'r1' } },
@@ -147,8 +155,8 @@ describe('salmon-large-trout-handler.unit', () => {
           released: true,
           _links: { activityEntity: { href: 'act1' } }
         })
-        mockDoMap.mockResolvedValue({ id: 'c1', dateCaught: '2025-05-01', activity: { river: { id: 'r1' } }, species: { id: 's1' }, mass: { oz: 32, kg: 2, type: 'imperial' }, method: { id: 'm1' }, released: true, _links: { activityEntity: { href: 'act1' } } })
-        BaseHandler.prototype.readCacheAndDisplayView = jest.fn().mockReturnValue('view-result')
+        mockDoMap.mockResolvedValueOnce({ id: 'c1', dateCaught: '2025-05-01', activity: { river: { id: 'r1' } }, species: { id: 's1' }, mass: { oz: 32, kg: 2, type: 'imperial' }, method: { id: 'm1' }, released: true, _links: { activityEntity: { href: 'act1' } } })
+        BaseHandler.prototype.readCacheAndDisplayView = jest.fn().mockReturnValueOnce('view-result')
 
         await handler.doGet(request, h)
 
@@ -180,6 +188,196 @@ describe('salmon-large-trout-handler.unit', () => {
             year: 2025
           })
       })
+
+      it('should throw ResponseError if catch not found in change', async () => {
+        const handler = new SalmonAndLargeTroutHandler('catches')
+        const request = getMockRequest({ submissionId: 'sub-1', year: 2025 }, {}, { id: '123' })
+        const h = getMockH()
+        mockIsAllowedParam.mockReturnValueOnce(true)
+        mockGetById.mockResolvedValueOnce({ _links: { activities: { href: '/activities' } } })
+        mockGetActivitiesFromLink.mockResolvedValueOnce([{
+          river: {
+            id: 'r1',
+            internal: false
+          },
+          _links: {
+            self: {
+              href: 'act1'
+            }
+          }
+        }])
+        mockListMethods.mockResolvedValueOnce([{ id: 'm1', internal: false }])
+        mockListSpecies.mockResolvedValueOnce([{ id: 's1' }])
+        mockTestLocked.mockResolvedValueOnce(false)
+        mockGetCatchById.mockResolvedValueOnce(null) // simulate missing catch
+
+        await expect(handler.doGet(request, h)).rejects.toMatchObject({
+          message: 'Unauthorized access to large catch',
+          statusCode: ResponseError.status.UNAUTHORIZED
+        })
+      })
+
+      it('should throw ResponseError if catch activity does not match submission activities', async () => {
+        const handler = new SalmonAndLargeTroutHandler('catches')
+        const request = getMockRequest({ submissionId: 'sub-1', year: 2025 }, {}, { id: '123' })
+        const h = getMockH()
+        mockIsAllowedParam.mockReturnValueOnce(true)
+        mockGetById.mockResolvedValueOnce({ _links: { activities: { href: '/activities' } } })
+        mockGetActivitiesFromLink.mockResolvedValueOnce([{
+          river: {
+            id: 'r1',
+            internal: false
+          },
+          _links: {
+            self: {
+              href: 'act1'
+            }
+          }
+        }])
+        mockListMethods.mockResolvedValueOnce([{ id: 'm1', internal: false }])
+        mockListSpecies.mockResolvedValueOnce([{ id: 's1' }])
+        mockTestLocked.mockResolvedValueOnce(false)
+        mockGetCatchById.mockResolvedValueOnce({
+          id: 'c1',
+          dateCaught: '2025-05-01',
+          activity: { river: { id: 'r1' } },
+          species: { id: 's1' },
+          mass: { oz: 32, kg: 2, type: 'imperial' },
+          method: { id: 'm1' },
+          released: true,
+          _links: { activityEntity: { href: 'different-act' } }
+        })
+
+        await expect(handler.doGet(request, h)).rejects.toMatchObject({
+          message: 'Unauthorized access to large catch',
+          statusCode: ResponseError.status.UNAUTHORIZED
+        })
+      })
+
+      it('should include noDateRecorded and onlyMonthRecorded flags in payload', async () => {
+        const handler = new SalmonAndLargeTroutHandler('catches')
+        const request = getMockRequest({ submissionId: 'sub-1', year: 2025 }, {}, { id: '123' })
+        const h = getMockH()
+        mockIsAllowedParam.mockReturnValueOnce(true)
+        mockGetById.mockResolvedValueOnce({ _links: { activities: { href: '/activities' } } })
+        mockGetActivitiesFromLink.mockResolvedValueOnce([{ river: { id: 'r1', internal: false }, _links: { self: { href: 'act1' } } }])
+        mockListMethods.mockResolvedValueOnce([{ id: 'm1', internal: false }])
+        mockListSpecies.mockResolvedValueOnce([{ id: 's1' }])
+        mockTestLocked.mockResolvedValueOnce(false)
+        mockGetCatchById.mockResolvedValueOnce({
+          id: 'c1',
+          dateCaught: '2025-05-01',
+          activity: { river: { id: 'r1' } },
+          species: { id: 's1' },
+          mass: { oz: 32, kg: 2, type: 'imperial' },
+          method: { id: 'm1' },
+          released: false,
+          noDateRecorded: true,
+          onlyMonthRecorded: true,
+          _links: { activityEntity: { href: 'act1' } }
+        })
+        mockDoMap.mockResolvedValueOnce({
+          id: 'c1',
+          dateCaught: '2025-05-01',
+          activity: { river: { id: 'r1' } },
+          species: { id: 's1' },
+          mass: { oz: 32, kg: 2, type: 'imperial' },
+          method: { id: 'm1' },
+          released: false,
+          noDateRecorded: true,
+          onlyMonthRecorded: true,
+          _links: { activityEntity: { href: 'act1' } }
+        })
+
+        BaseHandler.prototype.readCacheAndDisplayView = jest.fn().mockReturnValueOnce('view-result')
+
+        const result = await handler.doGet(request, h)
+        expect(BaseHandler.prototype.readCacheAndDisplayView).toHaveBeenCalledWith(
+          request,
+          h,
+          expect.objectContaining({
+            payload: expect.objectContaining({
+              noDateRecorded: 'true',
+              onlyMonthRecorded: 'true'
+            })
+          })
+        )
+        expect(result).toBe('view-result')
+      })
+
+      it('should filter out internal rivers/methods when CONTEXT=ANGLER', async () => {
+        process.env.CONTEXT = 'ANGLER'
+        const handler = new SalmonAndLargeTroutHandler('catches')
+        const request = getMockRequest({ submissionId: 'sub-1', year: 2025 }, {}, { id: 'add' })
+        const h = getMockH()
+        mockIsAllowedParam.mockReturnValueOnce(true)
+        mockGetById.mockResolvedValueOnce({ _links: { activities: { href: '/activities' } } })
+        mockGetActivitiesFromLink.mockResolvedValueOnce([
+          { river: { id: 'r1', internal: false } },
+          { river: { id: 'r2', internal: true } }
+        ])
+        mockListMethods.mockResolvedValueOnce([
+          { id: 'm1', internal: false },
+          { id: 'm2', internal: true }
+        ])
+        mockListSpecies.mockResolvedValueOnce([{ id: 's1' }])
+        mockTestLocked.mockResolvedValueOnce(false)
+
+        BaseHandler.prototype.readCacheAndDisplayView = jest.fn().mockReturnValueOnce('view-result')
+
+        await handler.doGet(request, h)
+
+        expect(BaseHandler.prototype.readCacheAndDisplayView).toHaveBeenCalledWith(
+          request,
+          h,
+          expect.objectContaining({
+            rivers: [{ id: 'r1', internal: false }],
+            methods: [{ id: 'm1', internal: false }]
+          })
+        )
+      })
+
+      it('should filter rivers by cache.add.river in add', async () => {
+        const handler = new SalmonAndLargeTroutHandler('catches')
+        const cacheObj = { submissionId: 'sub-1', year: 2025, add: { river: 'r2' } }
+        const request = getMockRequest(cacheObj, {}, { id: 'add' })
+        const h = getMockH()
+        mockIsAllowedParam.mockReturnValueOnce(true)
+        mockGetById.mockResolvedValueOnce({ _links: { activities: { href: '/activities' } } })
+        mockGetActivitiesFromLink.mockResolvedValueOnce([
+          { river: { id: 'r1', internal: false } },
+          { river: { id: 'r2', internal: false } }
+        ])
+        mockListMethods.mockResolvedValueOnce([{ id: 'm1', internal: false }])
+        mockListSpecies.mockResolvedValueOnce([{ id: 's1' }])
+        mockTestLocked.mockResolvedValueOnce(false)
+
+        BaseHandler.prototype.readCacheAndDisplayView = jest.fn().mockReturnValueOnce('view-result')
+
+        await handler.doGet(request, h)
+
+        expect(BaseHandler.prototype.readCacheAndDisplayView).toHaveBeenCalledWith(
+          request,
+          h,
+          expect.objectContaining({
+            rivers: [{ id: 'r2', internal: false }]
+          })
+        )
+      })
+
+      it('should skip exclusion change when errors are present in doPost', async () => {
+        const handler = new SalmonAndLargeTroutHandler('catches')
+        const cacheObj = { submissionId: 'sub-1' }
+        const request = getMockRequest(cacheObj, {}, { id: '123' })
+        const h = getMockH()
+        mockGetById.mockResolvedValueOnce({ id: 'sub-1', reportingExclude: true })
+        BaseHandler.prototype.writeCacheAndRedirect = jest.fn().mockReturnValueOnce('redirect-result')
+
+        const result = await handler.doPost(request, h, ['error'])
+        expect(mockChangeExclusion).not.toHaveBeenCalled()
+        expect(BaseHandler.prototype.writeCacheAndRedirect).toHaveBeenCalled()
+        expect(result).toBe('redirect-result')
+      })
     })
 
     describe('doPost', () => {
@@ -187,8 +385,8 @@ describe('salmon-large-trout-handler.unit', () => {
         const cacheObj = { submissionId: 'sub-1' }
         const request = getMockRequest(cacheObj, { add: true, river: 'r1' }, { id: '123' })
         const h = getMockH()
-        mockGetById.mockResolvedValue({ id: 'sub-1', reportingExclude: true })
-        BaseHandler.prototype.writeCacheAndRedirect = jest.fn().mockReturnValue('redirect-result')
+        mockGetById.mockResolvedValueOnce({ id: 'sub-1', reportingExclude: true })
+        BaseHandler.prototype.writeCacheAndRedirect = jest.fn().mockReturnValueOnce('redirect-result')
         const handler = new SalmonAndLargeTroutHandler('catches')
 
         await handler.doPost(request, h, null)
@@ -200,8 +398,8 @@ describe('salmon-large-trout-handler.unit', () => {
         const cacheObj = { submissionId: 'sub-1' }
         const request = getMockRequest(cacheObj, { add: true, river: 'r1' }, { id: '123' })
         const h = getMockH()
-        mockGetById.mockResolvedValue({ id: 'sub-1', reportingExclude: true })
-        BaseHandler.prototype.writeCacheAndRedirect = jest.fn().mockReturnValue('redirect-result')
+        mockGetById.mockResolvedValueOnce({ id: 'sub-1', reportingExclude: true })
+        BaseHandler.prototype.writeCacheAndRedirect = jest.fn().mockReturnValueOnce('redirect-result')
         const handler = new SalmonAndLargeTroutHandler('catches')
 
         await handler.doPost(request, h, null)
@@ -220,8 +418,8 @@ describe('salmon-large-trout-handler.unit', () => {
         const cacheObj = { submissionId: 'sub-1', add: { river: 'r1' } }
         const request = getMockRequest(cacheObj, {}, { id: '123' })
         const h = getMockH()
-        mockGetById.mockResolvedValue({ id: 'sub-1', reportingExclude: false })
-        BaseHandler.prototype.writeCacheAndRedirect = jest.fn().mockReturnValue('redirect-result')
+        mockGetById.mockResolvedValueOnce({ id: 'sub-1', reportingExclude: false })
+        BaseHandler.prototype.writeCacheAndRedirect = jest.fn().mockReturnValueOnce('redirect-result')
         const handler = new SalmonAndLargeTroutHandler('catches')
 
         await handler.doPost(request, h, null)
@@ -244,8 +442,8 @@ describe('salmon-large-trout-handler.unit', () => {
         const handlerClear = new SalmonAndLargeTroutHandlerClear('catches')
         const request = getMockRequest()
         const h = getMockH()
-        BaseHandler.prototype.clearCacheErrorsAndPayload = jest.fn().mockResolvedValue()
-        jest.spyOn(SalmonAndLargeTroutHandler.prototype, 'doGet').mockResolvedValue('super-result')
+        BaseHandler.prototype.clearCacheErrorsAndPayload = jest.fn().mockResolvedValueOnce()
+        jest.spyOn(SalmonAndLargeTroutHandler.prototype, 'doGet').mockResolvedValueOnce('super-result')
 
         await handlerClear.doGet(request, h)
 
@@ -256,8 +454,8 @@ describe('salmon-large-trout-handler.unit', () => {
         const handlerClear = new SalmonAndLargeTroutHandlerClear('catches')
         const request = getMockRequest()
         const h = getMockH()
-        BaseHandler.prototype.clearCacheErrorsAndPayload = jest.fn().mockResolvedValue()
-        const superDoGetSpy = jest.spyOn(SalmonAndLargeTroutHandler.prototype, 'doGet').mockResolvedValue('super-result')
+        BaseHandler.prototype.clearCacheErrorsAndPayload = jest.fn().mockResolvedValueOnce()
+        const superDoGetSpy = jest.spyOn(SalmonAndLargeTroutHandler.prototype, 'doGet').mockResolvedValueOnce('super-result')
 
         await handlerClear.doGet(request, h)
 
