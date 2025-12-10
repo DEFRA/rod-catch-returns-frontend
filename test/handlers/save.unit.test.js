@@ -20,19 +20,20 @@ describe('save-handler.unit', () => {
   })
 
   it('should render view with extendPeriod=false when year is current year', async () => {
-    const request = getMockRequest()
+    const year = moment().year().toString()
+    const request = getMockRequest({ year })
     const h = getMockH()
     const handler = new SaveHandler('save')
 
     await handler.doGet(request, h)
 
-    expect(h.view).toHaveBeenCalledWith('save', expect.objectContaining({
+    expect(h.view).toHaveBeenCalledWith('save', {
       extendPeriod: false,
       catchReturnsRef: 'https://www.gov.uk/catch-returns',
       catchReturnsLink: 'www.gov.uk/catch-returns',
-      year: moment().year().toString(),
+      year,
       fmt: false
-    }))
+    })
   })
 
   it('should render view with extendPeriod=true when year is previous year', async () => {
