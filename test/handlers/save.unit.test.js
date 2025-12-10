@@ -12,9 +12,9 @@ describe('save-handler.unit', () => {
 
   const getMockRequest = (cacheObj = { year: moment().year().toString() }) => ({
     cache: jest.fn(() => ({
-      get: jest.fn().mockResolvedValue(cacheObj),
-      drop: jest.fn().mockResolvedValue(),
-      set: jest.fn().mockResolvedValue()
+      get: jest.fn().mockResolvedValueOnce(cacheObj),
+      drop: jest.fn().mockResolvedValueOnce(),
+      set: jest.fn().mockResolvedValueOnce()
     })),
     cookieAuth: { clear: jest.fn() }
   })
@@ -56,9 +56,9 @@ describe('save-handler.unit', () => {
     const mockCacheDrop = jest.fn(() => ({}))
     const request = {
       cache: () => ({
-        get: jest.fn().mockResolvedValue({ year: moment().year().toString() }),
+        get: jest.fn().mockResolvedValueOnce({ year: moment().year().toString() }),
         drop: mockCacheDrop,
-        set: jest.fn().mockResolvedValue()
+        set: jest.fn().mockResolvedValueOnce()
       }),
       cookieAuth: { clear: jest.fn() }
     }
