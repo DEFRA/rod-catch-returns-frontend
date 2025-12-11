@@ -73,6 +73,30 @@ describe('small-catch-handler.unit', () => {
     mockTestLocked.mockResolvedValue(locked)
   }
 
+  const getMockSubmission = () => ({
+    _links: {
+      activities: {
+        href: '/activities'
+      }
+    }
+  })
+
+  const getMockActivities = () => [
+    {
+      id: 'act1',
+      river: {
+        id: 'r1'
+      },
+      _links: {
+        self: {
+          href: 'act1'
+        }
+      }
+    }
+  ]
+
+  const getMockMethods = () => [{ id: 'm1', internal: false }]
+
   const setupApis = ({
     submissionGetById,
     activitiesGetFromLink,
@@ -108,12 +132,11 @@ describe('small-catch-handler.unit', () => {
         { activity: { id: 'act1' }, month: 'NOVEMBER' },
         { activity: { id: 'act1' }, month: 'DECEMBER' }
       ]
-
       setupApis({
-        submissionGetById: { _links: { activities: { href: '/activities' } } },
-        activitiesGetFromLink: [{ id: 'act1', river: { id: 'r1' }, _links: { self: { href: 'act1' } } }],
+        submissionGetById: getMockSubmission(),
+        activitiesGetFromLink: getMockActivities(),
         smallCatchGetAllChildren: allMonths,
-        listMethods: [{ id: 'm1', internal: false }]
+        listMethods: getMockMethods()
       })
       const handler = new SmallCatchHandler('small-catches')
 
@@ -126,16 +149,19 @@ describe('small-catch-handler.unit', () => {
       const request = getMockRequest()
       const h = getMockH()
       setupCommonFlags()
-      mockSubmissionGetById.mockResolvedValueOnce({ _links: { activities: { href: '/activities' } } })
+      // rivers derived from activities; simulate only one river passed to add by making activities match rivers length 1
       const activities = [
         { id: 'act1', river: { id: 'r1' }, _links: { self: { href: 'act1' } } },
         { id: 'act2', river: { id: 'r2' }, _links: { self: { href: 'act2' } } }
       ]
-      // rivers derived from activities; simulate only one river passed to add by making activities match rivers length 1
-      mockActivitiesGetFromLink.mockResolvedValueOnce(activities)
       // smallCatches has only one month used for act1 so monthsFiltered will be non-empty
-      mockSmallCatchGetAllChildren.mockResolvedValueOnce([{ activity: { id: 'act1' }, month: 'JANUARY' }])
-      mockListMethods.mockResolvedValueOnce([{ id: 'm1', internal: false }])
+      const smallCatches = [{ activity: { id: 'act1' }, month: 'JANUARY' }]
+      setupApis({
+        submissionGetById: getMockSubmission(),
+        activitiesGetFromLink: activities,
+        smallCatchGetAllChildren: smallCatches,
+        listMethods: getMockMethods()
+      })
       BaseHandler.prototype.readCacheAndDisplayView = jest.fn().mockReturnValueOnce('view-result')
       const handler = new SmallCatchHandler('small-catches')
 
@@ -160,13 +186,13 @@ describe('small-catch-handler.unit', () => {
     it('should throw ResponseError if small catch not found', async () => {
       const request = getMockRequest({ params: { id: '123' } })
       const h = getMockH()
-      mockIsAllowedParam.mockReturnValueOnce(true)
-      mockSubmissionGetById.mockResolvedValueOnce({ _links: { activities: { href: '/activities' } } })
-      // activities include one activity for r1
-      const activities = [{ id: 'act1', river: { id: 'r1' }, _links: { self: { href: 'act1' } } }]
-      mockActivitiesGetFromLink.mockResolvedValueOnce(activities)
-      mockListMethods.mockResolvedValueOnce([{ id: 'm1', internal: false }])
-      mockSmallCatchGetById.mockResolvedValueOnce(null)
+      setupCommonFlags()
+      setupApis({
+        submissionGetById: getMockSubmission(),
+        activitiesGetFromLink: getMockActivities(),
+        smallCatchGetById: null,
+        listMethods: getMockMethods()
+      })
       const handler = new SmallCatchHandler('small-catches')
 
       await expect(handler.doGet(request, h, {})).rejects.toMatchObject({
@@ -313,7 +339,7 @@ describe('small-catch-handler.unit', () => {
   describe('doPost', () => {
     it('should skip exclusion change when errors present', async () => {
       const cacheObj = { submissionId: 'sub-1' }
-      const request = getMockRequest({ cacheObj, params: { id: '123' }})
+      const request = getMockRequest({ cacheObj, params: { id: '123' } })
       const h = getMockH()
       mockSubmissionGetById.mockResolvedValueOnce({ id: 'sub-1', reportingExclude: true })
       BaseHandler.prototype.writeCacheAndRedirect = jest.fn().mockReturnValueOnce('redirect-result')
