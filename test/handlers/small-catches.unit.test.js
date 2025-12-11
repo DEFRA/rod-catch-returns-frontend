@@ -291,14 +291,18 @@ describe('small-catch-handler.unit', () => {
       const h = getMockH()
       setupCommonFlags()
       const activities = [
-        { river: { id: 'r1', internal: false } },
-        { river: { id: 'r2', internal: true } }
+        { river: { id: 'r1', internal: true } },
+        { river: { id: 'r2', internal: false } }
+      ]
+      const methods = [
+        { id: 'm1', internal: true },
+        { id: 'm2', internal: false }
       ]
       setupApis({
         submissionGetById: getMockSubmission(),
         activitiesGetFromLink: activities,
         smallCatchGetAllChildren: [],
-        listMethods: getMockMethods()
+        listMethods: methods
       })
       BaseHandler.prototype.readCacheAndDisplayView = jest.fn().mockReturnValueOnce('view-result')
       const handler = new SmallCatchHandler('small-catches')
@@ -315,8 +319,48 @@ describe('small-catch-handler.unit', () => {
             postcode: 'PC1',
             year: 2025
           },
-          rivers: [{ id: 'r1', internal: false }],
-          methods: [{ id: 'm1', internal: false }]
+          rivers: [{ id: 'r2', internal: false }],
+          methods: [{ id: 'm2', internal: false }]
+        }
+      )
+    })
+
+    it('should filter return all rivers and methods when CONTEXT=FMT', async () => {
+      process.env.CONTEXT = 'FMT'
+      const request = getMockRequest()
+      const h = getMockH()
+      setupCommonFlags()
+      const activities = [
+        { river: { id: 'r1', internal: true } },
+        { river: { id: 'r2', internal: false } }
+      ]
+      const methods = [
+        { id: 'm1', internal: true },
+        { id: 'm2', internal: false }
+      ]
+      setupApis({
+        submissionGetById: getMockSubmission(),
+        activitiesGetFromLink: activities,
+        smallCatchGetAllChildren: [],
+        listMethods: methods
+      })
+      BaseHandler.prototype.readCacheAndDisplayView = jest.fn().mockReturnValueOnce('view-result')
+      const handler = new SmallCatchHandler('small-catches')
+
+      await handler.doGet(request, h)
+
+      expect(BaseHandler.prototype.readCacheAndDisplayView).toHaveBeenCalledWith(
+        request,
+        h,
+        {
+          add: true,
+          details: {
+            licenceNumber: 'LIC',
+            postcode: 'PC1',
+            year: 2025
+          },
+          rivers: [{ id: 'r1', internal: true }, { id: 'r2', internal: false }],
+          methods: [{ id: 'm1', internal: true }, { id: 'm2', internal: false }]
         }
       )
     })
