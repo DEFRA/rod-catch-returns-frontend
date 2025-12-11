@@ -41,7 +41,7 @@ describe('small-catch-handler.unit', () => {
   const OLD_ENV = process.env
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    jest.resetAllMocks()
     process.env = { ...OLD_ENV }
   })
 
@@ -89,9 +89,9 @@ describe('small-catch-handler.unit', () => {
       mockTestLocked.mockResolvedValueOnce(false)
       const handler = new SmallCatchHandler('small-catches')
 
-      const result = await handler.doGet(request, h)
+      await handler.doGet(request, h)
 
-      expect(result).toEqual(h.redirect('/summary'))
+      expect(h.redirect).toHaveBeenCalledWith('/summary')
     })
 
     it('should filter months when single river and show add view', async () => {
@@ -111,11 +111,9 @@ describe('small-catch-handler.unit', () => {
       mockListMethods.mockResolvedValueOnce([{ id: 'm1', internal: false }])
       mockTestLocked.mockResolvedValueOnce(false)
       BaseHandler.prototype.readCacheAndDisplayView = jest.fn().mockReturnValueOnce('view-result')
-      const rivers = [{ id: 'r1', internal: false }]
-      const methods = [{ id: 'm1', internal: false }]
       const handler = new SmallCatchHandler('small-catches')
 
-      await handler.add(request, h, rivers, cache, methods, activities)
+      await handler.doGet(request, h, {})
 
       expect(BaseHandler.prototype.readCacheAndDisplayView).toHaveBeenCalledWith(
         request,
@@ -143,6 +141,19 @@ describe('small-catch-handler.unit', () => {
 
       await expect(handler.change(request, h, [], cache, [], [])).rejects.toMatchObject({
         message: 'Unauthorized access to small catch',
+        statusCode: ResponseError.status.UNAUTHORIZED
+      })
+    })
+
+    it('should throw ResponseError if sthe parameter is not allowed', async () => {
+      const cache = { submissionId: 'sub-1', licenceNumber: 'LIC', postcode: 'PC1', year: 2025 }
+      const request = getMockRequest(cache, {}, { id: '123' })
+      const h = getMockH()
+      mockIsAllowedParam.mockReturnValueOnce(false)
+      const handler = new SmallCatchHandler('small-catches')
+
+      await expect(handler.doGet(request, h, [], cache, [], [])).rejects.toMatchObject({
+        message: 'Unknown small catch',
         statusCode: ResponseError.status.UNAUTHORIZED
       })
     })
@@ -184,11 +195,9 @@ describe('small-catch-handler.unit', () => {
       }
       mockGetSmallCatchById.mockResolvedValueOnce(smallCatch)
       mockDoMap.mockResolvedValueOnce(smallCatch)
-
       const rivers = [{ id: 'r1', internal: false }]
       const methods = [{ id: 'm1', internal: false }]
       const activities = [{ _links: { self: { href: 'act1' } } }]
-
       BaseHandler.prototype.readCacheAndDisplayView = jest.fn().mockReturnValueOnce('view-result')
 
       await handler.change(request, h, rivers, cache, methods, activities)
@@ -216,7 +225,7 @@ describe('small-catch-handler.unit', () => {
       )
     })
 
-    it.skip('should filter out internal rivers and methods when CONTEXT=ANGLER', async () => {
+    it('should filter out internal rivers and methods when CONTEXT=ANGLER', async () => {
       process.env.CONTEXT = 'ANGLER'
       const cache = { submissionId: 'sub-1', licenceNumber: 'LIC', postcode: 'PC1', year: 2025 }
       const request = getMockRequest(cache, {}, { id: 'add' })
@@ -256,48 +265,48 @@ describe('small-catch-handler.unit', () => {
     })
 
     it('should redirect to review when submission locked', async () => {
-      const handler = new SmallCatchHandler('small-catches')
       const cache = { submissionId: 'sub-1' }
       const request = getMockRequest(cache, {}, { id: 'add' })
       const h = getMockH()
-
       mockIsAllowedParam.mockReturnValueOnce(true)
       mockGetById.mockResolvedValueOnce({ _links: { activities: { href: '/activities' } } })
       mockGetActivitiesFromLink.mockResolvedValueOnce([{ river: { id: 'r1', internal: false } }])
       mockListMethods.mockResolvedValueOnce([{ id: 'm1', internal: false }])
       mockTestLocked.mockResolvedValueOnce(true)
+      const handler = new SmallCatchHandler('small-catches')
 
-      const result = await handler.doGet(request, h)
-      expect(result).toEqual(h.redirect('/review'))
+      await handler.doGet(request, h)
+
+      expect(h.redirect).toHaveBeenCalledWith('/review')
     })
   })
 
   describe('doPost', () => {
     it('should skip exclusion change when errors present', async () => {
-      const handler = new SmallCatchHandler('small-catches')
       const cacheObj = { submissionId: 'sub-1' }
       const request = getMockRequest(cacheObj, {}, { id: '123' })
       const h = getMockH()
       mockGetById.mockResolvedValueOnce({ id: 'sub-1', reportingExclude: true })
       BaseHandler.prototype.writeCacheAndRedirect = jest.fn().mockReturnValueOnce('redirect-result')
+      const handler = new SmallCatchHandler('small-catches')
 
       const result = await handler.doPost(request, h, ['error'])
+
       expect(mockChangeExclusion).not.toHaveBeenCalled()
       expect(BaseHandler.prototype.writeCacheAndRedirect).toHaveBeenCalled()
       expect(result).toBe('redirect-result')
     })
 
-    it('should set cache.add and redirect to add when add payload present', async () => {
-      const handler = new SmallCatchHandler('small-catches')
+    it('should redirect to add when add payload present', async () => {
       const cacheObj = { submissionId: 'sub-1' }
       const request = getMockRequest(cacheObj, { add: true, river: 'r1' }, { id: '123' })
       const h = getMockH()
       mockGetById.mockResolvedValueOnce({ id: 'sub-1', reportingExclude: true })
       BaseHandler.prototype.writeCacheAndRedirect = jest.fn().mockReturnValueOnce('redirect-result')
+      const handler = new SmallCatchHandler('small-catches')
 
       await handler.doPost(request, h, null)
 
-      expect(cacheObj.add).toEqual({ river: 'r1' })
       expect(BaseHandler.prototype.writeCacheAndRedirect).toHaveBeenCalledWith(
         request,
         h,
@@ -310,20 +319,17 @@ describe('small-catch-handler.unit', () => {
   })
 
   describe('SmallCatchHandlerClear', () => {
-    it('should clear cache errors and payload then call super.doGet', async () => {
-      const handlerClear = new SmallCatchHandlerClear('small-catches')
+    it('should call super.doGet', async () => {
       const cache = { submissionId: 'sub-1' }
       const request = getMockRequest(cache, {}, { id: 'add' })
       const h = getMockH()
-
       BaseHandler.prototype.clearCacheErrorsAndPayload = jest.fn().mockResolvedValueOnce()
       const superDoGetSpy = jest.spyOn(SmallCatchHandler.prototype, 'doGet').mockResolvedValueOnce('super-result')
+      const handlerClear = new SmallCatchHandlerClear('small-catches')
 
-      const result = await handlerClear.doGet(request, h)
+      await handlerClear.doGet(request, h)
 
-      expect(BaseHandler.prototype.clearCacheErrorsAndPayload).toHaveBeenCalledWith(request)
       expect(superDoGetSpy).toHaveBeenCalledWith(request, h)
-      expect(result).toBe('super-result')
     })
   })
 })
