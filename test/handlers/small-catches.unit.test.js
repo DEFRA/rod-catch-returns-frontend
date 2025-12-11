@@ -1,9 +1,9 @@
-const mockGetById = jest.fn()
+const mockSubmissionGetById = jest.fn()
 const mockChangeExclusion = jest.fn()
-const mockGetAllChildren = jest.fn()
-const mockGetSmallCatchById = jest.fn()
-const mockDoMap = jest.fn()
-const mockGetActivitiesFromLink = jest.fn()
+const mockSmallCatchGetAllChildren = jest.fn()
+const mockSmallCatchGetById = jest.fn()
+const mockSmallCatchDoMap = jest.fn()
+const mockActivitiesGetFromLink = jest.fn()
 const mockListMethods = jest.fn()
 const mockTestLocked = jest.fn()
 const mockIsAllowedParam = jest.fn()
@@ -14,18 +14,18 @@ const ResponseError = require('../../src/handlers/response-error')
 const { getMockH } = require('../test-utils/server-test-utils')
 
 jest.mock('../../src/api/submissions', () => jest.fn(() => ({
-  getById: mockGetById,
+  getById: mockSubmissionGetById,
   changeExclusion: mockChangeExclusion
 })))
 
 jest.mock('../../src/api/small-catches', () => jest.fn(() => ({
-  getAllChildren: mockGetAllChildren,
-  getById: mockGetSmallCatchById,
-  doMap: mockDoMap
+  getAllChildren: mockSmallCatchGetAllChildren,
+  getById: mockSmallCatchGetById,
+  doMap: mockSmallCatchDoMap
 })))
 
 jest.mock('../../src/api/activities', () => jest.fn(() => ({
-  getFromLink: mockGetActivitiesFromLink
+  getFromLink: mockActivitiesGetFromLink
 })))
 
 jest.mock('../../src/api/methods', () => jest.fn(() => ({
@@ -70,10 +70,10 @@ describe('small-catch-handler.unit', () => {
       const request = getMockRequest(cache, {}, { id: 'add' })
       const h = getMockH()
       setupCommonFlags()
-      mockGetById.mockResolvedValueOnce({ _links: { activities: { href: '/activities' } } })
+      mockSubmissionGetById.mockResolvedValueOnce({ _links: { activities: { href: '/activities' } } })
       // activities include one activity for r1
       const activities = [{ id: 'act1', river: { id: 'r1' }, _links: { self: { href: 'act1' } } }]
-      mockGetActivitiesFromLink.mockResolvedValueOnce(activities)
+      mockActivitiesGetFromLink.mockResolvedValueOnce(activities)
       // smallCatches already include all months for that activity
       const allMonths = [
         { activity: { id: 'act1' }, month: 'JANUARY' },
@@ -89,7 +89,7 @@ describe('small-catch-handler.unit', () => {
         { activity: { id: 'act1' }, month: 'NOVEMBER' },
         { activity: { id: 'act1' }, month: 'DECEMBER' }
       ]
-      mockGetAllChildren.mockResolvedValueOnce(allMonths)
+      mockSmallCatchGetAllChildren.mockResolvedValueOnce(allMonths)
       mockListMethods.mockResolvedValueOnce([{ id: 'm1', internal: false }])
       const handler = new SmallCatchHandler('small-catches')
 
@@ -103,15 +103,15 @@ describe('small-catch-handler.unit', () => {
       const request = getMockRequest(cache, {}, { id: 'add' })
       const h = getMockH()
       setupCommonFlags()
-      mockGetById.mockResolvedValueOnce({ _links: { activities: { href: '/activities' } } })
+      mockSubmissionGetById.mockResolvedValueOnce({ _links: { activities: { href: '/activities' } } })
       const activities = [
         { id: 'act1', river: { id: 'r1' }, _links: { self: { href: 'act1' } } },
         { id: 'act2', river: { id: 'r2' }, _links: { self: { href: 'act2' } } }
       ]
       // rivers derived from activities; simulate only one river passed to add by making activities match rivers length 1
-      mockGetActivitiesFromLink.mockResolvedValueOnce(activities)
+      mockActivitiesGetFromLink.mockResolvedValueOnce(activities)
       // smallCatches has only one month used for act1 so monthsFiltered will be non-empty
-      mockGetAllChildren.mockResolvedValueOnce([{ activity: { id: 'act1' }, month: 'JANUARY' }])
+      mockSmallCatchGetAllChildren.mockResolvedValueOnce([{ activity: { id: 'act1' }, month: 'JANUARY' }])
       mockListMethods.mockResolvedValueOnce([{ id: 'm1', internal: false }])
       BaseHandler.prototype.readCacheAndDisplayView = jest.fn().mockReturnValueOnce('view-result')
       const handler = new SmallCatchHandler('small-catches')
@@ -139,12 +139,12 @@ describe('small-catch-handler.unit', () => {
       const request = getMockRequest(cache, {}, { id: '123' })
       const h = getMockH()
       mockIsAllowedParam.mockReturnValueOnce(true)
-      mockGetById.mockResolvedValueOnce({ _links: { activities: { href: '/activities' } } })
+      mockSubmissionGetById.mockResolvedValueOnce({ _links: { activities: { href: '/activities' } } })
       // activities include one activity for r1
       const activities = [{ id: 'act1', river: { id: 'r1' }, _links: { self: { href: 'act1' } } }]
-      mockGetActivitiesFromLink.mockResolvedValueOnce(activities)
+      mockActivitiesGetFromLink.mockResolvedValueOnce(activities)
       mockListMethods.mockResolvedValueOnce([{ id: 'm1', internal: false }])
-      mockGetSmallCatchById.mockResolvedValueOnce(null)
+      mockSmallCatchGetById.mockResolvedValueOnce(null)
       const handler = new SmallCatchHandler('small-catches')
 
       await expect(handler.doGet(request, h, {})).rejects.toMatchObject({
@@ -174,13 +174,13 @@ describe('small-catch-handler.unit', () => {
 
       mockIsAllowedParam.mockReturnValueOnce(true)
       // small catch belongs to activity 'act-different'
-      mockGetSmallCatchById.mockResolvedValueOnce({
+      mockSmallCatchGetById.mockResolvedValueOnce({
         id: 'sc1',
         _links: { activityEntity: { href: 'act-different' } }
       })
       const activities = [{ _links: { self: { href: 'act1' } }, river: { id: 'r1' } }]
-      mockGetById.mockResolvedValueOnce({ _links: { activities: { href: '/activities' } } })
-      mockGetActivitiesFromLink.mockResolvedValueOnce(activities)
+      mockSubmissionGetById.mockResolvedValueOnce({ _links: { activities: { href: '/activities' } } })
+      mockActivitiesGetFromLink.mockResolvedValueOnce(activities)
       mockListMethods.mockResolvedValueOnce([{ id: 'm1', internal: false }])
 
       await expect(handler.doGet(request, h, {})).rejects.toMatchObject({
@@ -204,12 +204,12 @@ describe('small-catch-handler.unit', () => {
         counts: [{ name: 'Trout', count: 2 }, { name: 'Salmon', count: 1 }],
         _links: { activityEntity: { href: 'act1' } }
       }
-      mockGetSmallCatchById.mockResolvedValueOnce(smallCatch)
-      mockDoMap.mockResolvedValueOnce(smallCatch)
+      mockSmallCatchGetById.mockResolvedValueOnce(smallCatch)
+      mockSmallCatchDoMap.mockResolvedValueOnce(smallCatch)
       // const rivers = [{ id: 'r1', internal: false }]
-      mockGetById.mockResolvedValueOnce({ _links: { activities: { href: '/activities' } } })
-      mockGetActivitiesFromLink.mockResolvedValueOnce([{ id: 'act1', river: { id: 'r1' }, _links: { self: { href: 'act1' } } }])
-      mockGetAllChildren.mockResolvedValueOnce([{ activity: { id: 'act1' }, month: 'JANUARY' }])
+      mockSubmissionGetById.mockResolvedValueOnce({ _links: { activities: { href: '/activities' } } })
+      mockActivitiesGetFromLink.mockResolvedValueOnce([{ id: 'act1', river: { id: 'r1' }, _links: { self: { href: 'act1' } } }])
+      mockSmallCatchGetAllChildren.mockResolvedValueOnce([{ activity: { id: 'act1' }, month: 'JANUARY' }])
       mockListMethods.mockResolvedValueOnce([{ id: 'm1', internal: false }])
       BaseHandler.prototype.readCacheAndDisplayView = jest.fn().mockReturnValueOnce('view-result')
 
@@ -245,8 +245,8 @@ describe('small-catch-handler.unit', () => {
       const h = getMockH()
 
       setupCommonFlags()
-      mockGetById.mockResolvedValueOnce({ _links: { activities: { href: '/activities' } } })
-      mockGetActivitiesFromLink.mockResolvedValueOnce([
+      mockSubmissionGetById.mockResolvedValueOnce({ _links: { activities: { href: '/activities' } } })
+      mockActivitiesGetFromLink.mockResolvedValueOnce([
         { river: { id: 'r1', internal: false } },
         { river: { id: 'r2', internal: true } }
       ])
@@ -254,7 +254,7 @@ describe('small-catch-handler.unit', () => {
         { id: 'm1', internal: false },
         { id: 'm2', internal: true }
       ])
-      mockGetAllChildren.mockResolvedValueOnce([])
+      mockSmallCatchGetAllChildren.mockResolvedValueOnce([])
       BaseHandler.prototype.readCacheAndDisplayView = jest.fn().mockReturnValueOnce('view-result')
       const handler = new SmallCatchHandler('small-catches')
 
@@ -281,8 +281,8 @@ describe('small-catch-handler.unit', () => {
       const request = getMockRequest(cache, {}, { id: 'add' })
       const h = getMockH()
       setupCommonFlags({ locked: true })
-      mockGetById.mockResolvedValueOnce({ _links: { activities: { href: '/activities' } } })
-      mockGetActivitiesFromLink.mockResolvedValueOnce([{ river: { id: 'r1', internal: false } }])
+      mockSubmissionGetById.mockResolvedValueOnce({ _links: { activities: { href: '/activities' } } })
+      mockActivitiesGetFromLink.mockResolvedValueOnce([{ river: { id: 'r1', internal: false } }])
       mockListMethods.mockResolvedValueOnce([{ id: 'm1', internal: false }])
       const handler = new SmallCatchHandler('small-catches')
 
@@ -297,7 +297,7 @@ describe('small-catch-handler.unit', () => {
       const cacheObj = { submissionId: 'sub-1' }
       const request = getMockRequest(cacheObj, {}, { id: '123' })
       const h = getMockH()
-      mockGetById.mockResolvedValueOnce({ id: 'sub-1', reportingExclude: true })
+      mockSubmissionGetById.mockResolvedValueOnce({ id: 'sub-1', reportingExclude: true })
       BaseHandler.prototype.writeCacheAndRedirect = jest.fn().mockReturnValueOnce('redirect-result')
       const handler = new SmallCatchHandler('small-catches')
 
@@ -312,7 +312,7 @@ describe('small-catch-handler.unit', () => {
       const cacheObj = { submissionId: 'sub-1' }
       const request = getMockRequest(cacheObj, { add: true, river: 'r1' }, { id: '123' })
       const h = getMockH()
-      mockGetById.mockResolvedValueOnce({ id: 'sub-1', reportingExclude: true })
+      mockSubmissionGetById.mockResolvedValueOnce({ id: 'sub-1', reportingExclude: true })
       BaseHandler.prototype.writeCacheAndRedirect = jest.fn().mockReturnValueOnce('redirect-result')
       const handler = new SmallCatchHandler('small-catches')
 
