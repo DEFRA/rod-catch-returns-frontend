@@ -136,16 +136,21 @@ describe('small-catch-handler.unit', () => {
       const request = getMockRequest(cache, {}, { id: '123' })
       const h = getMockH()
       mockIsAllowedParam.mockReturnValueOnce(true)
+      mockGetById.mockResolvedValueOnce({ _links: { activities: { href: '/activities' } } })
+      // activities include one activity for r1
+      const activities = [{ id: 'act1', river: { id: 'r1' }, _links: { self: { href: 'act1' } } }]
+      mockGetActivitiesFromLink.mockResolvedValueOnce(activities)
+      mockListMethods.mockResolvedValueOnce([{ id: 'm1', internal: false }])
       mockGetSmallCatchById.mockResolvedValueOnce(null)
       const handler = new SmallCatchHandler('small-catches')
 
-      await expect(handler.change(request, h, [], cache, [], [])).rejects.toMatchObject({
+      await expect(handler.doGet(request, h, {})).rejects.toMatchObject({
         message: 'Unauthorized access to small catch',
         statusCode: ResponseError.status.UNAUTHORIZED
       })
     })
 
-    it('should throw ResponseError if sthe parameter is not allowed', async () => {
+    it('should throw ResponseError if the parameter is not allowed', async () => {
       const cache = { submissionId: 'sub-1', licenceNumber: 'LIC', postcode: 'PC1', year: 2025 }
       const request = getMockRequest(cache, {}, { id: '123' })
       const h = getMockH()
@@ -171,8 +176,11 @@ describe('small-catch-handler.unit', () => {
         _links: { activityEntity: { href: 'act-different' } }
       })
       const activities = [{ _links: { self: { href: 'act1' } }, river: { id: 'r1' } }]
+      mockGetById.mockResolvedValueOnce({ _links: { activities: { href: '/activities' } } })
+      mockGetActivitiesFromLink.mockResolvedValueOnce(activities)
+      mockListMethods.mockResolvedValueOnce([{ id: 'm1', internal: false }])
 
-      await expect(handler.change(request, h, [], cache, [], activities)).rejects.toMatchObject({
+      await expect(handler.doGet(request, h, {})).rejects.toMatchObject({
         message: 'Unauthorized access to small catch',
         statusCode: ResponseError.status.UNAUTHORIZED
       })
@@ -195,12 +203,15 @@ describe('small-catch-handler.unit', () => {
       }
       mockGetSmallCatchById.mockResolvedValueOnce(smallCatch)
       mockDoMap.mockResolvedValueOnce(smallCatch)
-      const rivers = [{ id: 'r1', internal: false }]
-      const methods = [{ id: 'm1', internal: false }]
-      const activities = [{ _links: { self: { href: 'act1' } } }]
+      // const rivers = [{ id: 'r1', internal: false }]
+      mockGetById.mockResolvedValueOnce({ _links: { activities: { href: '/activities' } } })
+      mockGetActivitiesFromLink.mockResolvedValueOnce([{ id: 'act1', river: { id: 'r1' }, _links: { self: { href: 'act1' } } }])
+      mockGetAllChildren.mockResolvedValueOnce([{ activity: { id: 'act1' }, month: 'JANUARY' }])
+      mockListMethods.mockResolvedValueOnce([{ id: 'm1', internal: false }])
+      mockTestLocked.mockResolvedValueOnce(false)
       BaseHandler.prototype.readCacheAndDisplayView = jest.fn().mockReturnValueOnce('view-result')
 
-      await handler.change(request, h, rivers, cache, methods, activities)
+      await handler.doGet(request, h, {})
 
       expect(BaseHandler.prototype.readCacheAndDisplayView).toHaveBeenCalledWith(
         request,
