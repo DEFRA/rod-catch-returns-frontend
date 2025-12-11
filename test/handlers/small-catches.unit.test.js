@@ -45,7 +45,16 @@ describe('small-catch-handler.unit', () => {
     process.env = { ...OLD_ENV }
   })
 
-  const getMockRequest = (cacheObj = {}, payload = {}, params = { id: 'add' }) => {
+  const getMockRequest = ({
+    cacheObj = {
+      submissionId: 'sub-1',
+      licenceNumber: 'LIC',
+      postcode: 'PC1',
+      year: 2025
+    },
+    payload = {},
+    params = { id: 'add' }
+  } = {}) => {
     const cacheApi = {
       get: jest.fn().mockResolvedValueOnce(cacheObj),
       set: jest.fn().mockResolvedValueOnce(),
@@ -64,17 +73,27 @@ describe('small-catch-handler.unit', () => {
     mockTestLocked.mockResolvedValue(locked)
   }
 
+  const setupApis = ({
+    submissionGetById,
+    activitiesGetFromLink,
+    smallCatchGetAllChildren,
+    smallCatchGetById,
+    smallCatchDoMap,
+    listMethods
+  } = {}) => {
+    if (submissionGetById) mockSubmissionGetById.mockResolvedValueOnce(submissionGetById)
+    if (activitiesGetFromLink) mockActivitiesGetFromLink.mockResolvedValueOnce(activitiesGetFromLink)
+    if (smallCatchGetAllChildren) mockSmallCatchGetAllChildren.mockResolvedValueOnce(smallCatchGetAllChildren)
+    if (smallCatchGetById) mockSmallCatchGetById.mockResolvedValueOnce(smallCatchGetById)
+    if (smallCatchDoMap) mockSmallCatchDoMap.mockResolvedValueOnce(smallCatchDoMap)
+    if (listMethods) mockListMethods.mockResolvedValueOnce(listMethods)
+  }
+
   describe('doGet', () => {
     it('should redirect to summary when monthsFiltered is empty', async () => {
-      const cache = { submissionId: 'sub-1', licenceNumber: 'LIC', postcode: 'PC1', year: 2025, add: { river: 'r1' } }
-      const request = getMockRequest(cache, {}, { id: 'add' })
+      const request = getMockRequest({ cacheObj: { submissionId: 'sub-1', licenceNumber: 'LIC', postcode: 'PC1', year: 2025, add: { river: 'r1' } } })
       const h = getMockH()
       setupCommonFlags()
-      mockSubmissionGetById.mockResolvedValueOnce({ _links: { activities: { href: '/activities' } } })
-      // activities include one activity for r1
-      const activities = [{ id: 'act1', river: { id: 'r1' }, _links: { self: { href: 'act1' } } }]
-      mockActivitiesGetFromLink.mockResolvedValueOnce(activities)
-      // smallCatches already include all months for that activity
       const allMonths = [
         { activity: { id: 'act1' }, month: 'JANUARY' },
         { activity: { id: 'act1' }, month: 'FEBRUARY' },
@@ -89,8 +108,13 @@ describe('small-catch-handler.unit', () => {
         { activity: { id: 'act1' }, month: 'NOVEMBER' },
         { activity: { id: 'act1' }, month: 'DECEMBER' }
       ]
-      mockSmallCatchGetAllChildren.mockResolvedValueOnce(allMonths)
-      mockListMethods.mockResolvedValueOnce([{ id: 'm1', internal: false }])
+
+      setupApis({
+        submissionGetById: { _links: { activities: { href: '/activities' } } },
+        activitiesGetFromLink: [{ id: 'act1', river: { id: 'r1' }, _links: { self: { href: 'act1' } } }],
+        smallCatchGetAllChildren: allMonths,
+        listMethods: [{ id: 'm1', internal: false }]
+      })
       const handler = new SmallCatchHandler('small-catches')
 
       await handler.doGet(request, h)
@@ -99,8 +123,7 @@ describe('small-catch-handler.unit', () => {
     })
 
     it('should filter months when single river and show add view', async () => {
-      const cache = { submissionId: 'sub-1', licenceNumber: 'LIC', postcode: 'PC1', year: 2025 }
-      const request = getMockRequest(cache, {}, { id: 'add' })
+      const request = getMockRequest()
       const h = getMockH()
       setupCommonFlags()
       mockSubmissionGetById.mockResolvedValueOnce({ _links: { activities: { href: '/activities' } } })
@@ -135,8 +158,7 @@ describe('small-catch-handler.unit', () => {
     })
 
     it('should throw ResponseError if small catch not found', async () => {
-      const cache = { submissionId: 'sub-1', licenceNumber: 'LIC', postcode: 'PC1', year: 2025 }
-      const request = getMockRequest(cache, {}, { id: '123' })
+      const request = getMockRequest({ params: { id: '123' } })
       const h = getMockH()
       mockIsAllowedParam.mockReturnValueOnce(true)
       mockSubmissionGetById.mockResolvedValueOnce({ _links: { activities: { href: '/activities' } } })
@@ -154,13 +176,13 @@ describe('small-catch-handler.unit', () => {
     })
 
     it('should throw ResponseError if the parameter is not allowed', async () => {
-      const cache = { submissionId: 'sub-1', licenceNumber: 'LIC', postcode: 'PC1', year: 2025 }
-      const request = getMockRequest(cache, {}, { id: '123' })
+      const cacheObj = { submissionId: 'sub-1', licenceNumber: 'LIC', postcode: 'PC1', year: 2025 }
+      const request = getMockRequest({ cacheObj, params: { id: '123' } })
       const h = getMockH()
       mockIsAllowedParam.mockReturnValueOnce(false)
       const handler = new SmallCatchHandler('small-catches')
 
-      await expect(handler.doGet(request, h, [], cache, [], [])).rejects.toMatchObject({
+      await expect(handler.doGet(request, h, [], cacheObj, [], [])).rejects.toMatchObject({
         message: 'Unknown small catch',
         statusCode: ResponseError.status.UNAUTHORIZED
       })
@@ -168,8 +190,7 @@ describe('small-catch-handler.unit', () => {
 
     it('should throw ResponseError if activity mismatch', async () => {
       const handler = new SmallCatchHandler('small-catches')
-      const cache = { submissionId: 'sub-1', licenceNumber: 'LIC', postcode: 'PC1', year: 2025 }
-      const request = getMockRequest(cache, {}, { id: '123' })
+      const request = getMockRequest({ params: { id: '123' } })
       const h = getMockH()
 
       mockIsAllowedParam.mockReturnValueOnce(true)
@@ -191,8 +212,7 @@ describe('small-catch-handler.unit', () => {
 
     it('should include noMonthRecorded and map counts into payload', async () => {
       const handler = new SmallCatchHandler('small-catches')
-      const cache = { submissionId: 'sub-1', licenceNumber: 'LIC', postcode: 'PC1', year: 2025 }
-      const request = getMockRequest(cache, {}, { id: '123' })
+      const request = getMockRequest({ params: { id: '123' } })
       const h = getMockH()
       setupCommonFlags()
       const smallCatch = {
@@ -240,8 +260,7 @@ describe('small-catch-handler.unit', () => {
 
     it('should filter out internal rivers and methods when CONTEXT=ANGLER', async () => {
       process.env.CONTEXT = 'ANGLER'
-      const cache = { submissionId: 'sub-1', licenceNumber: 'LIC', postcode: 'PC1', year: 2025 }
-      const request = getMockRequest(cache, {}, { id: 'add' })
+      const request = getMockRequest()
       const h = getMockH()
 
       setupCommonFlags()
@@ -277,8 +296,7 @@ describe('small-catch-handler.unit', () => {
     })
 
     it('should redirect to review when submission locked', async () => {
-      const cache = { submissionId: 'sub-1' }
-      const request = getMockRequest(cache, {}, { id: 'add' })
+      const request = getMockRequest()
       const h = getMockH()
       setupCommonFlags({ locked: true })
       mockSubmissionGetById.mockResolvedValueOnce({ _links: { activities: { href: '/activities' } } })
@@ -295,7 +313,7 @@ describe('small-catch-handler.unit', () => {
   describe('doPost', () => {
     it('should skip exclusion change when errors present', async () => {
       const cacheObj = { submissionId: 'sub-1' }
-      const request = getMockRequest(cacheObj, {}, { id: '123' })
+      const request = getMockRequest({ cacheObj, params: { id: '123' }})
       const h = getMockH()
       mockSubmissionGetById.mockResolvedValueOnce({ id: 'sub-1', reportingExclude: true })
       BaseHandler.prototype.writeCacheAndRedirect = jest.fn().mockReturnValueOnce('redirect-result')
@@ -310,7 +328,7 @@ describe('small-catch-handler.unit', () => {
 
     it('should redirect to add when add payload present', async () => {
       const cacheObj = { submissionId: 'sub-1' }
-      const request = getMockRequest(cacheObj, { add: true, river: 'r1' }, { id: '123' })
+      const request = getMockRequest({ cacheObj, payload: { add: true, river: 'r1' }, params: { id: '123' } })
       const h = getMockH()
       mockSubmissionGetById.mockResolvedValueOnce({ id: 'sub-1', reportingExclude: true })
       BaseHandler.prototype.writeCacheAndRedirect = jest.fn().mockReturnValueOnce('redirect-result')
@@ -331,8 +349,8 @@ describe('small-catch-handler.unit', () => {
 
   describe('SmallCatchHandlerClear', () => {
     it('should call super.doGet', async () => {
-      const cache = { submissionId: 'sub-1' }
-      const request = getMockRequest(cache, {}, { id: 'add' })
+      const cacheObj = { submissionId: 'sub-1' }
+      const request = getMockRequest({ cacheObj })
       const h = getMockH()
       BaseHandler.prototype.clearCacheErrorsAndPayload = jest.fn().mockResolvedValueOnce()
       const superDoGetSpy = jest.spyOn(SmallCatchHandler.prototype, 'doGet').mockResolvedValueOnce('super-result')
