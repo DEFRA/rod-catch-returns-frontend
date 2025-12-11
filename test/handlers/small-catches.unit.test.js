@@ -59,12 +59,17 @@ describe('small-catch-handler.unit', () => {
     }
   }
 
+  const setupCommonFlags = ({ allowed = true, locked = false } = {}) => {
+    mockIsAllowedParam.mockReturnValue(allowed)
+    mockTestLocked.mockResolvedValue(locked)
+  }
+
   describe('doGet', () => {
     it('should redirect to summary when monthsFiltered is empty', async () => {
       const cache = { submissionId: 'sub-1', licenceNumber: 'LIC', postcode: 'PC1', year: 2025, add: { river: 'r1' } }
       const request = getMockRequest(cache, {}, { id: 'add' })
       const h = getMockH()
-      mockIsAllowedParam.mockReturnValueOnce(true)
+      setupCommonFlags()
       mockGetById.mockResolvedValueOnce({ _links: { activities: { href: '/activities' } } })
       // activities include one activity for r1
       const activities = [{ id: 'act1', river: { id: 'r1' }, _links: { self: { href: 'act1' } } }]
@@ -86,7 +91,6 @@ describe('small-catch-handler.unit', () => {
       ]
       mockGetAllChildren.mockResolvedValueOnce(allMonths)
       mockListMethods.mockResolvedValueOnce([{ id: 'm1', internal: false }])
-      mockTestLocked.mockResolvedValueOnce(false)
       const handler = new SmallCatchHandler('small-catches')
 
       await handler.doGet(request, h)
@@ -98,7 +102,7 @@ describe('small-catch-handler.unit', () => {
       const cache = { submissionId: 'sub-1', licenceNumber: 'LIC', postcode: 'PC1', year: 2025 }
       const request = getMockRequest(cache, {}, { id: 'add' })
       const h = getMockH()
-      mockIsAllowedParam.mockReturnValueOnce(true)
+      setupCommonFlags()
       mockGetById.mockResolvedValueOnce({ _links: { activities: { href: '/activities' } } })
       const activities = [
         { id: 'act1', river: { id: 'r1' }, _links: { self: { href: 'act1' } } },
@@ -109,7 +113,6 @@ describe('small-catch-handler.unit', () => {
       // smallCatches has only one month used for act1 so monthsFiltered will be non-empty
       mockGetAllChildren.mockResolvedValueOnce([{ activity: { id: 'act1' }, month: 'JANUARY' }])
       mockListMethods.mockResolvedValueOnce([{ id: 'm1', internal: false }])
-      mockTestLocked.mockResolvedValueOnce(false)
       BaseHandler.prototype.readCacheAndDisplayView = jest.fn().mockReturnValueOnce('view-result')
       const handler = new SmallCatchHandler('small-catches')
 
@@ -191,7 +194,7 @@ describe('small-catch-handler.unit', () => {
       const cache = { submissionId: 'sub-1', licenceNumber: 'LIC', postcode: 'PC1', year: 2025 }
       const request = getMockRequest(cache, {}, { id: '123' })
       const h = getMockH()
-      mockIsAllowedParam.mockReturnValueOnce(true)
+      setupCommonFlags()
       const smallCatch = {
         id: 'sc1',
         activity: { river: { id: 'r1' } },
@@ -208,7 +211,6 @@ describe('small-catch-handler.unit', () => {
       mockGetActivitiesFromLink.mockResolvedValueOnce([{ id: 'act1', river: { id: 'r1' }, _links: { self: { href: 'act1' } } }])
       mockGetAllChildren.mockResolvedValueOnce([{ activity: { id: 'act1' }, month: 'JANUARY' }])
       mockListMethods.mockResolvedValueOnce([{ id: 'm1', internal: false }])
-      mockTestLocked.mockResolvedValueOnce(false)
       BaseHandler.prototype.readCacheAndDisplayView = jest.fn().mockReturnValueOnce('view-result')
 
       await handler.doGet(request, h, {})
@@ -242,7 +244,7 @@ describe('small-catch-handler.unit', () => {
       const request = getMockRequest(cache, {}, { id: 'add' })
       const h = getMockH()
 
-      mockIsAllowedParam.mockReturnValueOnce(true)
+      setupCommonFlags()
       mockGetById.mockResolvedValueOnce({ _links: { activities: { href: '/activities' } } })
       mockGetActivitiesFromLink.mockResolvedValueOnce([
         { river: { id: 'r1', internal: false } },
@@ -252,7 +254,6 @@ describe('small-catch-handler.unit', () => {
         { id: 'm1', internal: false },
         { id: 'm2', internal: true }
       ])
-      mockTestLocked.mockResolvedValueOnce(false)
       mockGetAllChildren.mockResolvedValueOnce([])
       BaseHandler.prototype.readCacheAndDisplayView = jest.fn().mockReturnValueOnce('view-result')
       const handler = new SmallCatchHandler('small-catches')
@@ -279,11 +280,10 @@ describe('small-catch-handler.unit', () => {
       const cache = { submissionId: 'sub-1' }
       const request = getMockRequest(cache, {}, { id: 'add' })
       const h = getMockH()
-      mockIsAllowedParam.mockReturnValueOnce(true)
+      setupCommonFlags({ locked: true })
       mockGetById.mockResolvedValueOnce({ _links: { activities: { href: '/activities' } } })
       mockGetActivitiesFromLink.mockResolvedValueOnce([{ river: { id: 'r1', internal: false } }])
       mockListMethods.mockResolvedValueOnce([{ id: 'm1', internal: false }])
-      mockTestLocked.mockResolvedValueOnce(true)
       const handler = new SmallCatchHandler('small-catches')
 
       await handler.doGet(request, h)
