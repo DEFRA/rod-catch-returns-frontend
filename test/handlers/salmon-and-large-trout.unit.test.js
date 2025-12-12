@@ -13,33 +13,23 @@ const BaseHandler = require('../../src/handlers/base')
 const ResponseError = require('../../src/handlers/response-error')
 const { getMockH } = require('../test-utils/server-test-utils')
 
-jest.mock('../../src/api/submissions', () => {
-  return jest.fn().mockImplementation(() => ({
-    getById: mockGetById,
-    changeExclusion: mockChangeExclusion
-  }))
-})
-jest.mock('../../src/api/catches', () => {
-  return jest.fn().mockImplementation(() => ({
-    getById: mockGetCatchById,
-    doMap: mockDoMap
-  }))
-})
-jest.mock('../../src/api/activities', () => {
-  return jest.fn().mockImplementation(() => ({
-    getFromLink: mockGetActivitiesFromLink
-  }))
-})
-jest.mock('../../src/api/methods', () => {
-  return jest.fn().mockImplementation(() => ({
-    list: mockListMethods
-  }))
-})
-jest.mock('../../src/api/species', () => {
-  return jest.fn().mockImplementation(() => ({
-    list: mockListSpecies
-  }))
-})
+jest.mock('../../src/api/submissions', () => jest.fn(() => ({
+  getById: mockGetById,
+  changeExclusion: mockChangeExclusion
+})))
+jest.mock('../../src/api/catches', () => jest.fn(() => ({
+  getById: mockGetCatchById,
+  doMap: mockDoMap
+})))
+jest.mock('../../src/api/activities', () => jest.fn(() => ({
+  getFromLink: mockGetActivitiesFromLink
+})))
+jest.mock('../../src/api/methods', () => jest.fn(() => ({
+  list: mockListMethods
+})))
+jest.mock('../../src/api/species', () => jest.fn(() => ({
+  list: mockListSpecies
+})))
 jest.mock('../../src/handlers/common', () => ({
   testLocked: (...args) => mockTestLocked(...args),
   isAllowedParam: (...args) => mockIsAllowedParam(...args)
