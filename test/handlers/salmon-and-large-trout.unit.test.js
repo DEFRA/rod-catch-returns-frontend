@@ -34,7 +34,7 @@ describe('salmon-large-trout-handler.unit', () => {
     payload,
     cache: jest.fn(() => ({
       get: jest.fn().mockResolvedValueOnce(cacheObj),
-      set: jest.fn().mockResolvedValueOnce()
+      set: jest.fn()
     }))
   })
 
