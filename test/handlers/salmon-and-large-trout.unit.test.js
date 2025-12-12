@@ -94,7 +94,6 @@ describe('salmon-large-trout-handler.unit', () => {
   const setupApis = ({
     submissionGetById,
     activitiesGetFromLink,
-    smallCatchGetAllChildren,
     catchGetById,
     catchDoMap,
     listMethods,
