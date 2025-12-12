@@ -105,11 +105,6 @@ describe('salmon-large-trout-handler.unit', () => {
 
     const [activitiesApi] = ActivitiesApi.mock.instances
     if (activitiesGetFromLink) activitiesApi.getFromLink.mockResolvedValueOnce(activitiesGetFromLink)
-    /*
-     * if (smallCatchGetAllChildren) mockSmallCatchGetAllChildren.mockResolvedValueOnce(smallCatchGetAllChildren)
-     * if (smallCatchGetById) mockSmallCatchGetById.mockResolvedValueOnce(smallCatchGetById)
-     * if (smallCatchDoMap) mockSmallCatchDoMap.mockResolvedValueOnce(smallCatchDoMap)
-     */
 
     const [catchesApi] = CatchesApi.mock.instances
     if (catchGetById) catchesApi.getById.mockResolvedValueOnce(catchGetById)
