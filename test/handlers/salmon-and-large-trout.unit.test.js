@@ -1,5 +1,3 @@
-const mockGetById = jest.fn()
-const mockChangeExclusion = jest.fn()
 const mockGetCatchById = jest.fn()
 const mockDoMap = jest.fn()
 const mockGetActivitiesFromLink = jest.fn()
@@ -12,11 +10,9 @@ const { SalmonAndLargeTroutHandler, SalmonAndLargeTroutHandlerClear } = require(
 const BaseHandler = require('../../src/handlers/base')
 const ResponseError = require('../../src/handlers/response-error')
 const { getMockH } = require('../test-utils/server-test-utils')
+const SubmissionsApi = require('../../src/api/submissions')
 
-jest.mock('../../src/api/submissions', () => jest.fn(() => ({
-  getById: mockGetById,
-  changeExclusion: mockChangeExclusion
-})))
+jest.mock('../../src/api/submissions')
 jest.mock('../../src/api/catches', () => jest.fn(() => ({
   getById: mockGetCatchById,
   doMap: mockDoMap
@@ -39,7 +35,7 @@ describe('salmon-large-trout-handler.unit', () => {
   const OLD_ENV = process.env
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    jest.resetModules()
     process.env = { ...OLD_ENV }
   })
 
@@ -106,14 +102,18 @@ describe('salmon-large-trout-handler.unit', () => {
       })
 
       it('should redirect to review if submission locked', async () => {
+        const handler = new SalmonAndLargeTroutHandler('catches')
+        expect(SubmissionsApi).toHaveBeenCalledTimes(1)
         const request = getMockRequest({ submissionId: 'sub-1' })
         const h = getMockH()
         mockIsAllowedParam.mockReturnValueOnce(true)
-        mockGetById.mockResolvedValueOnce(getMockSubmission())
+
+        const [submissionsApi] = SubmissionsApi.mock.instances
+
+        submissionsApi.getById.mockResolvedValueOnce(getMockSubmission())
         mockGetActivitiesFromLink.mockResolvedValueOnce(getMockActivities())
         mockListMethods.mockResolvedValueOnce(getMockMethods())
         mockTestLocked.mockResolvedValueOnce(true)
-        const handler = new SalmonAndLargeTroutHandler('catches')
 
         await handler.doGet(request, h)
 
@@ -125,7 +125,9 @@ describe('salmon-large-trout-handler.unit', () => {
         const request = getMockRequest({ submissionId: 'submissions/1', licenceNumber: 'AAA-111', postcode: 'AA11 1AA', year: 2025 })
         const h = getMockH()
         mockIsAllowedParam.mockReturnValueOnce(true)
-        mockGetById.mockResolvedValueOnce(getMockSubmission())
+
+        const [submissionsApi] = SubmissionsApi.mock.instances
+        submissionsApi.getById.mockResolvedValueOnce(getMockSubmission())
         mockGetActivitiesFromLink.mockResolvedValueOnce(getMockActivities())
         mockListMethods.mockResolvedValueOnce(getMockMethods())
         mockListSpecies.mockResolvedValueOnce(getMockSpecies())
@@ -165,7 +167,8 @@ describe('salmon-large-trout-handler.unit', () => {
         const request = getMockRequest({ submissionId: 'submissions/1', licenceNumber: 'AAA-111', postcode: 'AA11 1AA', year: 2025 }, {}, { id: '123' })
         const h = getMockH()
         mockIsAllowedParam.mockReturnValueOnce(true)
-        mockGetById.mockResolvedValueOnce(getMockSubmission())
+        const [submissionsApi] = SubmissionsApi.mock.instances
+        submissionsApi.getById.mockResolvedValueOnce(getMockSubmission())
         mockGetActivitiesFromLink.mockResolvedValueOnce(getMockActivities())
         mockListMethods.mockResolvedValueOnce(getMockMethods())
         mockListSpecies.mockResolvedValueOnce(getMockSpecies())
@@ -219,7 +222,8 @@ describe('salmon-large-trout-handler.unit', () => {
         const request = getMockRequest({ submissionId: 'sub-1', year: 2025 }, {}, { id: '123' })
         const h = getMockH()
         mockIsAllowedParam.mockReturnValueOnce(true)
-        mockGetById.mockResolvedValueOnce(getMockSubmission())
+        const [submissionsApi] = SubmissionsApi.mock.instances
+        submissionsApi.getById.mockResolvedValueOnce(getMockSubmission())
         mockGetActivitiesFromLink.mockResolvedValueOnce(getMockActivities())
         mockListMethods.mockResolvedValueOnce(getMockMethods())
         mockListSpecies.mockResolvedValueOnce(getMockSpecies())
@@ -238,7 +242,8 @@ describe('salmon-large-trout-handler.unit', () => {
         const request = getMockRequest({ submissionId: 'sub-1', year: 2025 }, {}, { id: '123' })
         const h = getMockH()
         mockIsAllowedParam.mockReturnValueOnce(true)
-        mockGetById.mockResolvedValueOnce(getMockSubmission())
+        const [submissionsApi] = SubmissionsApi.mock.instances
+        submissionsApi.getById.mockResolvedValueOnce(getMockSubmission())
         mockGetActivitiesFromLink.mockResolvedValueOnce(getMockActivities())
         mockListMethods.mockResolvedValueOnce(getMockMethods())
         mockListSpecies.mockResolvedValueOnce(getMockSpecies())
@@ -265,7 +270,8 @@ describe('salmon-large-trout-handler.unit', () => {
         const request = getMockRequest({ submissionId: 'sub-1', year: 2025 }, {}, { id: '123' })
         const h = getMockH()
         mockIsAllowedParam.mockReturnValueOnce(true)
-        mockGetById.mockResolvedValueOnce(getMockSubmission())
+        const [submissionsApi] = SubmissionsApi.mock.instances
+        submissionsApi.getById.mockResolvedValueOnce(getMockSubmission())
         mockGetActivitiesFromLink.mockResolvedValueOnce(getMockActivities())
         mockListMethods.mockResolvedValueOnce(getMockMethods())
         mockListSpecies.mockResolvedValueOnce(getMockSpecies())
@@ -317,7 +323,8 @@ describe('salmon-large-trout-handler.unit', () => {
         const request = getMockRequest({ submissionId: 'sub-1', year: 2025 }, {}, { id: 'add' })
         const h = getMockH()
         mockIsAllowedParam.mockReturnValueOnce(true)
-        mockGetById.mockResolvedValueOnce(getMockSubmission())
+        const [submissionsApi] = SubmissionsApi.mock.instances
+        submissionsApi.getById.mockResolvedValueOnce(getMockSubmission())
         mockGetActivitiesFromLink.mockResolvedValueOnce([
           { river: { id: 'r1', internal: false } },
           { river: { id: 'r2', internal: true } }
@@ -349,7 +356,8 @@ describe('salmon-large-trout-handler.unit', () => {
         const request = getMockRequest(cacheObj, {}, { id: 'add' })
         const h = getMockH()
         mockIsAllowedParam.mockReturnValueOnce(true)
-        mockGetById.mockResolvedValueOnce(getMockSubmission())
+        const [submissionsApi] = SubmissionsApi.mock.instances
+        submissionsApi.getById.mockResolvedValueOnce(getMockSubmission())
         mockGetActivitiesFromLink.mockResolvedValueOnce([
           { river: { id: 'r1', internal: false } },
           { river: { id: 'r2', internal: false } }
@@ -376,11 +384,12 @@ describe('salmon-large-trout-handler.unit', () => {
         const cacheObj = { submissionId: 'sub-1' }
         const request = getMockRequest(cacheObj, {}, { id: '123' })
         const h = getMockH()
-        mockGetById.mockResolvedValueOnce({ id: 'sub-1', reportingExclude: true })
+        const [submissionsApi] = SubmissionsApi.mock.instances
+        submissionsApi.getById.mockResolvedValueOnce({ id: 'sub-1', reportingExclude: true })
         BaseHandler.prototype.writeCacheAndRedirect = jest.fn().mockReturnValueOnce('redirect-result')
 
         const result = await handler.doPost(request, h, ['error'])
-        expect(mockChangeExclusion).not.toHaveBeenCalled()
+        expect(submissionsApi.changeExclusion).not.toHaveBeenCalled()
         expect(BaseHandler.prototype.writeCacheAndRedirect).toHaveBeenCalled()
         expect(result).toBe('redirect-result')
       })
@@ -391,20 +400,22 @@ describe('salmon-large-trout-handler.unit', () => {
         const cacheObj = { submissionId: 'sub-1' }
         const request = getMockRequest(cacheObj, { add: true, river: 'r1' }, { id: '123' })
         const h = getMockH()
-        mockGetById.mockResolvedValueOnce({ id: 'sub-1', reportingExclude: true })
+        const [submissionsApi] = SubmissionsApi.mock.instances
+        submissionsApi.getById.mockResolvedValueOnce({ id: 'sub-1', reportingExclude: true })
         BaseHandler.prototype.writeCacheAndRedirect = jest.fn().mockReturnValueOnce('redirect-result')
         const handler = new SalmonAndLargeTroutHandler('catches')
 
         await handler.doPost(request, h, null)
 
-        expect(mockChangeExclusion).toHaveBeenCalledWith(request, 'sub-1', false)
+        expect(submissionsApi.changeExclusion).toHaveBeenCalledWith(request, 'sub-1', false)
       })
 
       it('should redirect to confirmation when add payload present', async () => {
         const cacheObj = { submissionId: 'sub-1' }
         const request = getMockRequest(cacheObj, { add: true, river: 'r1' }, { id: '123' })
         const h = getMockH()
-        mockGetById.mockResolvedValueOnce({ id: 'sub-1', reportingExclude: true })
+        const [submissionsApi] = SubmissionsApi.mock.instances
+        submissionsApi.getById.mockResolvedValueOnce({ id: 'sub-1', reportingExclude: true })
         BaseHandler.prototype.writeCacheAndRedirect = jest.fn().mockReturnValueOnce('redirect-result')
         const handler = new SalmonAndLargeTroutHandler('catches')
 
@@ -424,7 +435,8 @@ describe('salmon-large-trout-handler.unit', () => {
         const cacheObj = { submissionId: 'sub-1', add: { river: 'r1' } }
         const request = getMockRequest(cacheObj, {}, { id: '123' })
         const h = getMockH()
-        mockGetById.mockResolvedValueOnce(getMockSubmission())
+        const [submissionsApi] = SubmissionsApi.mock.instances
+        submissionsApi.getById.mockResolvedValueOnce(getMockSubmission())
         BaseHandler.prototype.writeCacheAndRedirect = jest.fn().mockReturnValueOnce('redirect-result')
         const handler = new SalmonAndLargeTroutHandler('catches')
 
