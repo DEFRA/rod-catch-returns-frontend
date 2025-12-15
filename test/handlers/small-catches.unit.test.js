@@ -1,47 +1,25 @@
-const mockSubmissionGetById = jest.fn()
-const mockChangeExclusion = jest.fn()
-const mockSmallCatchGetAllChildren = jest.fn()
-const mockSmallCatchGetById = jest.fn()
-const mockSmallCatchDoMap = jest.fn()
-const mockActivitiesGetFromLink = jest.fn()
-const mockListMethods = jest.fn()
-const mockTestLocked = jest.fn()
-const mockIsAllowedParam = jest.fn()
-
 const { SmallCatchHandler, SmallCatchHandlerClear } = require('../../src/handlers/small-catches')
 const BaseHandler = require('../../src/handlers/base')
 const ResponseError = require('../../src/handlers/response-error')
 const { getMockH } = require('../test-utils/server-test-utils')
+const SubmissionsApi = require('../../src/api/submissions')
+const ActivitiesApi = require('../../src/api/activities')
+const MethodsApi = require('../../src/api/methods')
+const Common = require('../../src/handlers/common')
+const SmallCatchesApi = require('../../src/api/small-catches')
 
-jest.mock('../../src/api/submissions', () => jest.fn(() => ({
-  getById: mockSubmissionGetById,
-  changeExclusion: mockChangeExclusion
-})))
+jest.mock('../../src/api/submissions')
+jest.mock('../../src/api/small-catches')
+jest.mock('../../src/api/activities')
+jest.mock('../../src/api/methods')
 
-jest.mock('../../src/api/small-catches', () => jest.fn(() => ({
-  getAllChildren: mockSmallCatchGetAllChildren,
-  getById: mockSmallCatchGetById,
-  doMap: mockSmallCatchDoMap
-})))
-
-jest.mock('../../src/api/activities', () => jest.fn(() => ({
-  getFromLink: mockActivitiesGetFromLink
-})))
-
-jest.mock('../../src/api/methods', () => jest.fn(() => ({
-  list: mockListMethods
-})))
-
-jest.mock('../../src/handlers/common', () => ({
-  testLocked: (...args) => mockTestLocked(...args),
-  isAllowedParam: (...args) => mockIsAllowedParam(...args)
-}))
+jest.mock('../../src/handlers/common')
 
 describe('small-catch-handler.unit', () => {
   const OLD_ENV = process.env
 
   beforeEach(() => {
-    jest.resetAllMocks()
+    jest.resetModules()
     process.env = { ...OLD_ENV }
   })
 
@@ -94,8 +72,8 @@ describe('small-catch-handler.unit', () => {
 
   describe('doGet', () => {
     const setupCommonFlags = ({ allowed = true, locked = false } = {}) => {
-      mockIsAllowedParam.mockReturnValue(allowed)
-      mockTestLocked.mockResolvedValue(locked)
+      Common.isAllowedParam.mockReturnValueOnce(allowed)
+      Common.testLocked.mockReturnValueOnce(locked)
     }
 
     const setupApis = ({
@@ -106,12 +84,19 @@ describe('small-catch-handler.unit', () => {
       smallCatchDoMap,
       listMethods
     } = {}) => {
-      if (submissionGetById) mockSubmissionGetById.mockResolvedValueOnce(submissionGetById)
-      if (activitiesGetFromLink) mockActivitiesGetFromLink.mockResolvedValueOnce(activitiesGetFromLink)
-      if (smallCatchGetAllChildren) mockSmallCatchGetAllChildren.mockResolvedValueOnce(smallCatchGetAllChildren)
-      if (smallCatchGetById) mockSmallCatchGetById.mockResolvedValueOnce(smallCatchGetById)
-      if (smallCatchDoMap) mockSmallCatchDoMap.mockResolvedValueOnce(smallCatchDoMap)
-      if (listMethods) mockListMethods.mockResolvedValueOnce(listMethods)
+      const [submissionsApi] = SubmissionsApi.mock.instances
+      if (submissionGetById) submissionsApi.getById.mockResolvedValueOnce(submissionGetById)
+
+      const [activitiesApi] = ActivitiesApi.mock.instances
+      if (activitiesGetFromLink) activitiesApi.getFromLink.mockResolvedValueOnce(activitiesGetFromLink)
+
+      const [smallCatchesApi] = SmallCatchesApi.mock.instances
+      if (smallCatchGetAllChildren) smallCatchesApi.getAllChildren.mockResolvedValueOnce(smallCatchGetAllChildren)
+      if (smallCatchGetById) smallCatchesApi.getById.mockResolvedValueOnce(smallCatchGetById)
+      if (smallCatchDoMap) smallCatchesApi.doMap.mockResolvedValueOnce(smallCatchDoMap)
+
+      const [methodsApi] = MethodsApi.mock.instances
+      if (listMethods) methodsApi.list.mockResolvedValueOnce(listMethods)
     }
 
     it('should redirect to summary when monthsFiltered is empty', async () => {
@@ -205,7 +190,7 @@ describe('small-catch-handler.unit', () => {
       const cacheObj = { submissionId: 'sub-1', licenceNumber: 'LIC', postcode: 'PC1', year: 2025 }
       const request = getMockRequest({ cacheObj, params: { id: '123' } })
       const h = getMockH()
-      mockIsAllowedParam.mockReturnValueOnce(false)
+      Common.isAllowedParam.mockReturnValueOnce(false)
       const handler = new SmallCatchHandler('small-catches')
 
       await expect(handler.doGet(request, h, [], cacheObj, [], [])).rejects.toMatchObject({
@@ -383,26 +368,42 @@ describe('small-catch-handler.unit', () => {
   })
 
   describe('doPost', () => {
-    it('should skip exclusion change when errors present', async () => {
+    it('should skip exclusion change when errors present and reportingExclude is true', async () => {
       const cacheObj = { submissionId: 'sub-1' }
       const request = getMockRequest({ cacheObj, params: { id: '123' } })
       const h = getMockH()
-      mockSubmissionGetById.mockResolvedValueOnce({ id: 'sub-1', reportingExclude: true })
+      const [submissionsApi] = SubmissionsApi.mock.instances
+      submissionsApi.getById.mockResolvedValueOnce({ id: 'sub-1', reportingExclude: true })
+      submissionsApi.changeExclusion.mockResolvedValueOnce({ id: 'sub-1', reportingExclude: true })
       BaseHandler.prototype.writeCacheAndRedirect = jest.fn().mockReturnValueOnce('redirect-result')
       const handler = new SmallCatchHandler('small-catches')
 
-      const result = await handler.doPost(request, h, ['error'])
+      await handler.doPost(request, h, ['error'])
 
-      expect(mockChangeExclusion).not.toHaveBeenCalled()
-      expect(BaseHandler.prototype.writeCacheAndRedirect).toHaveBeenCalled()
-      expect(result).toBe('redirect-result')
+      expect(submissionsApi.changeExclusion).not.toHaveBeenCalled()
+    })
+
+    it('should call changeExclusion if reportingExclude is true and there are no errors', async () => {
+      const cacheObj = { submissionId: 'sub-1' }
+      const request = getMockRequest({ cacheObj, params: { id: '123' } })
+      const h = getMockH()
+      const [submissionsApi] = SubmissionsApi.mock.instances
+      submissionsApi.getById.mockResolvedValueOnce({ id: 'sub-1', reportingExclude: true })
+      submissionsApi.changeExclusion.mockResolvedValueOnce({ id: 'sub-1', reportingExclude: true })
+      BaseHandler.prototype.writeCacheAndRedirect = jest.fn().mockReturnValueOnce('redirect-result')
+      const handler = new SmallCatchHandler('small-catches')
+
+      await handler.doPost(request, h)
+
+      expect(submissionsApi.changeExclusion).toHaveBeenCalled()
     })
 
     it('should redirect to add when add payload present', async () => {
       const cacheObj = { submissionId: 'sub-1' }
       const request = getMockRequest({ cacheObj, payload: { add: true, river: 'r1' }, params: { id: '123' } })
       const h = getMockH()
-      mockSubmissionGetById.mockResolvedValueOnce({ id: 'sub-1', reportingExclude: true })
+      const [submissionsApi] = SubmissionsApi.mock.instances
+      submissionsApi.getById.mockResolvedValueOnce({ id: 'sub-1', reportingExclude: true })
       BaseHandler.prototype.writeCacheAndRedirect = jest.fn().mockReturnValueOnce('redirect-result')
       const handler = new SmallCatchHandler('small-catches')
 
@@ -413,6 +414,27 @@ describe('small-catch-handler.unit', () => {
         h,
         null,
         '/small-catches/add',
+        '/small-catches/123',
+        cacheObj
+      )
+    })
+
+    it('should redirect to summary when nod add payload present', async () => {
+      const cacheObj = { submissionId: 'sub-1' }
+      const request = getMockRequest({ cacheObj, payload: { river: 'r1' }, params: { id: '123' } })
+      const h = getMockH()
+      const [submissionsApi] = SubmissionsApi.mock.instances
+      submissionsApi.getById.mockResolvedValueOnce({ id: 'sub-1', reportingExclude: true })
+      BaseHandler.prototype.writeCacheAndRedirect = jest.fn().mockReturnValueOnce('redirect-result')
+      const handler = new SmallCatchHandler('small-catches')
+
+      await handler.doPost(request, h, null)
+
+      expect(BaseHandler.prototype.writeCacheAndRedirect).toHaveBeenCalledWith(
+        request,
+        h,
+        null,
+        '/summary',
         '/small-catches/123',
         cacheObj
       )
