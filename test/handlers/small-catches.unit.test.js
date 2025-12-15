@@ -1,0 +1,458 @@
+const { SmallCatchHandler, SmallCatchHandlerClear } = require('../../src/handlers/small-catches')
+const BaseHandler = require('../../src/handlers/base')
+const ResponseError = require('../../src/handlers/response-error')
+const { getMockH } = require('../test-utils/server-test-utils')
+const SubmissionsApi = require('../../src/api/submissions')
+const ActivitiesApi = require('../../src/api/activities')
+const MethodsApi = require('../../src/api/methods')
+const Common = require('../../src/handlers/common')
+const SmallCatchesApi = require('../../src/api/small-catches')
+
+jest.mock('../../src/api/submissions')
+jest.mock('../../src/api/small-catches')
+jest.mock('../../src/api/activities')
+jest.mock('../../src/api/methods')
+
+jest.mock('../../src/handlers/common')
+
+describe('small-catch-handler.unit', () => {
+  const OLD_ENV = process.env
+
+  beforeEach(() => {
+    jest.resetModules()
+    process.env = { ...OLD_ENV }
+  })
+
+  const getMockRequest = ({
+    cacheObj = {
+      submissionId: 'sub-1',
+      licenceNumber: 'LIC',
+      postcode: 'PC1',
+      year: 2025
+    },
+    payload = {},
+    params = { id: 'add' }
+  } = {}) => {
+    const cacheApi = {
+      get: jest.fn().mockResolvedValueOnce(cacheObj),
+      set: jest.fn().mockResolvedValueOnce(),
+      drop: jest.fn().mockResolvedValueOnce()
+    }
+    return {
+      path: '/small-catches/add',
+      params,
+      payload,
+      cache: jest.fn(() => cacheApi)
+    }
+  }
+
+  const getMockSubmission = () => ({
+    _links: {
+      activities: {
+        href: '/activities'
+      }
+    }
+  })
+
+  const getMockActivities = () => [
+    {
+      id: 'act1',
+      river: {
+        id: 'r1'
+      },
+      _links: {
+        self: {
+          href: 'act1'
+        }
+      }
+    }
+  ]
+
+  const getMockMethods = () => [{ id: 'm1', internal: false }]
+
+  describe('doGet', () => {
+    const setupCommonFlags = ({ allowed = true, locked = false } = {}) => {
+      Common.isAllowedParam.mockReturnValueOnce(allowed)
+      Common.testLocked.mockReturnValueOnce(locked)
+    }
+
+    const setupApis = ({
+      submissionGetById,
+      activitiesGetFromLink,
+      smallCatchGetAllChildren,
+      smallCatchGetById,
+      smallCatchDoMap,
+      listMethods
+    } = {}) => {
+      const [submissionsApi] = SubmissionsApi.mock.instances
+      if (submissionGetById) submissionsApi.getById.mockResolvedValueOnce(submissionGetById)
+
+      const [activitiesApi] = ActivitiesApi.mock.instances
+      if (activitiesGetFromLink) activitiesApi.getFromLink.mockResolvedValueOnce(activitiesGetFromLink)
+
+      const [smallCatchesApi] = SmallCatchesApi.mock.instances
+      if (smallCatchGetAllChildren) smallCatchesApi.getAllChildren.mockResolvedValueOnce(smallCatchGetAllChildren)
+      if (smallCatchGetById) smallCatchesApi.getById.mockResolvedValueOnce(smallCatchGetById)
+      if (smallCatchDoMap) smallCatchesApi.doMap.mockResolvedValueOnce(smallCatchDoMap)
+
+      const [methodsApi] = MethodsApi.mock.instances
+      if (listMethods) methodsApi.list.mockResolvedValueOnce(listMethods)
+    }
+
+    it('should redirect to summary when monthsFiltered is empty', async () => {
+      const request = getMockRequest({ cacheObj: { submissionId: 'sub-1', licenceNumber: 'LIC', postcode: 'PC1', year: 2025, add: { river: 'r1' } } })
+      const h = getMockH()
+      setupCommonFlags()
+      const allMonths = [
+        { activity: { id: 'act1' }, month: 'JANUARY' },
+        { activity: { id: 'act1' }, month: 'FEBRUARY' },
+        { activity: { id: 'act1' }, month: 'MARCH' },
+        { activity: { id: 'act1' }, month: 'APRIL' },
+        { activity: { id: 'act1' }, month: 'MAY' },
+        { activity: { id: 'act1' }, month: 'JUNE' },
+        { activity: { id: 'act1' }, month: 'JULY' },
+        { activity: { id: 'act1' }, month: 'AUGUST' },
+        { activity: { id: 'act1' }, month: 'SEPTEMBER' },
+        { activity: { id: 'act1' }, month: 'OCTOBER' },
+        { activity: { id: 'act1' }, month: 'NOVEMBER' },
+        { activity: { id: 'act1' }, month: 'DECEMBER' }
+      ]
+      setupApis({
+        submissionGetById: getMockSubmission(),
+        activitiesGetFromLink: getMockActivities(),
+        smallCatchGetAllChildren: allMonths,
+        listMethods: getMockMethods()
+      })
+      const handler = new SmallCatchHandler('small-catches')
+
+      await handler.doGet(request, h)
+
+      expect(h.redirect).toHaveBeenCalledWith('/summary')
+    })
+
+    it('should filter months when single river and show add view', async () => {
+      const request = getMockRequest()
+      const h = getMockH()
+      setupCommonFlags()
+      // rivers derived from activities; simulate only one river passed to add by making activities match rivers length 1
+      const activities = [
+        { id: 'act1', river: { id: 'r1' }, _links: { self: { href: 'act1' } } },
+        { id: 'act2', river: { id: 'r2' }, _links: { self: { href: 'act2' } } }
+      ]
+      // smallCatches has only one month used for act1 so monthsFiltered will be non-empty
+      const smallCatches = [{ activity: { id: 'act1' }, month: 'JANUARY' }]
+      setupApis({
+        submissionGetById: getMockSubmission(),
+        activitiesGetFromLink: activities,
+        smallCatchGetAllChildren: smallCatches,
+        listMethods: getMockMethods()
+      })
+      BaseHandler.prototype.readCacheAndDisplayView = jest.fn().mockReturnValueOnce('view-result')
+      const handler = new SmallCatchHandler('small-catches')
+
+      await handler.doGet(request, h, {})
+
+      expect(BaseHandler.prototype.readCacheAndDisplayView).toHaveBeenCalledWith(
+        request,
+        h,
+        {
+          add: true,
+          rivers: expect.any(Array),
+          methods: expect.any(Array),
+          details: {
+            licenceNumber: 'LIC',
+            postcode: 'PC1',
+            year: 2025
+          }
+        }
+      )
+    })
+
+    it('should throw ResponseError if small catch not found', async () => {
+      const request = getMockRequest({ params: { id: '123' } })
+      const h = getMockH()
+      setupCommonFlags()
+      setupApis({
+        submissionGetById: getMockSubmission(),
+        activitiesGetFromLink: getMockActivities(),
+        smallCatchGetById: null,
+        listMethods: getMockMethods()
+      })
+      const handler = new SmallCatchHandler('small-catches')
+
+      await expect(handler.doGet(request, h, {})).rejects.toMatchObject({
+        message: 'Unauthorized access to small catch',
+        statusCode: ResponseError.status.UNAUTHORIZED
+      })
+    })
+
+    it('should throw ResponseError if the parameter is not allowed', async () => {
+      const cacheObj = { submissionId: 'sub-1', licenceNumber: 'LIC', postcode: 'PC1', year: 2025 }
+      const request = getMockRequest({ cacheObj, params: { id: '123' } })
+      const h = getMockH()
+      Common.isAllowedParam.mockReturnValueOnce(false)
+      const handler = new SmallCatchHandler('small-catches')
+
+      await expect(handler.doGet(request, h, [], cacheObj, [], [])).rejects.toMatchObject({
+        message: 'Unknown small catch',
+        statusCode: ResponseError.status.UNAUTHORIZED
+      })
+    })
+
+    it('should throw ResponseError if activity mismatch', async () => {
+      const handler = new SmallCatchHandler('small-catches')
+      const request = getMockRequest({ params: { id: '123' } })
+      const h = getMockH()
+      setupCommonFlags()
+      // small catch belongs to activity 'act-different'
+      const smallCatch = {
+        id: 'sc1',
+        _links: { activityEntity: { href: 'act-different' } }
+      }
+      setupApis({
+        submissionGetById: getMockSubmission(),
+        activitiesGetFromLink: getMockActivities(),
+        smallCatchGetById: smallCatch,
+        listMethods: getMockMethods()
+      })
+
+      await expect(handler.doGet(request, h, {})).rejects.toMatchObject({
+        message: 'Unauthorized access to small catch',
+        statusCode: ResponseError.status.UNAUTHORIZED
+      })
+    })
+
+    it('should include noMonthRecorded and map counts into payload', async () => {
+      const handler = new SmallCatchHandler('small-catches')
+      const request = getMockRequest({ params: { id: '123' } })
+      const h = getMockH()
+      setupCommonFlags()
+      const smallCatch = {
+        id: 'sc1',
+        activity: { river: { id: 'r1' } },
+        released: true,
+        month: 'MARCH',
+        noMonthRecorded: true,
+        counts: [{ name: 'Trout', count: 2 }, { name: 'Salmon', count: 1 }],
+        _links: { activityEntity: { href: 'act1' } }
+      }
+      setupApis({
+        submissionGetById: getMockSubmission(),
+        activitiesGetFromLink: getMockActivities(),
+        smallCatchGetById: smallCatch,
+        smallCatchDoMap: smallCatch,
+        listMethods: getMockMethods()
+      })
+      BaseHandler.prototype.readCacheAndDisplayView = jest.fn().mockReturnValueOnce('view-result')
+
+      await handler.doGet(request, h, {})
+
+      expect(BaseHandler.prototype.readCacheAndDisplayView).toHaveBeenCalledWith(
+        request,
+        h,
+        {
+          rivers: expect.any(Array),
+          methods: expect.any(Array),
+          details: {
+            licenceNumber: 'LIC',
+            postcode: 'PC1',
+            year: 2025
+          },
+          payload: {
+            river: 'r1',
+            released: true,
+            month: 'MARCH',
+            noMonthRecorded: 'true',
+            trout: 2,
+            salmon: 1
+          }
+        }
+      )
+    })
+
+    it('should filter out internal rivers and methods when CONTEXT=ANGLER', async () => {
+      process.env.CONTEXT = 'ANGLER'
+      const request = getMockRequest()
+      const h = getMockH()
+      setupCommonFlags()
+      const activities = [
+        { river: { id: 'r1', internal: true } },
+        { river: { id: 'r2', internal: false } }
+      ]
+      const methods = [
+        { id: 'm1', internal: true },
+        { id: 'm2', internal: false }
+      ]
+      setupApis({
+        submissionGetById: getMockSubmission(),
+        activitiesGetFromLink: activities,
+        smallCatchGetAllChildren: [],
+        listMethods: methods
+      })
+      BaseHandler.prototype.readCacheAndDisplayView = jest.fn().mockReturnValueOnce('view-result')
+      const handler = new SmallCatchHandler('small-catches')
+
+      await handler.doGet(request, h)
+
+      expect(BaseHandler.prototype.readCacheAndDisplayView).toHaveBeenCalledWith(
+        request,
+        h,
+        {
+          add: true,
+          details: {
+            licenceNumber: 'LIC',
+            postcode: 'PC1',
+            year: 2025
+          },
+          rivers: [{ id: 'r2', internal: false }],
+          methods: [{ id: 'm2', internal: false }]
+        }
+      )
+    })
+
+    it('should filter return all rivers and methods when CONTEXT=FMT', async () => {
+      process.env.CONTEXT = 'FMT'
+      const request = getMockRequest()
+      const h = getMockH()
+      setupCommonFlags()
+      const activities = [
+        { river: { id: 'r1', internal: true } },
+        { river: { id: 'r2', internal: false } }
+      ]
+      const methods = [
+        { id: 'm1', internal: true },
+        { id: 'm2', internal: false }
+      ]
+      setupApis({
+        submissionGetById: getMockSubmission(),
+        activitiesGetFromLink: activities,
+        smallCatchGetAllChildren: [],
+        listMethods: methods
+      })
+      BaseHandler.prototype.readCacheAndDisplayView = jest.fn().mockReturnValueOnce('view-result')
+      const handler = new SmallCatchHandler('small-catches')
+
+      await handler.doGet(request, h)
+
+      expect(BaseHandler.prototype.readCacheAndDisplayView).toHaveBeenCalledWith(
+        request,
+        h,
+        {
+          add: true,
+          details: {
+            licenceNumber: 'LIC',
+            postcode: 'PC1',
+            year: 2025
+          },
+          rivers: [{ id: 'r1', internal: true }, { id: 'r2', internal: false }],
+          methods: [{ id: 'm1', internal: true }, { id: 'm2', internal: false }]
+        }
+      )
+    })
+
+    it('should redirect to review when submission locked', async () => {
+      const request = getMockRequest()
+      const h = getMockH()
+      setupCommonFlags({ locked: true })
+      setupApis({
+        submissionGetById: getMockSubmission(),
+        activitiesGetFromLink: getMockActivities(),
+        listMethods: getMockMethods()
+      })
+      const handler = new SmallCatchHandler('small-catches')
+
+      await handler.doGet(request, h)
+
+      expect(h.redirect).toHaveBeenCalledWith('/review')
+    })
+  })
+
+  describe('doPost', () => {
+    it('should skip exclusion change when errors present and reportingExclude is true', async () => {
+      const cacheObj = { submissionId: 'sub-1' }
+      const request = getMockRequest({ cacheObj, params: { id: '123' } })
+      const h = getMockH()
+      const [submissionsApi] = SubmissionsApi.mock.instances
+      submissionsApi.getById.mockResolvedValueOnce({ id: 'sub-1', reportingExclude: true })
+      submissionsApi.changeExclusion.mockResolvedValueOnce({ id: 'sub-1', reportingExclude: true })
+      BaseHandler.prototype.writeCacheAndRedirect = jest.fn().mockReturnValueOnce('redirect-result')
+      const handler = new SmallCatchHandler('small-catches')
+
+      await handler.doPost(request, h, ['error'])
+
+      expect(submissionsApi.changeExclusion).not.toHaveBeenCalled()
+    })
+
+    it('should call changeExclusion if reportingExclude is true and there are no errors', async () => {
+      const cacheObj = { submissionId: 'sub-1' }
+      const request = getMockRequest({ cacheObj, params: { id: '123' } })
+      const h = getMockH()
+      const [submissionsApi] = SubmissionsApi.mock.instances
+      submissionsApi.getById.mockResolvedValueOnce({ id: 'sub-1', reportingExclude: true })
+      submissionsApi.changeExclusion.mockResolvedValueOnce({ id: 'sub-1', reportingExclude: true })
+      BaseHandler.prototype.writeCacheAndRedirect = jest.fn().mockReturnValueOnce('redirect-result')
+      const handler = new SmallCatchHandler('small-catches')
+
+      await handler.doPost(request, h)
+
+      expect(submissionsApi.changeExclusion).toHaveBeenCalled()
+    })
+
+    it('should redirect to add when add payload present', async () => {
+      const cacheObj = { submissionId: 'sub-1' }
+      const request = getMockRequest({ cacheObj, payload: { add: true, river: 'r1' }, params: { id: '123' } })
+      const h = getMockH()
+      const [submissionsApi] = SubmissionsApi.mock.instances
+      submissionsApi.getById.mockResolvedValueOnce({ id: 'sub-1', reportingExclude: true })
+      BaseHandler.prototype.writeCacheAndRedirect = jest.fn().mockReturnValueOnce('redirect-result')
+      const handler = new SmallCatchHandler('small-catches')
+
+      await handler.doPost(request, h, null)
+
+      expect(BaseHandler.prototype.writeCacheAndRedirect).toHaveBeenCalledWith(
+        request,
+        h,
+        null,
+        '/small-catches/add',
+        '/small-catches/123',
+        cacheObj
+      )
+    })
+
+    it('should redirect to summary when nod add payload present', async () => {
+      const cacheObj = { submissionId: 'sub-1' }
+      const request = getMockRequest({ cacheObj, payload: { river: 'r1' }, params: { id: '123' } })
+      const h = getMockH()
+      const [submissionsApi] = SubmissionsApi.mock.instances
+      submissionsApi.getById.mockResolvedValueOnce({ id: 'sub-1', reportingExclude: true })
+      BaseHandler.prototype.writeCacheAndRedirect = jest.fn().mockReturnValueOnce('redirect-result')
+      const handler = new SmallCatchHandler('small-catches')
+
+      await handler.doPost(request, h, null)
+
+      expect(BaseHandler.prototype.writeCacheAndRedirect).toHaveBeenCalledWith(
+        request,
+        h,
+        null,
+        '/summary',
+        '/small-catches/123',
+        cacheObj
+      )
+    })
+  })
+
+  describe('SmallCatchHandlerClear', () => {
+    it('should call super.doGet', async () => {
+      const cacheObj = { submissionId: 'sub-1' }
+      const request = getMockRequest({ cacheObj })
+      const h = getMockH()
+      BaseHandler.prototype.clearCacheErrorsAndPayload = jest.fn().mockResolvedValueOnce()
+      const superDoGetSpy = jest.spyOn(SmallCatchHandler.prototype, 'doGet').mockResolvedValueOnce('super-result')
+      const handlerClear = new SmallCatchHandlerClear('small-catches')
+
+      await handlerClear.doGet(request, h)
+
+      expect(superDoGetSpy).toHaveBeenCalledWith(request, h)
+    })
+  })
+})
