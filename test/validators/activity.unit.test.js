@@ -10,7 +10,15 @@ describe('activity.unit', () => {
     jest.resetModules()
   })
 
-  const getMockRequest = (cacheObj = { submissionId: 'sub-1' }, payload = { river: 'r1', daysFishedOther: 1, daysFishedWithMandatoryRelease: 2 }) => {
+  const getMockRequest = (
+    cacheObj = {
+      submissionId: 'sub-1'
+    },
+    payload = {
+      river: 'r1',
+      daysFishedOther: 1,
+      daysFishedWithMandatoryRelease: 2
+    }) => {
     const cache = {
       get: jest.fn().mockResolvedValue(cacheObj)
     }
