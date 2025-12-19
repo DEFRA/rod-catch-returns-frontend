@@ -3,6 +3,8 @@ const YearHandler = require('../../src/handlers/year')
 const BaseHandler = require('../../src/handlers/base')
 const { getMockH } = require('../test-utils/server-test-utils')
 
+jest.mock('moment')
+
 describe('year-handler.unit', () => {
   const OLD_ENV = process.env
   const OLD_ARGV = process.argv
@@ -29,8 +31,10 @@ describe('year-handler.unit', () => {
 
   describe('doGet', () => {
     it('should display year selection when month is Jan, Feb or Mar', async () => {
-      jest.spyOn(moment.prototype, 'month').mockReturnValue(0)
-      jest.spyOn(moment.prototype, 'year').mockReturnValue(2025)
+      moment.mockReturnValueOnce({
+        month: () => 0,
+        year: () => 2025
+      })
       const handler = new YearHandler('select-year')
       const request = getMockRequest({
         licenceNumber: 'AAA-111',
@@ -59,8 +63,10 @@ describe('year-handler.unit', () => {
 
     it('should display year selection when --force-year-choose is present', async () => {
       process.argv.push('--force-year-choose')
-      jest.spyOn(moment.prototype, 'month').mockReturnValue(6)
-      jest.spyOn(moment.prototype, 'year').mockReturnValue(2025)
+      moment.mockReturnValueOnce({
+        month: () => 6,
+        year: () => 2025
+      })
       const handler = new YearHandler('select-year')
       const request = getMockRequest({
         licenceNumber: 'AAA-111',
@@ -88,8 +94,10 @@ describe('year-handler.unit', () => {
 
     it('should display year selection when NODE_ENV=test', async () => {
       process.env.NODE_ENV = 'test'
-      jest.spyOn(moment.prototype, 'month').mockReturnValue(6)
-      jest.spyOn(moment.prototype, 'year').mockReturnValue(2025)
+      moment.mockReturnValueOnce({
+        month: () => 6,
+        year: () => 2025
+      })
       const handler = new YearHandler('select-year')
       const request = getMockRequest({
         licenceNumber: 'AAA-111',
@@ -117,8 +125,11 @@ describe('year-handler.unit', () => {
     })
 
     it('should auto-set year when outside selection window', async () => {
-      jest.spyOn(moment.prototype, 'month').mockReturnValue(6)
-      jest.spyOn(moment.prototype, 'year').mockReturnValue(2025)
+      const expectedYear = 2025
+      moment.mockReturnValueOnce({
+        month: () => 6,
+        year: () => expectedYear
+      })
       const cacheSet = jest.fn().mockResolvedValueOnce()
       const request = {
         payload: {},
@@ -134,19 +145,20 @@ describe('year-handler.unit', () => {
       await handler.doGet(request, h)
 
       expect(cacheSet).toHaveBeenCalledWith({
-        year: 2025
+        year: expectedYear
       })
     })
 
     it('should redirect to did-you-fish when outside selection window', async () => {
-      jest.spyOn(moment.prototype, 'month').mockReturnValue(6)
-      jest.spyOn(moment.prototype, 'year').mockReturnValue(2025)
-      const cacheSet = jest.fn().mockResolvedValueOnce()
+      moment.mockReturnValueOnce({
+        month: () => 6,
+        year: () => 2025
+      })
       const request = {
         payload: {},
         cache: jest.fn(() => ({
           get: jest.fn().mockResolvedValueOnce({}),
-          set: cacheSet
+          set: jest.fn().mockResolvedValueOnce()
         }))
       }
       const h = getMockH()
