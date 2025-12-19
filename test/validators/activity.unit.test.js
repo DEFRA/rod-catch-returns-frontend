@@ -10,7 +10,7 @@ describe('activity.unit', () => {
     jest.resetModules()
   })
 
-  const getMockRequest = (cacheObj = {}, payload = {}) => {
+  const getMockRequest = (cacheObj = { submissionId: 'sub-1' }, payload = { river: 'r1', daysFishedOther: 1, daysFishedWithMandatoryRelease: 2 }) => {
     const cache = {
       get: jest.fn().mockResolvedValue(cacheObj)
     }
@@ -34,45 +34,57 @@ describe('activity.unit', () => {
       .mockImplementationOnce((v) => v)
   }
 
-  describe('number validation', () => {
-    it('should call checkNumber for both day fields', async () => {
-      setupCommonMocks()
-      const request = getMockRequest(
-        { submissionId: 'sub-1' },
-        { river: 'r1', daysFishedOther: 1, daysFishedWithMandatoryRelease: 2 }
-      )
-
-      const [activitiesApi] = ActivitiesApi.mock.instances
-      activitiesApi.add.mockResolvedValueOnce({})
-
-      await activityValidator(request)
-
-      expect(Common.checkNumber).toHaveBeenCalledWith(
-        'daysFishedOther',
-        1,
-        expect.any(Array)
-      )
-
-      expect(Common.checkNumber).toHaveBeenCalledWith(
-        'daysFishedWithMandatoryRelease',
-        2,
-        expect.any(Array)
-      )
-    })
-  })
-
-  it('should call activitiesApi.add when no activity exists in cache', async () => {
+  it('should return null if validation succeeds', async () => {
     setupCommonMocks()
-
-    const request = getMockRequest(
-      { submissionId: 'sub-1' },
-      { river: 'r1', daysFishedOther: 1, daysFishedWithMandatoryRelease: 2 }
-    )
+    const request = getMockRequest()
 
     const [activitiesApi] = ActivitiesApi.mock.instances
     activitiesApi.add.mockResolvedValueOnce({})
 
     const result = await activityValidator(request)
+
+    expect(result).toBe(null)
+  })
+
+  it('should call checkNumber for daysFishedOther', async () => {
+    setupCommonMocks()
+    const request = getMockRequest()
+
+    const [activitiesApi] = ActivitiesApi.mock.instances
+    activitiesApi.add.mockResolvedValueOnce({})
+
+    await activityValidator(request)
+
+    expect(Common.checkNumber).toHaveBeenCalledWith(
+      'daysFishedOther',
+      1,
+      expect.any(Array)
+    )
+  })
+
+  it('should call checkNumber daysFishedWithMandatoryRelease', async () => {
+    setupCommonMocks()
+    const request = getMockRequest()
+
+    const [activitiesApi] = ActivitiesApi.mock.instances
+    activitiesApi.add.mockResolvedValueOnce({})
+
+    await activityValidator(request)
+
+    expect(Common.checkNumber).toHaveBeenCalledWith(
+      'daysFishedWithMandatoryRelease',
+      2,
+      expect.any(Array)
+    )
+  })
+
+  it('should call activitiesApi.add when no activity exists in cache', async () => {
+    setupCommonMocks()
+    const request = getMockRequest()
+    const [activitiesApi] = ActivitiesApi.mock.instances
+    activitiesApi.add.mockResolvedValueOnce({})
+
+    await activityValidator(request)
 
     expect(activitiesApi.add).toHaveBeenCalledWith(
       request,
@@ -81,13 +93,10 @@ describe('activity.unit', () => {
       2,
       1
     )
-
-    expect(result).toBeNull()
   })
 
   it('should call activitiesApi.change when activity exists in cache', async () => {
     setupCommonMocks()
-
     const request = getMockRequest(
       {
         submissionId: 'sub-1',
@@ -97,9 +106,9 @@ describe('activity.unit', () => {
     )
 
     const [activitiesApi] = ActivitiesApi.mock.instances
-    activitiesApi.change.mockResolvedValueOnce({})
+    activitiesApi.change.mockResolvedValueOnce(1)
 
-    const result = await activityValidator(request)
+    await activityValidator(request)
 
     expect(activitiesApi.change).toHaveBeenCalledWith(
       request,
@@ -109,15 +118,12 @@ describe('activity.unit', () => {
       2,
       1
     )
-
-    expect(result).toBeNull()
   })
 
   it('should return combined validation and API errors when API returns errors', async () => {
     const validationErrors = [{ name: 'daysFishedOther', message: 'Invalid' }]
     const apiErrorResult = { errors: [{ message: 'API error' }] }
     const mappedApiErrors = [{ name: 'river', message: 'Bad river' }]
-
     Common.checkNumber
       .mockImplementationOnce((_, __, errors) => {
         errors.push(validationErrors[0])
@@ -125,14 +131,12 @@ describe('activity.unit', () => {
       })
       .mockImplementationOnce(() => null)
 
-    Common.subNumber.mockImplementation((v) => v)
+    Common.subNumber.mockImplementationOnce((v) => v)
     Common.apiErrors.mockReturnValueOnce(mappedApiErrors)
-
     const request = getMockRequest(
       { submissionId: 'sub-1' },
       { river: 'r1', daysFishedOther: null, daysFishedWithMandatoryRelease: null }
     )
-
     const [activitiesApi] = ActivitiesApi.mock.instances
     activitiesApi.add.mockResolvedValueOnce(apiErrorResult)
 
@@ -146,7 +150,6 @@ describe('activity.unit', () => {
 
   it('should return validation errors when present and API succeeds', async () => {
     const validationErrors = [{ name: 'daysFishedOther', message: 'Invalid' }]
-
     Common.checkNumber
       .mockImplementationOnce((_, __, errors) => {
         errors.push(validationErrors[0])
@@ -154,13 +157,11 @@ describe('activity.unit', () => {
       })
       .mockImplementationOnce(() => null)
 
-    Common.subNumber.mockImplementation((v) => v)
-
+    Common.subNumber.mockImplementationOnce((v) => v)
     const request = getMockRequest(
       { submissionId: 'sub-1' },
       { river: 'r1', daysFishedOther: null, daysFishedWithMandatoryRelease: null }
     )
-
     const [activitiesApi] = ActivitiesApi.mock.instances
     activitiesApi.add.mockResolvedValueOnce({})
 
