@@ -70,7 +70,7 @@ describe('activity.unit', () => {
     )
   })
 
-  it('should call checkNumber daysFishedWithMandatoryRelease', async () => {
+  it('should call checkNumber with daysFishedWithMandatoryRelease', async () => {
     setupCommonMocks()
     const request = getMockRequest()
 
