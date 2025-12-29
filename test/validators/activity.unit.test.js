@@ -29,13 +29,10 @@ describe('activity.unit', () => {
     }
   }
 
-  const setupCommonMocks = ({
-    daysOther = 1,
-    daysMandatory = 2
-  } = {}) => {
+  const setupCommonMocks = () => {
     Common.checkNumber
-      .mockImplementationOnce(() => daysOther)
-      .mockImplementationOnce(() => daysMandatory)
+      .mockImplementationOnce(() => 1)
+      .mockImplementationOnce(() => 2)
 
     Common.subNumber
       .mockImplementationOnce((v) => v)
