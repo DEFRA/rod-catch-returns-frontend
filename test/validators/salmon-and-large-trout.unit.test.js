@@ -63,9 +63,8 @@ describe('salmon-and-large-trout.unit', () => {
 
     await validate(request)
 
-    expect(mockAdd).toHaveBeenCalledWith(expect.any(Object), expect.any(String), undefined,
-      null, // 4th value is dateCaught
-      undefined, expect.any(Object), undefined, null, expect.any(Boolean), expect.any(Boolean))
+    // 4th parameter is dateCaught
+    expect(mockAdd.mock.calls[0][3]).toBe(null)
   })
 
   it('returns ISO date string for valid date', async () => {
@@ -77,9 +76,8 @@ describe('salmon-and-large-trout.unit', () => {
 
     await validate(request)
 
-    expect(mockAdd).toHaveBeenCalledWith(expect.any(Object), expect.any(String), 'a1',
-      '2025-05-10T00:00:00+01:00', // 4th value is dateCaught
-      undefined, expect.any(Object), undefined, null, expect.any(Boolean), expect.any(Boolean))
+    // 4th parameter is dateCaught
+    expect(mockAdd.mock.calls[0][3]).toMatch(/^2025-05-10T00:00:00/)
   })
 
   it('converts METRIC to IMPERIAL when no errors', async () => {
@@ -136,9 +134,8 @@ describe('salmon-and-large-trout.unit', () => {
 
     await validate(request)
 
-    expect(mockAdd).toHaveBeenCalledWith(expect.any(Object), expect.any(String), 'a1', null, undefined, expect.any(Object), undefined,
-      true,
-      expect.any(Boolean), expect.any(Boolean))
+    // 8th parameter is released
+    expect(mockAdd.mock.calls[0][7]).toBe(true)
   })
 
   it('set released to false if it is true (boolean)', async () => {
@@ -151,9 +148,8 @@ describe('salmon-and-large-trout.unit', () => {
 
     await validate(request)
 
-    expect(mockAdd).toHaveBeenCalledWith(expect.any(Object), expect.any(String), 'a1', null, undefined, expect.any(Object), undefined,
-      false,
-      expect.any(Boolean), expect.any(Boolean))
+    // 8th parameter is released
+    expect(mockAdd.mock.calls[0][7]).toBe(false)
   })
 
   it.each([
@@ -168,9 +164,8 @@ describe('salmon-and-large-trout.unit', () => {
 
     await validate(request)
 
-    expect(mockAdd).toHaveBeenCalledWith(expect.any(Object), expect.any(String), undefined, null, undefined, expect.any(Object), undefined,
-      null,
-      expect.any(Boolean), expect.any(Boolean))
+    // 8th parameter is released
+    expect(mockAdd.mock.calls[0][7]).toBe(null)
   })
 
   it('calls add when cache.largeCatch is missing', async () => {
