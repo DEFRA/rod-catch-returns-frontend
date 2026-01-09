@@ -1,6 +1,3 @@
-const mockGetActivities = jest.fn()
-const mockAdd = jest.fn()
-const mockChange = jest.fn()
 const mockSorter = jest.fn(() => 0)
 const mockApiErrors = jest.fn()
 
@@ -18,19 +15,18 @@ jest.mock('../../src/validators/common', () => ({
   apiErrors: (...args) => mockApiErrors(...args)
 }))
 
+const [submissionsApi] = SubmissionsApi.mock.instances
+const [activitiesApi] = ActivitiesApi.mock.instances
+const [catchesApi] = CatchesApi.mock.instances
+
 describe('salmon-and-large-trout.unit', () => {
   beforeEach(() => {
-    jest.resetModules()
-    /*
-     * jest.resetModules()
-     * jest.clearMocks()
-     */
-   // SubmissionsApi.mockClear()
+    jest.resetAllMocks()
   })
 
   const getMockRequest = (payload, cacheObj) => {
     const cacheApi = {
-      get: jest.fn().mockResolvedValue(cacheObj)
+      get: jest.fn().mockResolvedValueOnce(cacheObj)
     }
     return {
       payload,
@@ -39,30 +35,11 @@ describe('salmon-and-large-trout.unit', () => {
   }
 
   const setUpMocks = () => {
-    const [submissionsApi] = SubmissionsApi.mock.instances
     submissionsApi.getById.mockResolvedValueOnce({ _links: { activities: { href: '/acts' } } })
-
-    const [activitiesApi] = ActivitiesApi.mock.instances
     activitiesApi.getFromLink.mockResolvedValueOnce([{ id: 'a1', river: { id: 'r1' } }])
-
-    const [catchesApi] = CatchesApi.mock.instances
     catchesApi.add.mockResolvedValueOnce('add')
     catchesApi.change.mockResolvedValueOnce('change')
-
-    return {
-      catchesApi
-    }
   }
-
-  it.only('test1', async () => {
-    const payload = { month: '5', day: '10', river: 'r1' }
-    const request = getMockRequest(payload, { year: 2025, submissionId: 'sub1' })
-    const { catchesApi } = setUpMocks()
-
-    await validate(request)
-
-    expect(catchesApi.add).toHaveBeenCalledTimes(1)
-  })
 
   // TODO use object instead of array
   it.each([
@@ -73,11 +50,9 @@ describe('salmon-and-large-trout.unit', () => {
     [{ month: '2', day: '31' }, 'invalid date']
   ])('dateCaught is null when %s', async (payload) => {
     const request = getMockRequest(payload, { year: 2025, submissionId: 'sub1' })
-    const { catchesApi } = setUpMocks()
+    setUpMocks()
 
     await validate(request)
-
-    // expect(catchesApi.add).toHaveBeenCalledTimes(1)
 
     // 4th parameter is dateCaught
     expect(catchesApi.add.mock.calls[0][3]).toBe(null)
@@ -86,10 +61,10 @@ describe('salmon-and-large-trout.unit', () => {
   it('returns ISO date string for valid date', async () => {
     const payload = { month: '5', day: '10', river: 'r1' }
     const request = getMockRequest(payload, { year: 2025, submissionId: 'sub1' })
-    const { catchesApi } = setUpMocks()
+    setUpMocks()
 
     await validate(request)
-    expect(catchesApi.add).toHaveBeenCalledTimes(1)
+
     // 4th parameter is dateCaught
     expect(catchesApi.add.mock.calls[0][3]).toMatch(/^2025-05-10T00:00:00/)
   })
@@ -138,7 +113,7 @@ describe('salmon-and-large-trout.unit', () => {
   it('set released to true if it is true (string)', async () => {
     const payload = { river: 'r1', released: 'true' }
     const request = getMockRequest(payload, { year: 2025, submissionId: 'sub1' })
-    const { catchesApi } = setUpMocks()
+    setUpMocks()
 
     await validate(request)
 
@@ -150,7 +125,7 @@ describe('salmon-and-large-trout.unit', () => {
     // This doesn't make sense
     const payload = { river: 'r1', released: true }
     const request = getMockRequest(payload, { year: 2025, submissionId: 'sub1' })
-    const { catchesApi } = setUpMocks()
+    setUpMocks()
 
     await validate(request)
 
@@ -164,18 +139,18 @@ describe('salmon-and-large-trout.unit', () => {
     { payload: { released: undefined }, description: 'undefined' }
   ])('set released to null if it is $description', async ({ payload }) => {
     const request = getMockRequest(payload, { year: 2025, submissionId: 'sub1' })
-    const { catchesApi } = setUpMocks()
+    setUpMocks()
 
     await validate(request)
 
     // 8th parameter is released
-    expect(catchesApi.add.calls[0][7]).toBe(null)
+    expect(catchesApi.add.mock.calls[0][7]).toBe(null)
   })
 
   it('calls add when cache.largeCatch is missing', async () => {
     const payload = { river: 'r1', month: '5', day: '10' }
     const request = getMockRequest(payload, { submissionId: 'sub1', year: 2025 })
-    const { catchesApi } = setUpMocks()
+    setUpMocks()
 
     await validate(request)
 
@@ -189,48 +164,39 @@ describe('salmon-and-large-trout.unit', () => {
       year: 2025,
       largeCatch: { id: 'catch123' }
     })
-    const { catchesApi } = setUpMocks()
+    setUpMocks()
 
     await validate(request)
 
     expect(catchesApi.change).toHaveBeenCalled()
   })
 
-  /*
-   * it('returns sorted API errors when result contains errors', async () => {
-   *   const payload = { river: 'r1', month: '5', day: '10' }
-   *   const request = getMockRequest(payload, { submissionId: 'sub1', year: 2025 })
-   *   SubmissionsApi.getById.mockResolvedValue({ _links: { activities: { href: '/acts' } } })
-   *   mockGetActivities.mockResolvedValue([{ id: 'a1', river: { id: 'r1' } }])
-   *   const apiErr = { errors: [{ MASS: 'BAD' }] }
-   *   mockAdd.mockResolvedValue(apiErr)
-   *   mockApiErrors.mockReturnValue([{ MASS: 'BAD' }])
-   */
+  it('returns sorted API errors when result contains errors', async () => {
+    const payload = { river: 'r1', month: '5', day: '10' }
+    const request = getMockRequest(payload, { submissionId: 'sub1', year: 2025 })
 
-  //   const result = await validate(request)
+    submissionsApi.getById.mockResolvedValueOnce({ _links: { activities: { href: '/acts' } } })
+    activitiesApi.getFromLink.mockResolvedValueOnce([{ id: 'a1', river: { id: 'r1' } }])
+    const apiErr = { errors: [{ MASS: 'BAD' }] }
+    catchesApi.add.mockResolvedValueOnce(apiErr)
+    mockApiErrors.mockReturnValueOnce([{ MASS: 'BAD' }])
 
-  /*
-   *   expect(result).toEqual([{ MASS: 'BAD' }])
-   *   expect(mockApiErrors).toHaveBeenCalledWith(apiErr)
-   * })
-   */
+    const result = await validate(request)
 
-  /*
-   * it('returns null when no errors and API success', async () => {
-   *   const payload = { river: 'r1', month: '5', day: '10' }
-   *   const request = getMockRequest(payload, { submissionId: 'sub1', year: 2025 })
-   */
+    expect(result).toEqual([{ MASS: 'BAD' }])
+    expect(mockApiErrors).toHaveBeenCalledWith(apiErr)
+  })
 
-  /*
-   *   SubmissionsApi.getById.mockResolvedValue({ _links: { activities: { href: '/acts' } } })
-   *   mockGetActivities.mockResolvedValue([{ id: 'a1', river: { id: 'r1' } }])
-   *   mockAdd.mockResolvedValue({})
-   */
+  it('returns null when no errors and API success', async () => {
+    const payload = { river: 'r1', month: '5', day: '10' }
+    const request = getMockRequest(payload, { submissionId: 'sub1', year: 2025 })
 
-  //   const result = await validate(request)
+    submissionsApi.getById.mockResolvedValueOnce({ _links: { activities: { href: '/acts' } } })
+    activitiesApi.getFromLink.mockResolvedValueOnce([{ id: 'a1', river: { id: 'r1' } }])
+    catchesApi.add.mockResolvedValueOnce({})
 
-  /*
-   *   expect(result).toBeNull()
-   * })
-   */
+    const result = await validate(request)
+
+    expect(result).toBeNull()
+  })
 })
