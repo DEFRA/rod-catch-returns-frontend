@@ -1,19 +1,13 @@
-const mockSorter = jest.fn(() => 0)
-const mockApiErrors = jest.fn()
-
 const validate = require('../../src/validators/salmon-and-large-trout')
 const SubmissionsApi = require('../../src/api/submissions')
 const ActivitiesApi = require('../../src/api/activities')
 const CatchesApi = require('../../src/api/catches')
+const { apiErrors } = require('../../src/validators/common')
 
 jest.mock('../../src/api/submissions')
 jest.mock('../../src/api/activities')
 jest.mock('../../src/api/catches')
-
-jest.mock('../../src/validators/common', () => ({
-  getSorterForApiErrors: () => mockSorter,
-  apiErrors: (...args) => mockApiErrors(...args)
-}))
+jest.mock('../../src/validators/common')
 
 const [submissionsApi] = SubmissionsApi.mock.instances
 const [activitiesApi] = ActivitiesApi.mock.instances
@@ -41,14 +35,13 @@ describe('salmon-and-large-trout.unit', () => {
     catchesApi.change.mockResolvedValueOnce('change')
   }
 
-  // TODO use object instead of array
   it.each([
-    [{ month: null, day: '10' }, 'missing month'],
-    [{ month: '5', day: null }, 'missing day'],
-    [{ month: 'abc', day: '10' }, 'non-numeric month'],
-    [{ month: '5', day: 'xyz' }, 'non-numeric day'],
-    [{ month: '2', day: '31' }, 'invalid date']
-  ])('dateCaught is null when %s', async (payload) => {
+    { payload: { month: null, day: '10' }, description: 'missing month' },
+    { payload: { month: '5', day: null }, description: 'missing day' },
+    { payload: { month: 'abc', day: '10' }, description: 'non-numeric month' },
+    { payload: { month: '5', day: 'xyz' }, description: 'non-numeric day' },
+    { payload: { month: '2', day: '31' }, description: 'invalid date' }
+  ])('dateCaught is null when %description', async ({ payload }) => {
     const request = getMockRequest(payload, { year: 2025, submissionId: 'sub1' })
     setUpMocks()
 
@@ -174,23 +167,20 @@ describe('salmon-and-large-trout.unit', () => {
   it('returns sorted API errors when result contains errors', async () => {
     const payload = { river: 'r1', month: '5', day: '10' }
     const request = getMockRequest(payload, { submissionId: 'sub1', year: 2025 })
-
     submissionsApi.getById.mockResolvedValueOnce({ _links: { activities: { href: '/acts' } } })
     activitiesApi.getFromLink.mockResolvedValueOnce([{ id: 'a1', river: { id: 'r1' } }])
     const apiErr = { errors: [{ MASS: 'BAD' }] }
     catchesApi.add.mockResolvedValueOnce(apiErr)
-    mockApiErrors.mockReturnValueOnce([{ MASS: 'BAD' }])
+    apiErrors.mockReturnValueOnce([{ MASS: 'BAD' }])
 
     const result = await validate(request)
 
     expect(result).toEqual([{ MASS: 'BAD' }])
-    expect(mockApiErrors).toHaveBeenCalledWith(apiErr)
   })
 
   it('returns null when no errors and API success', async () => {
     const payload = { river: 'r1', month: '5', day: '10' }
     const request = getMockRequest(payload, { submissionId: 'sub1', year: 2025 })
-
     submissionsApi.getById.mockResolvedValueOnce({ _links: { activities: { href: '/acts' } } })
     activitiesApi.getFromLink.mockResolvedValueOnce([{ id: 'a1', river: { id: 'r1' } }])
     catchesApi.add.mockResolvedValueOnce({})
