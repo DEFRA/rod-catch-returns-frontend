@@ -17,24 +17,24 @@ describe('age-weight-key.unit', () => {
     process.env = { ...OLD_ENV }
   })
 
-  const mockRequest = (payload) => ({
+  const getMockRequest = (payload) => ({
     payload
   })
 
   it('adds NO_GATE_SELECTED when gate missing', async () => {
-    const result = await validate(mockRequest({ year: '2024', upload: {} }))
+    const result = await validate(getMockRequest({ year: '2024', upload: {} }))
 
     expect(result).toContainEqual({ type: 'NO_GATE_SELECTED' })
   })
 
   it('adds NO_YEAR_ENTERED when year missing', async () => {
-    const result = await validate(mockRequest({ gate: 'A', upload: {} }))
+    const result = await validate(getMockRequest({ gate: 'A', upload: {} }))
 
     expect(result).toContainEqual({ type: 'NO_YEAR_ENTERED' })
   })
 
   it('adds NOT_A_REAL_YEAR when year is not numeric', async () => {
-    const result = await validate(mockRequest({ gate: 'A', year: 'abc', upload: {} }))
+    const result = await validate(getMockRequest({ gate: 'A', year: 'abc', upload: {} }))
 
     expect(result).toContainEqual({ type: 'NOT_A_REAL_YEAR' })
   })
@@ -42,19 +42,19 @@ describe('age-weight-key.unit', () => {
   it('adds YEAR_OUT_OF_RANGE when year not in ±2 range', async () => {
     const farYear = (moment().year() + 10).toString()
 
-    const result = await validate(mockRequest({ gate: 'A', year: farYear, upload: {} }))
+    const result = await validate(getMockRequest({ gate: 'A', year: farYear, upload: {} }))
 
     expect(result).toContainEqual({ type: 'YEAR_OUT_OF_RANGE' })
   })
 
   it('adds NO_FILE_SELECTED when upload missing', async () => {
-    const result = await validate(mockRequest({ gate: 'A', year: '2024' }))
+    const result = await validate(getMockRequest({ gate: 'A', year: '2024' }))
 
     expect(result).toContainEqual({ type: 'NO_FILE_SELECTED' })
   })
 
   it('adds BAD_FILE_TYPE when not CSV', async () => {
-    const result = await validate(mockRequest({
+    const result = await validate(getMockRequest({
       gate: 'A',
       year: '2024',
       upload: { filename: 'test.txt' }
@@ -64,7 +64,7 @@ describe('age-weight-key.unit', () => {
   })
 
   it('adds FILE_TOO_LARGE when bytes exceed limit', async () => {
-    const result = await validate(mockRequest({
+    const result = await validate(getMockRequest({
       gate: 'A',
       year: '2024',
       upload: { filename: 'test.csv', bytes: 200000 }
@@ -74,7 +74,7 @@ describe('age-weight-key.unit', () => {
   })
 
   it('adds FILE_EMPTY when bytes = 0', async () => {
-    const result = await validate(mockRequest({
+    const result = await validate(getMockRequest({
       gate: 'A',
       year: '2024',
       upload: { filename: 'test.csv', bytes: 0 }
@@ -204,7 +204,7 @@ describe('age-weight-key.unit', () => {
   })
 
   it('returns validation errors when preValidate fails', async () => {
-    const request = mockRequest({
+    const request = getMockRequest({
       gate: null,
       year: null,
       upload: null
@@ -219,7 +219,7 @@ describe('age-weight-key.unit', () => {
   })
 
   it('returns FILE_HAS_VIRUS when scanner detects infection', async () => {
-    const request = mockRequest({
+    const request = getMockRequest({
       gate: 'A',
       year: moment().year().toString(),
       upload: {
@@ -240,7 +240,7 @@ describe('age-weight-key.unit', () => {
       statusCode: ResponseError.status.CONFLICT
     })
 
-    const request = mockRequest({
+    const request = getMockRequest({
       gate: 'A',
       year: moment().year().toString(),
       upload: {
@@ -261,7 +261,7 @@ describe('age-weight-key.unit', () => {
       errors: [{ msg: 'bad row' }]
     })
 
-    const request = mockRequest({
+    const request = getMockRequest({
       gate: 'A',
       year: moment().year().toString(),
       upload: {
@@ -284,7 +284,7 @@ describe('age-weight-key.unit', () => {
       statusCode: 200
     })
 
-    const request = mockRequest({
+    const request = getMockRequest({
       gate: 'A',
       year: moment().year().toString(),
       upload: {
