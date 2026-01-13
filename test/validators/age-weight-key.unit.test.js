@@ -159,30 +159,25 @@ describe('age-weight-key.unit', () => {
     expect(logger.error).toHaveBeenCalledWith(chmodError)
   })
 
-  // TODO clean up
   it('calls scanner.is_infected with file path and returns its result', async () => {
     process.env.CLAMD_SOCK = '/tmp/clam.sock'
     process.env.CLAMD_PORT = '3310'
     const { retryAntiVirusInit } = require('../../src/lib/antivirus')
     const AgeWeightKeyApi = require('../../src/api/age-weight-key')
-
     AgeWeightKeyApi.postNew.mockResolvedValue({
       statusCode: 200
     })
-
     const isInfectedMock = jest.fn().mockResolvedValue({
       is_infected: false,
       file: 'test.csv',
       viruses: []
     })
-
     retryAntiVirusInit.mockResolvedValue({
       get_version: jest.fn().mockResolvedValue('ClamAV 1.0'),
       is_infected: isInfectedMock
     })
 
     const validate = require('../../src/validators/age-weight-key')
-
     const request = {
       payload: {
         gate: 'A',
@@ -194,7 +189,6 @@ describe('age-weight-key.unit', () => {
         }
       }
     }
-
     await new Promise(process.nextTick)
 
     const result = await validate(request)
