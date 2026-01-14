@@ -113,8 +113,7 @@ describe('small-catch.unit', () => {
 
     await validate(request)
 
-    const [, , , , , released] = smallCatchesApi.add.mock.calls[0]
-    expect(released).toBe('5')
+    expect(smallCatchesApi.add.mock.calls[0][5]).toBe('5')
   })
 
   it('returns sorted API errors when API fails', async () => {
