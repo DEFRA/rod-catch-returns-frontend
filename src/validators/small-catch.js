@@ -135,6 +135,7 @@ module.exports = async (request) => {
       subNumber(payload.released),
       Object.keys(payload).includes('noMonthRecorded')
     )
+    
   }
 
   const sorter = getSorterForApiErrors('SmallCatch',
@@ -146,11 +147,11 @@ module.exports = async (request) => {
     'BAIT',
     'UNKNOWN',
     'RELEASED')
-
+    
   if (Object.keys(result).includes('errors')) {
     const reMappedApiErrors = apiMethodErrorRemapper(apiErrors(result),
       apiCounts, apiIgnore, methods)
-
+console.log(reMappedApiErrors)
     return errors.concat(reMappedApiErrors).sort(sorter)
   } else {
     return errors.length ? errors : null
