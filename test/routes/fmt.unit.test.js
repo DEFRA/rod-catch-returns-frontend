@@ -4,6 +4,36 @@ const { getMockH } = require('../test-utils/server-test-utils')
 jest.mock('../../src/lib/antivirus')
 
 describe('fmt', () => {
+  describe('routes configuration', () => {
+    it('exports an array of route definitions', () => {
+      expect(fmt.length).toBe(20)
+    })
+
+    it.each([
+      '/login',
+      '/oidc/signin',
+      '/oidc/account-disabled',
+      '/oidc/account-role-required',
+      '/licence',
+      '/records',
+      '/records-search-results',
+      '/records-submissions',
+      '/reports',
+      '/reports/{file}',
+      '/age-weight-key',
+      '/age-weight-key-ok',
+      '/age-weight-key-conflict-check',
+      '/age-weight-key-error-breakdown',
+      '/age-weight-key-cancel',
+      '/lookup',
+      '/back',
+      '/exclusions'
+    ])('contains route path "%s"', (expectedPath) => {
+      const match = fmt.find(r => r.path === expectedPath)
+      expect(match).toBeDefined()
+    })
+  })
+
   describe('/login', () => {
     const loginRoute = fmt.find(route => route.path === '/login')
 
