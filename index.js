@@ -15,7 +15,7 @@ const figlet = require('figlet')
 
 const AuthorizationSchemes = require('./src/lib/authorization-schemes')
 const AuthorizationStrategies = require('./src/lib/authorization-strategies')
-const EnvironmentSchema = require('./environment-schema')
+const EnvironmentSchema = require('./src/environment-schema')
 const CacheDecorator = require('./src/lib/cache-decorator')
 const { checkTempDir } = require('./src/lib/misc')
 const manFishing = require('./manFishing')
