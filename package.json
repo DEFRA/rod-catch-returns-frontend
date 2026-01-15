@@ -94,6 +94,9 @@
       "text",
       "html"
     ],
+    "coveragePathIgnorePatterns" : [
+      "test/test-utils"
+    ],
     "setupFiles": [
       "<rootDir>/test/setEnvVars.js"
     ]
