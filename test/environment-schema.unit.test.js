@@ -1,19 +1,19 @@
 const schema = require('../src/environment-schema')
 
 describe('environment schema validation', () => {
-  const validEnv = {
+  const getValidEnvVars = (overrides) => ({
     NODE_ENV: 'production',
     CONTEXT: 'ANGLER',
     REDIS_HOSTNAME: 'localhost',
     REDIS_PORT: 6379,
-    COOKIE_PW: '12345678901234567890123456789012', // 32 chars
+    COOKIE_PW: '12345678901234567890123456789012',
     HTTPS: true,
     SESSION_TTL_MS: 1000,
     AIRBRAKE_HOST: 'https://example.com',
     AIRBRAKE_PROJECT_KEY: 'abc123',
     JS_API_URL: 'https://api.example.com',
     API_REQUEST_TIMEOUT_MS: 5000,
-    AUTH_PW: '1234567890123456', // 16 chars
+    AUTH_PW: '1234567890123456',
     LRU_ITEMS: 100,
     LRU_TTL: 200,
     GA_TRACKING_ID: 'GA-123',
@@ -22,11 +22,13 @@ describe('environment schema validation', () => {
     AWS_REGION: 'eu-west-2',
     CLAMD_SOCKET: '/tmp/clam.sock',
     CLAMD_PORT: 3310,
-    TEMP_DIR: '/tmp'
-  }
+    TEMP_DIR: '/tmp',
+    ...overrides
+  })
 
   it('accepts a fully valid environment object', () => {
-    const { error } = schema.validate(validEnv)
+    const { error } = schema.validate(getValidEnvVars())
+
     expect(error).toBeUndefined()
   })
 
@@ -42,51 +44,64 @@ describe('environment schema validation', () => {
     ['AUTH_PW'],
     ['CATCH_RETURNS_GOV_UK']
   ])('fails when required field %s is missing', (field) => {
-    const env = { ...validEnv }
+    const env = getValidEnvVars()
     delete env[field]
 
     const { error } = schema.validate(env)
+
     expect(error).toBeDefined()
   })
 
   it('fails when CONTEXT is not ANGLER or FMT', () => {
-    const env = { ...validEnv, CONTEXT: 'INVALID' }
+    const env = getValidEnvVars({ CONTEXT: 'INVALID' })
+
     const { error } = schema.validate(env)
-    expect(error).toBeDefined()
+
+    expect(error.details[0].message).toBe('"CONTEXT" must be one of [ANGLER, FMT]')
   })
 
   it('fails when COOKIE_PW is not 32 characters', () => {
-    const env = { ...validEnv, COOKIE_PW: 'short' }
+    const env = getValidEnvVars({ COOKIE_PW: 'short' })
+
     const { error } = schema.validate(env)
-    expect(error).toBeDefined()
+
+    expect(error.details[0].message).toBe('"COOKIE_PW" length must be 32 characters long')
   })
 
   it('fails when AUTH_PW is not 16 characters', () => {
-    const env = { ...validEnv, AUTH_PW: '123' }
+    const env = getValidEnvVars({ AUTH_PW: '123' })
+
     const { error } = schema.validate(env)
-    expect(error).toBeDefined()
+
+    expect(error.details[0].message).toBe('"AUTH_PW" length must be 16 characters long')
   })
 
   it('fails when REDIS_PORT is not a valid port', () => {
-    const env = { ...validEnv, REDIS_PORT: 999999 }
+    const env = getValidEnvVars({ REDIS_PORT: 999999 })
+
     const { error } = schema.validate(env)
-    expect(error).toBeDefined()
+
+    expect(error.details[0].message).toBe('"REDIS_PORT" must be a valid port')
   })
 
   it('fails when CLAMD_PORT is invalid', () => {
-    const env = { ...validEnv, CLAMD_PORT: -1 }
+    const env = getValidEnvVars({ CLAMD_PORT: -1 })
+
     const { error } = schema.validate(env)
-    expect(error).toBeDefined()
+
+    expect(error.details[0].message).toBe('"CLAMD_PORT" must be a valid port')
   })
 
   it('fails when CATCH_RETURNS_GOV_UK is not a URI', () => {
-    const env = { ...validEnv, CATCH_RETURNS_GOV_UK: 'not-a-url' }
+    const env = getValidEnvVars({ CATCH_RETURNS_GOV_UK: 'not-a-url' })
+
     const { error } = schema.validate(env)
-    expect(error).toBeDefined()
+
+    expect(error.details[0].message).toBe('"CATCH_RETURNS_GOV_UK" must be a valid uri')
   })
 
   it('allows optional fields to be omitted', () => {
-    const optionalEnv = { ...validEnv }
+    const optionalEnv = getValidEnvVars()
     delete optionalEnv.AIRBRAKE_HOST
     delete optionalEnv.AIRBRAKE_PROJECT_KEY
     delete optionalEnv.LRU_ITEMS
@@ -99,6 +114,7 @@ describe('environment schema validation', () => {
     delete optionalEnv.TEMP_DIR
 
     const { error } = schema.validate(optionalEnv)
+
     expect(error).toBeUndefined()
   })
 })
