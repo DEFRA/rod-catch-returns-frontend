@@ -1,6 +1,6 @@
-const validate = require('../../src/validators/year') // adjust path
+const yearValidator = require('../../src/validators/year')
 
-describe('licence-postcode.unit', () => {
+describe('year.unit', () => {
   const mockRequest = (payload) => ({ payload })
 
   it.each([
@@ -8,13 +8,13 @@ describe('licence-postcode.unit', () => {
     { payload: { year: null }, description: 'null year' },
     { payload: { year: '' }, description: 'empty string year' }
   ])('returns { year: "EMPTY" } when $description', async ({ payload }) => {
-    const result = await validate(mockRequest(payload))
+    const result = await yearValidator(mockRequest(payload))
 
     expect(result).toEqual({ year: 'EMPTY' })
   })
 
   it('returns undefined when year is present', async () => {
-    const result = await validate(mockRequest({ year: '2024' }))
+    const result = await yearValidator(mockRequest({ year: '2024' }))
 
     expect(result).toBeUndefined()
   })
