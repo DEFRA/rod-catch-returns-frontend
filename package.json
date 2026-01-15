@@ -46,7 +46,6 @@
     "blankie": "5.0.0",
     "blipp": "4.0.2",
     "clamscan": "1.4.2",
-    "defra-logging-facade": "git+https://github.com/DEFRA/defra-logging-facade.git#02459ac",
     "disinfect": "1.1.0",
     "dot-prop": "6.0.1",
     "dotenv": "8.6.0",
