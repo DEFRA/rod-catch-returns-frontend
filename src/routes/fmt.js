@@ -44,12 +44,6 @@ const ageWeightKeyCancel = new AgeWeightKeyCancel(null, null, 'ageWeightContext'
 const exclusionsHandler = new ExclusionsHandler('exclusions')
 const adminLoginHandler = new AdminLoginHandler()
 
-const api = {
-  host: process.env.API_HOSTNAME || 'localhost',
-  port: Number.parseInt(process.env.API_PORT || 9580),
-  protocol: 'http'
-}
-
 const lookupQuerySchema = Joi.object({
   submissionId: id.required(),
   activityId: id.optional(),
@@ -279,37 +273,6 @@ module.exports = [
     options: {
       plugins: {
         crumb: { restful: true }
-      }
-    }
-  },
-
-  {
-    method: ['GET', 'POST'],
-    path: '/reporting/{reports*}',
-    options: {
-      auth: false,
-      plugins: {
-        disinfect: {
-          disinfectQuery: true,
-          disinfectParams: true,
-          disinfectPayload: false
-        },
-        crumb: false
-      }
-    },
-    handler: {
-      proxy: {
-        mapUri: (request) => {
-          const mappedUri = new URL(`http://${api.host}:${api.port}/api/reporting/${request.params.reports}`)
-          if (request.query) {
-            mappedUri.search = new URLSearchParams(request.query)
-          }
-          return {
-            uri: mappedUri.href
-          }
-        },
-        passThrough: true,
-        acceptEncoding: true
       }
     }
   }

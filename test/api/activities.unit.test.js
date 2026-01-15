@@ -93,11 +93,10 @@ describe('activities', () => {
     })
 
     it.each([
-      ['http://example.com/path/to/somewhere', '/path', 'Tyne', 'internal'],
-      ['http://example.com/unwise/path/to/the/dark/side', 'the', 'Tyne', 'internal'],
-      ['http://example.com/unwise/path/to/the/dark/side/', 'side', 'Tyne', 'internal']
-    ])('sets the _links attribute values id, name and internal', async (href, apiPath, name, internal) => {
-      process.env.API_PATH = apiPath
+      ['http://example.com/path/to/somewhere', 'Tyne', 'internal'],
+      ['http://example.com/unwise/path/to/the/dark/side', 'Tyne', 'internal'],
+      ['http://example.com/unwise/path/to/the/dark/side/', 'Tyne', 'internal']
+    ])('sets the _links attribute values id, name and internal', async (href, name, internal) => {
       const activitiesApi = new ActivitiesApi()
       mockGetFromLink.mockImplementationOnce(() => ({ _links: { self: { href: href } } }))
       const mapped = await activitiesApi.doMap(({ }), createMockContext({ href, name, internal }))
