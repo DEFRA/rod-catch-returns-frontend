@@ -101,19 +101,21 @@ describe('environment schema validation', () => {
   })
 
   it('allows optional fields to be omitted', () => {
-    const optionalEnv = getValidEnvVars()
-    delete optionalEnv.AIRBRAKE_HOST
-    delete optionalEnv.AIRBRAKE_PROJECT_KEY
-    delete optionalEnv.LRU_ITEMS
-    delete optionalEnv.LRU_TTL
-    delete optionalEnv.GA_TRACKING_ID
-    delete optionalEnv.REPORTS_S3_LOCATION_BUCKET
-    delete optionalEnv.AWS_REGION
-    delete optionalEnv.CLAMD_SOCKET
-    delete optionalEnv.CLAMD_PORT
-    delete optionalEnv.TEMP_DIR
+    const requiredEnv = {
+      NODE_ENV: 'production',
+      CONTEXT: 'ANGLER',
+      REDIS_HOSTNAME: 'localhost',
+      REDIS_PORT: 6379,
+      COOKIE_PW: '12345678901234567890123456789012',
+      HTTPS: true,
+      SESSION_TTL_MS: 1000,
+      JS_API_URL: 'https://api.example.com',
+      API_REQUEST_TIMEOUT_MS: 5000,
+      AUTH_PW: '1234567890123456',
+      CATCH_RETURNS_GOV_UK: 'https://gov.uk'
+    }
 
-    const { error } = schema.validate(optionalEnv)
+    const { error } = schema.validate(requiredEnv)
 
     expect(error).toBeUndefined()
   })
