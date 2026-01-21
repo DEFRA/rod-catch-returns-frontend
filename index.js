@@ -15,7 +15,7 @@ const figlet = require('figlet')
 
 const AuthorizationSchemes = require('./src/lib/authorization-schemes')
 const AuthorizationStrategies = require('./src/lib/authorization-strategies')
-const EnvironmentSchema = require('./environment-schema')
+const EnvironmentSchema = require('./src/environment-schema')
 const CacheDecorator = require('./src/lib/cache-decorator')
 const { checkTempDir } = require('./src/lib/misc')
 const manFishing = require('./manFishing')
@@ -103,14 +103,6 @@ const manifest = {
           // will disallow everyone from every path:
           '*': ['/']
         }
-      },
-
-      /*
-       * This plugin handles direct proxying through to the API
-       * See https://github.com/hapijs/h2o2
-       */
-      {
-        plugin: require('@hapi/h2o2')
       },
 
       /*

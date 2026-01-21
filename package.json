@@ -33,7 +33,6 @@
     "@hapi/cookie": "11.0.1",
     "@hapi/crumb": "8.0.0",
     "@hapi/glue": "8.0.0",
-    "@hapi/h2o2": "9.1.0",
     "@hapi/hapi": "20.2.1",
     "@hapi/hoek": "9.2.1",
     "@hapi/inert": "6.0.5",
@@ -47,7 +46,6 @@
     "blankie": "5.0.0",
     "blipp": "4.0.2",
     "clamscan": "1.4.2",
-    "defra-logging-facade": "git+https://github.com/DEFRA/defra-logging-facade.git#02459ac",
     "disinfect": "1.1.0",
     "dot-prop": "6.0.1",
     "dotenv": "8.6.0",
@@ -94,7 +92,7 @@
       "text",
       "html"
     ],
-    "coveragePathIgnorePatterns" : [
+    "coveragePathIgnorePatterns": [
       "test/test-utils"
     ],
     "setupFiles": [

@@ -28,9 +28,6 @@ jobs:
       - name: Run Tests
         env:
           COOKIE_PW: 532fdfghdf62645872aaau121qsqw112
-          API_PATH: /api
-          API_HOSTNAME: localhost
-          API_PORT: 9580
           REDIS_HOSTNAME: localhost
           REDIS_PORT: 6379
           SESSION_TTL_MS: 3600000
@@ -43,7 +40,6 @@ jobs:
       - name: SonarCloud Scan
         uses: sonarSource/sonarqube-scan-action@master
         env:
-          JAVA_HOME:
           use_embedded_jre: true
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
