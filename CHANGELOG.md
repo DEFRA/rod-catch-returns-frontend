@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.18.0](https://github.com/DEFRA/rod-catch-returns-frontend/compare/v1.17.0...v1.18.0) (2026-01-21)
+
+Version RCR Release 19 (Hundred River)
+[Release notes](https://eaflood.atlassian.net/wiki/spaces/IWTF/pages/6277824543/21+01+2026+RCR+v1.18+Hundred+River)
+
 ## [1.17.0](https://github.com/DEFRA/rod-catch-returns-frontend/compare/v1.16.0...v1.17.0) (2025-11-12)
 
 Version RCR Release 18 (River Greta)
