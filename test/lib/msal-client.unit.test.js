@@ -1,8 +1,5 @@
-const mockFetch = jest.fn()
-const fetch = require('node-fetch')
 const msal = require('@azure/msal-node')
 
-jest.mock('node-fetch', () => mockFetch)
 jest.mock('https-proxy-agent', () => ({
   HttpsProxyAgent: jest.fn()
 }))
@@ -22,7 +19,7 @@ describe('msal-client', () => {
       jest.spyOn(console, 'log').mockImplementation(() => {})
       jest.spyOn(console, 'error').mockImplementation(() => {})
 
-      mockFetch.mockResolvedValue({
+      global.fetch = jest.fn().mockResolvedValue({
         headers: new Map([['content-type', 'application/json']]),
         json: () => Promise.resolve({ access_token: 'fake-token' }),
         status: 200

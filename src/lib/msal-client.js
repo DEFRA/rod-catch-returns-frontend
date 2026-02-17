@@ -1,5 +1,4 @@
 const msal = require('@azure/msal-node')
-const fetch = require('node-fetch')
 const { HttpsProxyAgent } = require('https-proxy-agent')
 
 const proxyUrl = process.env.https_proxy
