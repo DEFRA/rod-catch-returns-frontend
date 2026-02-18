@@ -60,6 +60,7 @@
     "proxy-agent": "4.0.1",
     "request": "2.88.2",
     "request-etag": "2.0.3",
+    "undici": "^6.23.0",
     "uuid": "8.3.2"
   },
   "devDependencies": {
