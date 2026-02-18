@@ -1,5 +1,4 @@
 const msal = require('@azure/msal-node')
-const { HttpsProxyAgent } = require('https-proxy-agent')
 const { ProxyAgent } = require('undici')
 
 const proxyUrl = process.env.https_proxy

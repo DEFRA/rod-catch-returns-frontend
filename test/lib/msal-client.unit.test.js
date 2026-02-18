@@ -1,7 +1,7 @@
 const msal = require('@azure/msal-node')
 
-jest.mock('https-proxy-agent', () => ({
-  HttpsProxyAgent: jest.fn()
+jest.mock('undici', () => ({
+  ProxyAgent: jest.fn()
 }))
 
 const loadMsalClient = () => {
@@ -95,7 +95,7 @@ describe('msal-client', () => {
         expect.objectContaining({
           headers: testHeaders,
           method: 'get',
-          agent: expect.any(Object)
+          dispatcher: expect.any(Object)
         })
       )
       expect(result.status).toBe(200)
