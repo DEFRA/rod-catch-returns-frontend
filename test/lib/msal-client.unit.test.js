@@ -16,10 +16,10 @@ describe('msal-client', () => {
     beforeEach(() => {
       jest.clearAllMocks()
       process.env = { ...originalEnv }
-      console.log = jest.fn().mockImplementation(() => {})
-      console.error = jest.fn().mockImplementation(() => {})
+      jest.spyOn(console, 'log').mockImplementation(() => {})
+      jest.spyOn(console, 'error').mockImplementation(() => {})
 
-      global.fetch = jest.fn().mockResolvedValue({
+      jest.spyOn(global, 'fetch').mockResolvedValue({
         headers: new Map([['content-type', 'application/json']]),
         json: () => Promise.resolve({ access_token: 'fake-token' }),
         status: 200
