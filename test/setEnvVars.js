@@ -1,3 +1,7 @@
+// needed by undici for tests to pass
+const { ReadableStream } = require('node:stream/web')
+global.ReadableStream = ReadableStream
+
 process.env.AUTH_PW = '1234567890123456'
 process.env.COOKIE_PW = 'cookieabcdef1234'
 process.env.HTTPS = 'false'
