@@ -11,7 +11,7 @@
   },
   "scripts": {
     "aws": "node proto.js",
-    "lint": "eslint '*.js' 'src/**/*.js'",
+    "lint": "eslint 'src/**/*.js'",
     "lint-fix": "npm run lint -- --fix",
     "postinstall": "gulp",
     "release": "standard-version",
