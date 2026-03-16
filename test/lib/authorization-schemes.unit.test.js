@@ -67,6 +67,14 @@ describe('authorization-schemes', () => {
         expect(LicenceApi.getContactFromLicenceKey).not.toHaveBeenCalled()
       })
 
+      it('should return h.continue if payload is not present', async () => {
+        const request = {}
+
+        await expect(authorizationSchemes.licenceScheme().payload(request, getMockH())).resolves.toEqual('response')
+
+        expect(LicenceApi.getContactFromLicenceKey).not.toHaveBeenCalled()
+      })
+
       it('should return h.continue and auth should not be present if licence schema fails to validate', async () => {
         const request = getMockLicenceRequest()
         setupMocks({ licenceSchemaResponse: { error: 'error' } })
