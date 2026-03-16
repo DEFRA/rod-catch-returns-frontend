@@ -36,10 +36,10 @@ module.exports = class ReviewHandler extends BaseHandler {
     // Return the review details
     return h.view(this.path, {
       year: cache.year,
-      activities: activities,
-      catches: catches,
-      smallCatches: smallCatches,
-      foundInternal: foundInternal,
+      activities,
+      catches,
+      smallCatches,
+      foundInternal,
       locked: !!cache.locked,
       reportingExclude: submission.reportingExclude,
       details: {

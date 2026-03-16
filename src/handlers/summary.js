@@ -49,11 +49,11 @@ module.exports = class SummaryHandler extends BaseHandler {
     // Return the summary view
     return h.view(this.path, {
       year: cache.year,
-      activities: activities,
-      catches: catches,
-      smallCatches: smallCatches,
+      activities,
+      catches,
+      smallCatches,
       reportingExclude: submission.reportingExclude,
-      foundInternal: foundInternal,
+      foundInternal,
       details: {
         licenceNumber: cache.licenceNumber,
         postcode: cache.postcode,

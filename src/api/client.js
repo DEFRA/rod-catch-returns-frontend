@@ -118,8 +118,8 @@ const internals = {
       Hoek.assert(Object.values(internals.typeHeader).includes(typeHeader), `Type not allowed: ${typeHeader}`)
 
       const requestObject = {
-        uri: uri,
-        method: method,
+        uri,
+        method,
         timeout: Number.parseInt(process.env.API_REQUEST_TIMEOUT_MS) || 60000,
         json: false // This influences both the headers and treatment of the response body so deserialization is done explicitly
       }

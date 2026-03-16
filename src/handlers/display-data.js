@@ -102,9 +102,9 @@ module.exports = async (request, submission) => {
   smallCatches.forEach(addRowSpansForSmallCatch(smallCatchIsEqual))
 
   return {
-    activities: activities,
-    catches: catches,
-    smallCatches: smallCatches,
-    foundInternal: foundInternal
+    activities,
+    catches,
+    smallCatches,
+    foundInternal
   }
 }

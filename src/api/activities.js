@@ -30,17 +30,17 @@ module.exports = class ActivitiesApi extends EntityApi {
   async add (request, submissionId, river, daysFishedWithMandatoryRelease, daysFishedOther) {
     return super.add(request, {
       submission: submissionId,
-      river: river,
-      daysFishedWithMandatoryRelease: daysFishedWithMandatoryRelease,
-      daysFishedOther: daysFishedOther
+      river,
+      daysFishedWithMandatoryRelease,
+      daysFishedOther
     })
   }
 
   async change (request, activityId, submissionId, riverId, daysFishedWithMandatoryRelease, daysFishedOther) {
     // Change the days
     const result = await super.change(request, activityId, {
-      daysFishedWithMandatoryRelease: daysFishedWithMandatoryRelease,
-      daysFishedOther: daysFishedOther,
+      daysFishedWithMandatoryRelease,
+      daysFishedOther,
       river: riverId
     })
 

@@ -345,7 +345,7 @@ const options = {
             hitTypes: ['pageview', 'event', 'ecommerce']
           }
         ],
-        sessionIdProducer: sessionIdProducer,
+        sessionIdProducer,
         batchSize: 20,
         batchInterval: 15000
       }
