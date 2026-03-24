@@ -19,7 +19,7 @@ module.exports = class SubmissionsApi extends EntityApi {
 
   async add (request, contactId, year) {
     return super.add(request, {
-      contactId: contactId,
+      contactId,
       season: year,
       status: 'INCOMPLETE',
       source: process.env.CONTEXT === 'ANGLER' ? 'WEB' : 'PAPER'
@@ -44,7 +44,7 @@ module.exports = class SubmissionsApi extends EntityApi {
 
   async changeExclusion (request, submissionId, reportingExclude) {
     return super.change(request, submissionId, {
-      reportingExclude: reportingExclude
+      reportingExclude
     })
   }
 }

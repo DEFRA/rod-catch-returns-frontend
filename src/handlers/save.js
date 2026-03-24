@@ -35,8 +35,8 @@ module.exports = class SaveHandler extends BaseHandler {
 
     return h.view(this.path, {
       extendPeriod: Number.parseInt(cache.year) === now.year() - 1,
-      catchReturnsRef: catchReturnsRef,
-      catchReturnsLink: catchReturnsLink,
+      catchReturnsRef,
+      catchReturnsLink,
       year: cache.year,
       fmt: process.env.CONTEXT === 'FMT'
     })

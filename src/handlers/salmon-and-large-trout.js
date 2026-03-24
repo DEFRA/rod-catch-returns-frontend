@@ -48,10 +48,10 @@ class SalmonAndLargeTroutHandler extends BaseHandler {
 
     // Add a new salmon and large trout
     return this.readCacheAndDisplayView(request, h, {
-      rivers: rivers,
+      rivers,
       year: cache.year,
       types: await speciesApi.list(request),
-      methods: methods,
+      methods,
       add: true,
       details: {
         licenceNumber: cache.licenceNumber,
@@ -111,11 +111,11 @@ class SalmonAndLargeTroutHandler extends BaseHandler {
     }
 
     return this.readCacheAndDisplayView(request, h, {
-      rivers: rivers,
+      rivers,
       year: cache.year,
       types: await speciesApi.list(request),
-      methods: methods,
-      payload: payload,
+      methods,
+      payload,
       details: {
         licenceNumber: cache.licenceNumber,
         postcode: cache.postcode,
