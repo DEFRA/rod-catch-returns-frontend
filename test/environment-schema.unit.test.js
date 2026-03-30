@@ -18,7 +18,6 @@ describe('environment schema validation', () => {
     LRU_TTL: 200,
     GA_TRACKING_ID: 'GA-123',
     CATCH_RETURNS_GOV_UK: 'https://gov.uk',
-    AWS_REGION: 'eu-west-2',
     CLAMD_SOCKET: '/tmp/clam.sock',
     CLAMD_PORT: 3310,
     TEMP_DIR: '/tmp',

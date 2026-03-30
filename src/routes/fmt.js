@@ -230,7 +230,7 @@ module.exports = [
     }
   },
 
-  // Back to the catch return from the reports
+  // Back to the catch return
   {
     path: '/back',
     method: 'GET',
