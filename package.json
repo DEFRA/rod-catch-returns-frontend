@@ -10,7 +10,6 @@
     "node": ">20.0.0"
   },
   "scripts": {
-    "aws": "node proto.js",
     "lint": "eslint 'src/**/*.js'",
     "lint-fix": "npm run lint -- --fix",
     "postinstall": "gulp",
@@ -25,7 +24,6 @@
   },
   "dependencies": {
     "@airbrake/node": "2.1.9",
-    "@aws-sdk/client-s3": "3.316.0",
     "@azure/msal-node": "3.4.1",
     "@defra/hapi-gapi": "1.2.1",
     "@hapi/basic": "6.0.0",
@@ -39,9 +37,7 @@
     "@hapi/joi": "17.1.1",
     "@hapi/scooter": "6.0.0",
     "@hapi/vision": "6.1.0",
-    "@smithy/node-http-handler": "2.4.0",
     "accessible-autocomplete": "2.0.4",
-    "aws-sdk": "2.1361.0",
     "bash": "0.0.1",
     "blankie": "5.0.0",
     "blipp": "4.0.2",
@@ -57,7 +53,6 @@
     "https-proxy-agent": "7.0.6",
     "moment": "2.29.1",
     "nunjucks": "3.2.3",
-    "proxy-agent": "4.0.1",
     "request": "2.88.2",
     "request-etag": "2.0.3",
     "undici": "^6.23.0",
