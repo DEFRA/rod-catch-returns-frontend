@@ -6,7 +6,7 @@ jest.mock('../../src/lib/antivirus')
 describe('fmt', () => {
   describe('routes configuration', () => {
     it('exports an array of route definitions', () => {
-      expect(fmt.length).toBe(20)
+      expect(fmt.length).toBe(18)
     })
 
     it.each([
@@ -18,8 +18,6 @@ describe('fmt', () => {
       '/records',
       '/records-search-results',
       '/records-submissions',
-      '/reports',
-      '/reports/{file}',
       '/age-weight-key',
       '/age-weight-key-ok',
       '/age-weight-key-conflict-check',
