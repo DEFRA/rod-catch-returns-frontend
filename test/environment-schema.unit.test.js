@@ -1,7 +1,7 @@
 const schema = require('../src/environment-schema')
 
 describe('environment schema validation', () => {
-  const getValidEnvVars = overrides => ({
+  const getValidEnvVars = (overrides) => ({
     NODE_ENV: 'production',
     CONTEXT: 'ANGLER',
     REDIS_HOSTNAME: 'localhost',
@@ -55,9 +55,7 @@ describe('environment schema validation', () => {
 
     const { error } = schema.validate(env)
 
-    expect(error.details[0].message).toBe(
-      '"CONTEXT" must be one of [ANGLER, FMT]'
-    )
+    expect(error.details[0].message).toBe('"CONTEXT" must be one of [ANGLER, FMT]')
   })
 
   it('fails when COOKIE_PW is not 32 characters', () => {
@@ -65,9 +63,7 @@ describe('environment schema validation', () => {
 
     const { error } = schema.validate(env)
 
-    expect(error.details[0].message).toBe(
-      '"COOKIE_PW" length must be 32 characters long'
-    )
+    expect(error.details[0].message).toBe('"COOKIE_PW" length must be 32 characters long')
   })
 
   it('fails when AUTH_PW is not 16 characters', () => {
@@ -75,9 +71,7 @@ describe('environment schema validation', () => {
 
     const { error } = schema.validate(env)
 
-    expect(error.details[0].message).toBe(
-      '"AUTH_PW" length must be 16 characters long'
-    )
+    expect(error.details[0].message).toBe('"AUTH_PW" length must be 16 characters long')
   })
 
   it('fails when REDIS_PORT is not a valid port', () => {
@@ -101,9 +95,7 @@ describe('environment schema validation', () => {
 
     const { error } = schema.validate(env)
 
-    expect(error.details[0].message).toBe(
-      '"CATCH_RETURNS_GOV_UK" must be a valid uri'
-    )
+    expect(error.details[0].message).toBe('"CATCH_RETURNS_GOV_UK" must be a valid uri')
   })
 
   it('allows optional fields to be omitted', () => {
