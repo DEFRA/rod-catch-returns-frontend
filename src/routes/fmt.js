@@ -6,8 +6,6 @@ const id = Joi.string()
  * These routes are scanned automatically by the hapi-router
  */
 const LicenceHandler = require('../handlers/licence')
-const ReportsHandler = require('../handlers/reports')
-const ReportDownloadHandler = require('../handlers/report-download')
 const RecordsHandler = require('../handlers/records')
 const RecordsSearchResultsHandler = require('../handlers/records-search-results')
 const RecordsSubmissionsHandler = require('../handlers/records-submissions')
@@ -27,8 +25,6 @@ const ageWeightKeyValidator = require('../validators/age-weight-key')
 const ageWeightKeyConflictValidator = require('../validators/age-weight-key-conflict')
 
 // Define the handlers
-const reportsHandler = new ReportsHandler('reports')
-const reportDownloadHandler = new ReportDownloadHandler()
 const recordsHandler = new RecordsHandler('records', licenceFullValidator)
 const recordsSearchResultsHandler = new RecordsSearchResultsHandler('records-search-results')
 const recordsSubmissionsHandler = new RecordsSubmissionsHandler('records-submissions')
@@ -139,20 +135,6 @@ module.exports = [
     handler: recordsSubmissionsHandler.handler
   },
 
-  // Reports handler
-  {
-    path: '/reports',
-    method: 'GET',
-    handler: reportsHandler.handler
-  },
-
-  // Report download handler
-  {
-    path: '/reports/{file}',
-    method: 'GET',
-    handler: reportDownloadHandler.handler
-  },
-
   // Age weight key upload handlers
   {
     path: '/age-weight-key',
@@ -248,7 +230,7 @@ module.exports = [
     }
   },
 
-  // Back to the catch return from the reports
+  // Back to the catch return
   {
     path: '/back',
     method: 'GET',
