@@ -2,7 +2,7 @@
 
 ## Prerequisites
 
-- Node v20+ (to execute npm helper scripts only)
+- Node v24+ (to execute npm helper scripts only)
 - Docker v18.06.0+ (to run the docker services)
 
 You'll also need to initialise a local docker swarm before you can run the infrastructure or services locally. To do so, run the following
