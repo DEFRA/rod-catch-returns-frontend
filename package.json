@@ -1,13 +1,13 @@
 {
   "name": "rod-catch-returns-frontend",
-  "version": "1.20.0",
+  "version": "1.21.0",
   "description": "Rod catch returns webservice",
   "repository": "https://github.com/DEFRA/rod-catch-returns-frontend.git",
   "license": "ISC",
   "author": "Graham Willis, Sam Gardner-Dell",
   "main": "index.js",
   "engines": {
-    "node": ">20.0.0"
+    "node": ">24.0.0"
   },
   "scripts": {
     "lint": "eslint 'src/**/*.js'",
