@@ -10,11 +10,6 @@
     "node": ">24.0.0",
     "npm": ">=11.19.0"
   },
-  "allowScripts": {
-    "es5-ext@0.10.63": true,
-    "preact@8.5.3": true,
-    "unrs-resolver@1.11.1": true
-  },
   "scripts": {
     "lint": "eslint 'src/**/*.js'",
     "lint-fix": "npm run lint -- --fix",
