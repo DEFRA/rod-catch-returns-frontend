@@ -16,7 +16,8 @@ To run using docker, see the [README](docker/README.md) in the docker folder. Th
 
 ### To build
 
-Version 24 or above of Node.js is required to run the service.
+- Node v24.x (to run the service)
+- NPM v11.19.0+
 
 ```
 npm install
