@@ -17,7 +17,7 @@ To run using docker, see the [README](docker/README.md) in the docker folder. Th
 ### To build
 
 - Node v24.x (to run the service)
-- NPM v11.19.0+
+- npm v11.19.0
 
 ```
 npm install
