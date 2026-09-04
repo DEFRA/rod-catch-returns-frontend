@@ -9,7 +9,7 @@
 {% from "navigation.njk" import navigationHeaderBlock %}
 {% from "format-page-title.njk" import formatPageTitle %}
 
-{% set title ="Enter your licence details and postcode" %}
+{% set title ="Enter your licence number and postcode" %}
 
 {% block pageTitle %}{{ formatPageTitle(title) }}{% endblock %}
 
@@ -51,13 +51,17 @@
                 }
             }) %}
 
+            <p class="govuk-body">
+                Only submit one return per person, this covers all licences you’ve had this year. 
+            </p>
+
             {{ govukInput({
                     label: {
-                        text: "Last 6 characters of rod licence number",
+                        text: "Last 6 characters of your licence number",
                         classes: "govuk-label--m"
                     },
                     hint: {
-                        text: "This can be found on your licence or your catch return reminder. For example, B7A718."
+                        text: "This is a combination of letters and numbers, found on your licence and return reminder. For example, B7A718. It will not contain the letter O"
                     },
                     id: "licence",
                     name: "licence",
@@ -72,7 +76,7 @@
                         classes: "govuk-label--m"
                     },
                     hint: {
-                        text: "For example, WA4 8HT."
+                        text: "This is the postcode you used when you bought your licence. For example, WA4 8HT"
                     },
                     id: "postcode",
                     name: "postcode",
