@@ -15,7 +15,7 @@
     {% endif %}
 {% endblock %}
 
-{% set title = "Did you fish for salmon or sea trout in " + details.year + "?" %}
+{% set title = "Have you fished for salmon or sea trout in England or Wales in " + details.year + "?" %}
 
 {% block pageTitle %}{{ formatPageTitle(title) }}{% endblock %}
 
@@ -53,12 +53,12 @@
                     name: "dyf",
                     items: [
                         {
-                            text: "Yes",
+                            text: "Yes, I want to add catches or fishing activity",
                             value: "YES",
                             checked: payload.dyf === 'true'
                         },
                         {
-                            text: "No",
+                            text: "No, I didn’t fish at all",
                             value: "NO",
                             checked: payload.dyf === 'false'
                         }
