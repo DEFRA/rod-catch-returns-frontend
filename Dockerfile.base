@@ -9,7 +9,8 @@ WORKDIR /app
 
 # Install app dependencies
 COPY / /app
-RUN npm install pm2 -g --ignore-scripts \
+RUN npm install -g npm@11.19.0 \
+    && npm install pm2 -g --ignore-scripts \
     && npm install --ignore-scripts
 
 # Default service port
