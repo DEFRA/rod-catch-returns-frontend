@@ -28,6 +28,7 @@ pipeline {
                         . /var/lib/jenkins/.bashrc && nvm install 20.17.0
                         npm install -g npm@11.19.0
                         npm ci
+                        npm run postinstall
                     """
                 }
             }
