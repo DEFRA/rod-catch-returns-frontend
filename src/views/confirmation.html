@@ -14,7 +14,7 @@
     {% endif %}
 {% endblock %}
 
-{% set title = year + " catch return complete"%}
+{% set title = "Your " + year + " fishing return has been submitted"%}
 {% block pageTitle %}{{ formatPageTitle(title) }}{% endblock %}
 
 {% block content %}
@@ -25,14 +25,18 @@
             titleText: title
         }) }}
 
-        <p class="govuk-body-m govuk-!-margin-top-7">Thank you for completing your salmon and sea trout catch return.</p>
+        <p class="govuk-body-m govuk-!-margin-top-7">
+            <a id="print-link" class="govuk-link govuk-body-m" href="#" onclick="window.print();return false;">Print your confirmation</a>
+        </p>
+
         <h2 class="govuk-heading-m">What happens next</h2>
 
-        <p class="govuk-body-m">The Environment Agency will use this data to monitor, assess and manage fish stocks in a sustainable way.</p>
+        <p class="govuk-body-m">Thank you for submitting your fishing return for {{ year }}. No further action is required. The data submitted by anglers helps the Environment Agency monitor, assess and manage the number of fish in the rivers.</p>
+        <p class="govuk-body-m"> The information provided supports <a class="govuk-link" href="https://www.gov.uk/government/collections/salmonid-and-freshwater-fisheries-statistics-reports-and-supplementary-data-tables">catch statistics</a>.</p>
 
-        <p class="govuk-body-m">
-            <a id="print-link" class="govuk-link govuk-body-m" href="#" onclick="window.print();return false;">Print your catch return</a>
-        </p>
+        <h2 class="govuk-heading-m">Feedback</h2>
+
+        <p class="govuk-body-m">Give us your <a class="govuk-link" href="https://www.smartsurvey.co.uk/s/QQJ22/" target="_blank" rel="noreferrer noopener">feedback (opens in a new tab)</a> to help us improve this service. You can also use this form to tell us anything else about your fishing activity this year.</p>
 
         {% if fmt %}
             {{ govukButton({
@@ -40,10 +44,6 @@
               href: "/licence",
               classes: "govuk-button--start"
             }) }}
-        {% else %}
-            <p class="govuk-body-m govuk-!-margin-top-7">
-                <a href="https://www.smartsurvey.co.uk/s/QQJ22/" class="govuk-link">What did you think of this service?</a> (takes 30 seconds)
-            </p>
         {% endif %}
 
         {{ extra() }}
