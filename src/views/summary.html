@@ -16,7 +16,8 @@
     {% endif %}
 {% endblock %}
 
-{% set title = "Your " + year + " catch return" %}
+{% set title = "Your " + year + " fishing return" %}
+{% set returnPeriodHintText = "The return period runs from 1 January to 31 December " + year %}
 
 {% block pageTitle %}{{ formatPageTitle(title) }}{% endblock %}
 
@@ -218,7 +219,8 @@
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
         <form method="post" action="#">
-            <h1 class="govuk-heading-l">{{ title }}</h1>
+            <h1 class="govuk-heading-l" aria-describedby="return-period-hint">{{ title }}</h1>
+            <p id="return-period-hint" class="govuk-hint">{{ returnPeriodHintText }}</p>
 
             {{ govukTable({
                 classes: "rcr-responsive-summary-table",
