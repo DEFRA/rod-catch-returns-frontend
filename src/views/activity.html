@@ -83,8 +83,23 @@
     {% endfor %}
 {% endif %}
 
-{% set extraText = '<p class="govuk-body-m">If you fished in more than one river, you can add another afterwards</p>' if add else '' %}
-{% set leg = '<h1 class="govuk-heading-l">' + title + '</h1>' + extraText %}
+{% set hintText %}
+    {% if add %}
+        <p class="govuk-hint">This includes:</p>
+        <ul class="govuk-hint govuk-list--bullet">
+            <li>main rivers in England or Wales only</li>
+            <li>The Border Esk, including sections in Scotland</li>
+        </ul>
+        <p class="govuk-hint">The River Tweed is managed separately and should not be included in this return.</p>
+        <p class="govuk-hint">If you fished in more than one river, you can add another afterwards.</p>
+    {% endif %}
+{% endset %}
+
+{% set leg %}
+    <h1 class="govuk-heading-l">{{ title }}</h1>
+    {{ hintText | safe }}
+{% endset %}
+{% set leg = '<h1 class="govuk-heading-l">' + title + '</h1>' + hintText %}
 
 
 {% block content %}
