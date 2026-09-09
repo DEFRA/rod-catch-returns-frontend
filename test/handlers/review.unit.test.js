@@ -70,7 +70,7 @@ describe('review-handler.unit', () => {
   describe('doPost', () => {
     it('should lock when continue is present', async () => {
       const cacheObj = { submissionId: 'submissions/1', locked: false }
-      const request = getMockRequest(cacheObj, { continue: true })
+      const request = getMockRequest(cacheObj, { continue: true, confirm: 'yes'})
       const h = getMockH()
       const handler = new ReviewHandler('review')
 
@@ -81,7 +81,7 @@ describe('review-handler.unit', () => {
 
     it('should redirect to confirmation when continue is present', async () => {
       const cacheObj = { submissionId: 'submissions/1', locked: false }
-      const request = getMockRequest(cacheObj, { continue: true })
+      const request = getMockRequest(cacheObj, { continue: true, confirm: 'yes'})
       const h = getMockH()
       const handler = new ReviewHandler('review')
 
