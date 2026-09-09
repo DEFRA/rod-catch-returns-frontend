@@ -24,7 +24,7 @@ module.exports = class ReviewHandler extends BaseHandler {
     return this.reviewReturn(request, h)
   }
 
-  async reviewReturn (request, h) {
+  async reviewReturn (request, h, viewData = {}) {
     const cache = await request.cache().get()
     cache.back = request.path
     await request.cache().set(cache)
@@ -46,7 +46,8 @@ module.exports = class ReviewHandler extends BaseHandler {
         licenceNumber: cache.licenceNumber,
         postcode: cache.postcode,
         year: cache.year
-      }
+      },
+      ...viewData
     })
   }
 
@@ -58,11 +59,17 @@ module.exports = class ReviewHandler extends BaseHandler {
    */
   async doPost (request, h) {
     if (Object.keys(request.payload).includes('continue')) {
-      const cache = await request.cache().get()
-      cache.locked = true
-      await request.cache().set(cache)
-      await submissionsApi.setSubmitted(request, cache.submissionId)
-      return h.redirect('/confirmation')
+      if (request.payload.confirm === 'yes') {
+        const cache = await request.cache().get()
+        cache.locked = true
+        await request.cache().set(cache)
+        await submissionsApi.setSubmitted(request, cache.submissionId)
+        return h.redirect('/confirmation')
+      } else {
+        return this.reviewReturn(request, h, {
+          errors: true
+        })
+      }
     } else if (Object.keys(request.payload).includes('unlock') && process.env.CONTEXT === 'FMT') {
       const cache = await request.cache().get()
       cache.locked = false
