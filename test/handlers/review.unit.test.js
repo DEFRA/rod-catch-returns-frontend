@@ -90,6 +90,28 @@ describe('review-handler.unit', () => {
       expect(h.redirect).toHaveBeenCalledWith('/confirmation')
     })
 
+    it('should redisplay the page when checkbox is not selected', async () => {
+      const cacheObj = { submissionId: 'submissions/1', year:2025, licenceNumber: 'AB1CD2', postcode: 'DC32 1BA', locked: false }
+      const request = getMockRequest(cacheObj, { continue: true})
+      const h = getMockH()
+
+      mockGetById.mockResolvedValueOnce({
+        reportingExclude: true
+      })
+
+      mockDisplayData.mockResolvedValueOnce({
+        activities: [],
+        catches: [],
+        smallCatches: [],
+        foundInternal: false
+      })
+      const handler = new ReviewHandler('review')
+
+      await handler.doPost(request, h)
+
+      expect(h.view).toHaveBeenCalledWith('review', expect.objectContaining({errors: true}))
+    })
+
     it('should unlock when unlock is present and CONTEXT=FMT', async () => {
       process.env.CONTEXT = 'FMT'
       const cacheObj = { submissionId: 'submissions/1', locked: true }
