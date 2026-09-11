@@ -103,6 +103,27 @@ describe('salmon-and-large-trout.unit', () => {
     })
   })
 
+  it('defaults ounces to 0 when pounds >= 1 and ounces is empty', async () => {
+      const payload = {
+      system: 'IMPERIAL',
+      pounds: '2',
+      ounces: '',
+      river: 'r1'
+    }
+    const request = getMockRequest(payload, { year: 2025, submissionId: 'sub1' })
+    setUpMocks()
+
+    await validate(request)
+
+    expect(payload).toStrictEqual({
+      system: 'IMPERIAL',
+      pounds: '2',
+      ounces: '0',
+      river: 'r1',
+      kilograms: 0.907
+    })
+  })
+
   it('set released to true if it is true (string)', async () => {
     const payload = { river: 'r1', released: 'true' }
     const request = getMockRequest(payload, { year: 2025, submissionId: 'sub1' })
