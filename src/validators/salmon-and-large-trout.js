@@ -43,6 +43,11 @@ function conversion (payload, errors) {
 
 module.exports = async (request) => {
   const payload = request.payload
+
+  if (payload.system === 'IMPERIAL' && Number.parseInt(payload.pounds) >= 1 && !payload.ounces) {
+    payload.ounces = '0'
+  }
+
   const errors = []
   const cache = await request.cache().get()
 
