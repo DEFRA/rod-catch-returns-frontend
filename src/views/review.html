@@ -26,7 +26,7 @@
 {% block pageTitle %}{{ formatPageTitle(title) }}{% endblock %}
 
 {% if errors %}
-    {% set nilReturnErrorMessage = 'Confirmation box must be checked' %}
+    {% set nilReturnErrorMessage = { text: 'Confirmation box must be checked' } %}
 {% endif %}
 
 {% block content %}
@@ -40,7 +40,7 @@
                     titleText: "There is a problem",
                     errorList: [
                         {
-                            text: nilReturnErrorMessage,
+                            text: nilReturnErrorMessage.text,
                             href: "#confirm"
                         }
                     ]
@@ -62,9 +62,7 @@
                             classes: "govuk-fieldset__legend--l"
                         }
                      },
-                     errorMessage: errors and {
-                        text: nilReturnErrorMessage
-                    },
+                     errorMessage: nilReturnErrorMessage,
                     items: [
                         {
                             value: "yes",
