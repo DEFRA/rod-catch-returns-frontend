@@ -25,25 +25,28 @@
 
 {% block pageTitle %}{{ formatPageTitle(title) }}{% endblock %}
 
+{% if errors %}
+    {% set nilReturnErrorMessage = 'Confirmation box must be checked' %}
+{% endif %}
+
 {% block content %}
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
         <form method="post" action="#">
-            {% if not locked %}
-                {% if errors %}
-                    {% set nilReturnErrorMessage = 'Confirmation box must be checked' %}
-                    {{ govukErrorSummary({
-                        titleText: "There is a problem",
-                        errorList: [
-                            {
-                                text: nilReturnErrorMessage,
-                                href: "#confirm"
-                            }
-                        ]
-                    }) }}
-                {% endif %}
-            {% endif %}
 
+        {% if not locked %}
+            {% if errors %}
+                {{ govukErrorSummary({
+                    titleText: "There is a problem",
+                    errorList: [
+                        {
+                            text: nilReturnErrorMessage,
+                            href: "#confirm"
+                        }
+                    ]
+                }) }}
+            {% endif %}
+        {% endif %}
             <div id="review" class="govuk-!-margin-bottom-6">
                 {{ review(activities, catches, smallCatches, locked, year, fmt, reportingExclude, foundInternal) }}
             </div>

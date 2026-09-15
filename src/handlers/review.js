@@ -34,7 +34,7 @@ module.exports = class ReviewHandler extends BaseHandler {
     const { activities, catches, smallCatches, foundInternal } = await displayData(request, submission)
 
     // Return the review details
-    return h.view(this.path, {
+    return this.readCacheAndDisplayView(request, h, {
       year: cache.year,
       activities,
       catches,
@@ -57,19 +57,15 @@ module.exports = class ReviewHandler extends BaseHandler {
    * @param h
    * @returns {Promise<*>}
    */
-  async doPost (request, h) {
+  async doPost (request, h, errors) {
     if (Object.keys(request.payload).includes('continue')) {
-      if (request.payload.confirm === 'yes') {
+      if (!errors) {
         const cache = await request.cache().get()
         cache.locked = true
         await request.cache().set(cache)
         await submissionsApi.setSubmitted(request, cache.submissionId)
-        return h.redirect('/confirmation')
-      } else {
-        return this.reviewReturn(request, h, {
-          errors: true
-        })
       }
+      return this.writeCacheAndRedirect(request, h, errors, '/confirmation', '/review')
     } else if (Object.keys(request.payload).includes('unlock') && process.env.CONTEXT === 'FMT') {
       const cache = await request.cache().get()
       cache.locked = false

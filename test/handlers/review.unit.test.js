@@ -2,6 +2,7 @@ const mockGetById = jest.fn()
 const mockDisplayData = jest.fn()
 
 const ReviewHandler = require('../../src/handlers/review')
+const BaseHandler = require('../../src/handlers/base')
 const { getMockH } = require('../test-utils/server-test-utils')
 
 jest.mock('../../src/api/submissions', () => jest.fn(() => ({
@@ -47,69 +48,88 @@ describe('review-handler.unit', () => {
         foundInternal: true
       })
       const handler = new ReviewHandler('review')
+      BaseHandler.prototype.readCacheAndDisplayView = jest.fn()
 
       await handler.doGet(request, h)
 
-      expect(h.view).toHaveBeenCalledWith('review', {
-        year: 2025,
-        activities: ['a1'],
-        catches: ['c1'],
-        smallCatches: ['s1'],
-        foundInternal: true,
-        locked: true,
-        reportingExclude: true,
-        details: {
-          licenceNumber: 'LIC123',
-          postcode: 'AB12 CCD',
-          year: 2025
+      expect(BaseHandler.prototype.readCacheAndDisplayView).toHaveBeenCalledWith(
+        request,
+        h,
+        {
+          year: 2025,
+          activities: ['a1'],
+          catches: ['c1'],
+          smallCatches: ['s1'],
+          foundInternal: true,
+          locked: true,
+          reportingExclude: true,
+          details: {
+            licenceNumber: 'LIC123',
+            postcode: 'AB12 CCD',
+            year: 2025
+          }
         }
-      })
+      )
     })
   })
 
   describe('doPost', () => {
-    it('should lock when continue is present', async () => {
+    it('should lock when continue is present and there are no errors', async () => {
       const cacheObj = { submissionId: 'submissions/1', locked: false }
       const request = getMockRequest(cacheObj, { continue: true, confirm: 'yes' })
       const h = getMockH()
       const handler = new ReviewHandler('review')
 
-      await handler.doPost(request, h)
+      await handler.doPost(request, h, null)
 
       expect(cacheObj.locked).toBe(true)
     })
 
-    it('should redirect to confirmation when continue is present', async () => {
+    it('should redirect to confirmation when continue is present and there are no errors', async () => {
       const cacheObj = { submissionId: 'submissions/1', locked: false }
       const request = getMockRequest(cacheObj, { continue: true, confirm: 'yes' })
       const h = getMockH()
       const handler = new ReviewHandler('review')
 
-      await handler.doPost(request, h)
+      await handler.doPost(request, h, null)
 
       expect(h.redirect).toHaveBeenCalledWith('/confirmation')
     })
 
-    it('should redisplay the page when checkbox is not selected', async () => {
-      const cacheObj = { submissionId: 'submissions/1', year: 2025, licenceNumber: 'AB1CD2', postcode: 'DC32 1BA', locked: false }
+    it('should not lock when continue is present but there are errors', async () => {
+      const cacheObj = { submissionId: 'submissions/1', locked: false }
       const request = getMockRequest(cacheObj, { continue: true })
       const h = getMockH()
-
-      mockGetById.mockResolvedValueOnce({
-        reportingExclude: true
-      })
-
-      mockDisplayData.mockResolvedValueOnce({
-        activities: [],
-        catches: [],
-        smallCatches: [],
-        foundInternal: false
-      })
       const handler = new ReviewHandler('review')
 
-      await handler.doPost(request, h)
+      await handler.doPost(request, h, [{ confirm: 'EMPTY' }])
 
-      expect(h.view).toHaveBeenCalledWith('review', expect.objectContaining({ errors: true }))
+      expect(cacheObj.locked).toBe(false)
+    })
+
+    it('should cache the errors and payload when there are errors', async () => {
+      const cacheObj = { submissionId: 'submissions/1', locked: false }
+      const request = getMockRequest(cacheObj, { continue: true })
+      const h = getMockH()
+      const handler = new ReviewHandler('review')
+
+      await handler.doPost(request, h, [{ confirm: 'EMPTY' }])
+
+      expect(cacheObj.defaultContext).toEqual({
+        errors: [{ confirm: 'EMPTY' }],
+        payload: { continue: true }
+      })
+    })
+
+    it('should redirect to review when there are errors', async () => {
+      const cacheObj = { submissionId: 'submissions/1', locked: false }
+      const request = getMockRequest(cacheObj, { continue: true })
+      const h = getMockH()
+      const handler = new ReviewHandler('review')
+
+      await handler.doPost(request, h, [{ confirm: 'EMPTY' }])
+
+      expect(h.redirect).toHaveBeenCalledWith('/review')
     })
 
     it('should unlock when unlock is present and CONTEXT=FMT', async () => {
@@ -136,17 +156,12 @@ describe('review-handler.unit', () => {
       expect(h.redirect).toHaveBeenCalledWith('/summary')
     })
 
-    it('should throw error when payload does not contain continue or unlock', async () => {
-      const request = getMockRequest({}, { somethingElse: true })
-      const h = getMockH()
-      const handler = new ReviewHandler('review')
-
-      await expect(handler.doPost(request, h)).rejects.toThrow('Lock operation not permitted')
-    })
-
-    it('should throw error when unlock present but CONTEXT != FMT', async () => {
+    it.each([
+      { payload: { somethingElse: true }, description: 'payload does not contain continue or unlock' },
+      { payload: { unlock: true }, description: 'unlock is present but CONTEXT is not FMT' }
+    ])('should throw an error when $description', async ({ payload }) => {
       process.env.CONTEXT = 'ANGLER'
-      const request = getMockRequest({}, { unlock: true })
+      const request = getMockRequest({}, payload)
       const h = getMockH()
       const handler = new ReviewHandler('review')
 
