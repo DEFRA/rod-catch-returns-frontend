@@ -27,6 +27,7 @@ const didYouFishValidator = require('../validators/did-you-fish')
 const activityValidator = require('../validators/activity')
 const salmonAndLargeTroutValidator = require('../validators/salmon-and-large-trout')
 const smallCatchValidator = require('../validators/small-catch')
+const reviewValidator = require('../validators/review')
 
 // Define the handlers
 const licenceAuthHandler = new LicenceAuthHandler('licence', loginValidator)
@@ -49,7 +50,7 @@ const smallCatchHandlerClear = new SmallCatchHandlerClear('small-catches', small
 
 const deleteSmallCatchHandler = new DeleteSmallCatchHandler('delete-small-catch')
 
-const reviewHandler = new ReviewHandler('review')
+const reviewHandler = new ReviewHandler('review', reviewValidator, 'reviewContext')
 const confirmationHandler = new ConfirmationHandler('confirmation')
 const saveHandler = new SaveHandler('save')
 
