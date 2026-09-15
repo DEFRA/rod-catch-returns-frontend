@@ -3,7 +3,7 @@
 /**
  * Validate the nil return confirmation checkbox on the review page
  */
-module.exports = async (request) => {
+const validateReview = async (request) => {
   const payload = request.payload
 
   const errors = []
@@ -15,4 +15,4 @@ module.exports = async (request) => {
   return errors.length ? errors : null
 }
 
-
+module.exports = validateReview
