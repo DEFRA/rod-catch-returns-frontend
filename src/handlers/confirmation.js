@@ -25,6 +25,6 @@ module.exports = class ConfirmHandler extends ReviewHandler {
       throw new ResponseError.Error('Illegal access of the confirmation page', ResponseError.status.UNAUTHORIZED)
     }
 
-    return this.reviewReturn(request, h, { year: cache.year })
+    return this.reviewReturn(request, h)
   }
 }

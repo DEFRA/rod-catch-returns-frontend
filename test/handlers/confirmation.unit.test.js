@@ -34,8 +34,7 @@ describe('confirm-handler.unit', () => {
 
       expect(ReviewHandler.prototype.reviewReturn).toHaveBeenCalledWith(
         request,
-        h,
-        { year: '2025' }
+        h
       )
     })
 

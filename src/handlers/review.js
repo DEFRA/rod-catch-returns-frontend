@@ -24,7 +24,7 @@ module.exports = class ReviewHandler extends BaseHandler {
     return this.reviewReturn(request, h)
   }
 
-  async reviewReturn (request, h, viewData = {}) {
+  async reviewReturn (request, h) {
     const cache = await request.cache().get()
     cache.back = request.path
     await request.cache().set(cache)
@@ -46,8 +46,7 @@ module.exports = class ReviewHandler extends BaseHandler {
         licenceNumber: cache.licenceNumber,
         postcode: cache.postcode,
         year: cache.year
-      },
-      ...viewData
+      }
     })
   }
 
