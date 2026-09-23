@@ -61,6 +61,8 @@ describe('review-handler.unit', () => {
           catches: ['c1'],
           smallCatches: ['s1'],
           foundInternal: true,
+          fished: true,
+          hasCatches: false,
           locked: true,
           reportingExclude: true,
           details: {
@@ -70,6 +72,24 @@ describe('review-handler.unit', () => {
           }
         }
       )
+    })
+
+    it.each([
+      { activities: [], expected: { fished: false, hasCatches: false }, description: 'there are no activities' },
+      { activities: [{ count: 0 }], expected: { fished: true, hasCatches: false }, description: 'there are activities but no catches' },
+      { activities: [{ count: 2 }], expected: { fished: true, hasCatches: true }, description: 'there are activities with catches' }
+    ])('should set fished and hasCatches correctly when $description', async ({ activities, expected }) => {
+      const request = getMockRequest({ submissionId: 'submissions/1', year: 2025 })
+      const h = getMockH()
+      mockGetById.mockResolvedValueOnce({})
+      mockDisplayData.mockResolvedValueOnce({ activities, catches: [], smallCatches: [], foundInternal: false })
+      const handler = new ReviewHandler('review')
+      BaseHandler.prototype.readCacheAndDisplayView = jest.fn()
+
+      await handler.doGet(request, h)
+
+      const viewData = BaseHandler.prototype.readCacheAndDisplayView.mock.calls[0][2]
+      expect({ fished: viewData.fished, hasCatches: viewData.hasCatches }).toEqual(expected)
     })
   })
 

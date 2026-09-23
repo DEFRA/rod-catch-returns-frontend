@@ -33,13 +33,14 @@ module.exports = class ReviewHandler extends BaseHandler {
 
     const { activities, catches, smallCatches, foundInternal } = await displayData(request, submission)
 
-    // Return the review details
     return this.readCacheAndDisplayView(request, h, {
       year: cache.year,
       activities,
       catches,
       smallCatches,
       foundInternal,
+      fished: !!activities.length,
+      hasCatches: activities.some(activity => activity.count > 0),
       locked: !!cache.locked,
       reportingExclude: submission.reportingExclude,
       details: {
