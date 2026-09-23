@@ -5,6 +5,8 @@
 {% from "warning-text/macro.njk" import govukWarningText %}
 {% from "navigation.njk" import navigationHeaderBlock %}
 {% from "format-page-title.njk" import formatPageTitle %}
+{% from "error-summary/macro.njk" import govukErrorSummary %}
+{% from "checkboxes/macro.njk" import govukCheckboxes %}
 
 {% block header %}
     {% if fmt %}
@@ -15,33 +17,78 @@
 {% endblock %}
 
 {% if not locked %}
-    {% set title = "Confirm your " + year + " catch return report" %}
+    {% set title = "Your " + year + " fishing return" %}
 {% else %}
     {% set title = "Your " + year + " catch return report" %}
 {% endif %}
 
 {% block pageTitle %}{{ formatPageTitle(title) }}{% endblock %}
 
+{% if errors %}
+    {% set confirmErrorMessage = { text: 'Confirmation box must be checked' } %}
+{% endif %}
+
+{% if not hasFished %}
+    {% set confirmationText = "I confirm I did not fish for salmon or sea trout in England or Wales during " + year %}
+    {% set submitButtonText = "Submit" %}
+{% elif not hasCatches %}
+    {% set confirmationText = "I confirm that I did not catch any salmon or sea trout in " + year %}
+    {% set submitButtonText = "Submit return" %}
+{% else %}
+    {% set confirmationText = "I confirm I have logged all my fishing activity for " + year %}
+    {% set submitButtonText = "Submit return" %}
+{% endif %}
+
 {% block content %}
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
         <form method="post" action="#">
+
+        {% if not locked %}
+            {% if errors %}
+                {{ govukErrorSummary({
+                    titleText: "There is a problem",
+                    errorList: [
+                        {
+                            text: confirmErrorMessage.text,
+                            href: "#confirm"
+                        }
+                    ]
+                }) }}
+            {% endif %}
+        {% endif %}
+
             <h1 class="govuk-heading-l">{{ title }}</h1>
 
-            <div id="review" class="govuk-!-margin-bottom-9">
+            <div id="review" class="govuk-!-margin-bottom-6">
                 {{ review(activities, catches, smallCatches, locked, year, fmt, reportingExclude, foundInternal) }}
             </div>
 
             {% if not locked %}
-                {{ govukWarningText({
-                    text: "Only submit if you have finished fishing for salmon and sea trout this year.",
-                    iconFallbackText: "Warning"
+                {% if hasFished %}
+                    {{ govukWarningText({
+                        text: "Only submit if you have finished fishing for salmon and sea trout this year.",
+                        iconFallbackText: "Warning"
+                    }) }}
+                {% endif %}
+
+                {{ govukCheckboxes({
+                     idPrefix: "confirm",
+                     name: "confirm",
+                     errorMessage: confirmErrorMessage,
+                    items: [
+                        {
+                            value: "yes",
+                            text: confirmationText
+                        }
+                    ]
                 }) }}
 
                 {{ govukButton({
                     name: "continue",
-                    text: "Submit catch return"
+                    text: submitButtonText
                 }) }}
+
             {% else %}
                 {% if fmt %}
                     {{ govukButton({
@@ -50,8 +97,7 @@
                         text: "Unlock catch return"
                     }) }}
                 {% endif %}
-            {% endif %}
-
+            {% endif %}           
             {{ extra() }}
         </form>
         {% if not locked %}

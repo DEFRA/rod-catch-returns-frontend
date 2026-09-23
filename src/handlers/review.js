@@ -33,13 +33,14 @@ module.exports = class ReviewHandler extends BaseHandler {
 
     const { activities, catches, smallCatches, foundInternal } = await displayData(request, submission)
 
-    // Return the review details
-    return h.view(this.path, {
+    return this.readCacheAndDisplayView(request, h, {
       year: cache.year,
       activities,
       catches,
       smallCatches,
       foundInternal,
+      hasFished: !!activities.length,
+      hasCatches: activities.some(activity => activity.count > 0),
       locked: !!cache.locked,
       reportingExclude: submission.reportingExclude,
       details: {
@@ -56,13 +57,15 @@ module.exports = class ReviewHandler extends BaseHandler {
    * @param h
    * @returns {Promise<*>}
    */
-  async doPost (request, h) {
+  async doPost (request, h, errors) {
     if (Object.keys(request.payload).includes('continue')) {
-      const cache = await request.cache().get()
-      cache.locked = true
-      await request.cache().set(cache)
-      await submissionsApi.setSubmitted(request, cache.submissionId)
-      return h.redirect('/confirmation')
+      if (!errors) {
+        const cache = await request.cache().get()
+        cache.locked = true
+        await request.cache().set(cache)
+        await submissionsApi.setSubmitted(request, cache.submissionId)
+      }
+      return this.writeCacheAndRedirect(request, h, errors, '/confirmation', '/review')
     } else if (Object.keys(request.payload).includes('unlock') && process.env.CONTEXT === 'FMT') {
       const cache = await request.cache().get()
       cache.locked = false
