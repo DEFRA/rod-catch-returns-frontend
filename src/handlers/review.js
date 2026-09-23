@@ -39,7 +39,7 @@ module.exports = class ReviewHandler extends BaseHandler {
       catches,
       smallCatches,
       foundInternal,
-      fished: !!activities.length,
+      hasFished: !!activities.length,
       hasCatches: activities.some(activity => activity.count > 0),
       locked: !!cache.locked,
       reportingExclude: submission.reportingExclude,

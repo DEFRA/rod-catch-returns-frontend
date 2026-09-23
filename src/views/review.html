@@ -28,7 +28,7 @@
     {% set confirmErrorMessage = { text: 'Confirmation box must be checked' } %}
 {% endif %}
 
-{% if not fished %}
+{% if not hasFished %}
     {% set confirmationText = "I confirm I did not fish for salmon or sea trout in England or Wales during " + year %}
     {% set submitButtonText = "Submit" %}
 {% elif not hasCatches %}
@@ -65,7 +65,7 @@
             </div>
 
             {% if not locked %}
-                {% if fished %}
+                {% if hasFished %}
                     {{ govukWarningText({
                         text: "Only submit if you have finished fishing for salmon and sea trout this year.",
                         iconFallbackText: "Warning"

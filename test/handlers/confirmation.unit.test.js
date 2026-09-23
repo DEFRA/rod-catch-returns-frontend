@@ -38,6 +38,19 @@ describe('confirm-handler.unit', () => {
       )
     })
 
+    it('should get the submission using the submissionId from the cache', async () => {
+      const request = getMockRequest()
+      const h = getMockH()
+      const handler = new ConfirmHandler('confirm')
+      const submission = { status: 'SUBMITTED' }
+      mockGetById.mockResolvedValue(submission)
+      ReviewHandler.prototype.reviewReturn = jest.fn()
+
+      await handler.doGet(request, h)
+
+      expect(mockGetById).toHaveBeenCalledWith(request, '123')
+    })
+
     it('should throw ResponseError if submission status is not SUBMITTED', async () => {
       const request = getMockRequest()
       const h = getMockH()
