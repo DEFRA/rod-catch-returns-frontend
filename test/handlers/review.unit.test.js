@@ -1,5 +1,7 @@
 const mockGetById = jest.fn()
 const mockDisplayData = jest.fn()
+const mockSetSubmitted = jest.fn()
+const mockSetIncomplete = jest.fn()
 
 const ReviewHandler = require('../../src/handlers/review')
 const BaseHandler = require('../../src/handlers/base')
@@ -7,8 +9,8 @@ const { getMockH } = require('../test-utils/server-test-utils')
 
 jest.mock('../../src/api/submissions', () => jest.fn(() => ({
   getById: mockGetById,
-  setSubmitted: jest.fn(),
-  setIncomplete: jest.fn()
+  setSubmitted: mockSetSubmitted,
+  setIncomplete: mockSetIncomplete
 })))
 jest.mock('../../src/handlers/display-data', () => mockDisplayData)
 
@@ -20,14 +22,17 @@ describe('review-handler.unit', () => {
     process.env = { ...OLD_ENV }
   })
 
-  const getMockRequest = (cacheObj, payload = {}) => ({
-    path: '/review',
-    payload,
-    cache: jest.fn(() => ({
-      get: jest.fn().mockResolvedValueOnce(cacheObj),
-      set: jest.fn().mockResolvedValueOnce()
-    }))
-  })
+  const getMockRequest = (cacheObj, payload = {}) => {
+    const cache = {
+      get: jest.fn().mockResolvedValue(cacheObj),
+      set: jest.fn().mockResolvedValue()
+    }
+    return {
+      path: '/review',
+      payload,
+      cache: jest.fn(() => cache)
+    }
+  }
 
   describe('doGet', () => {
     it('should render view with details', async () => {
@@ -61,7 +66,7 @@ describe('review-handler.unit', () => {
           catches: ['c1'],
           smallCatches: ['s1'],
           foundInternal: true,
-          fished: true,
+          hasFished: true,
           hasCatches: false,
           locked: true,
           reportingExclude: true,
@@ -74,11 +79,54 @@ describe('review-handler.unit', () => {
       )
     })
 
+    it('should persist the request path as the back link in the cache', async () => {
+      const cacheObj = { submissionId: 'submissions/1', year: 2025 }
+      const request = getMockRequest(cacheObj)
+      const h = getMockH()
+      mockGetById.mockResolvedValueOnce({})
+      mockDisplayData.mockResolvedValueOnce({ activities: [], catches: [], smallCatches: [], foundInternal: false })
+      const handler = new ReviewHandler('review')
+      BaseHandler.prototype.readCacheAndDisplayView = jest.fn()
+
+      await handler.doGet(request, h)
+
+      expect(request.cache().set).toHaveBeenCalledWith(expect.objectContaining({ back: '/review' }))
+    })
+
+    it('should get the submission using the submissionId from the cache', async () => {
+      const cacheObj = { submissionId: 'submissions/1', year: 2025 }
+      const request = getMockRequest(cacheObj)
+      const h = getMockH()
+      mockGetById.mockResolvedValueOnce({})
+      mockDisplayData.mockResolvedValueOnce({ activities: [], catches: [], smallCatches: [], foundInternal: false })
+      const handler = new ReviewHandler('review')
+      BaseHandler.prototype.readCacheAndDisplayView = jest.fn()
+
+      await handler.doGet(request, h)
+
+      expect(mockGetById).toHaveBeenCalledWith(request, 'submissions/1')
+    })
+
+    it('should get the display data using the fetched submission', async () => {
+      const cacheObj = { submissionId: 'submissions/1', year: 2025 }
+      const request = getMockRequest(cacheObj)
+      const h = getMockH()
+      const submission = { reportingExclude: true }
+      mockGetById.mockResolvedValueOnce(submission)
+      mockDisplayData.mockResolvedValueOnce({ activities: [], catches: [], smallCatches: [], foundInternal: false })
+      const handler = new ReviewHandler('review')
+      BaseHandler.prototype.readCacheAndDisplayView = jest.fn()
+
+      await handler.doGet(request, h)
+
+      expect(mockDisplayData).toHaveBeenCalledWith(request, submission)
+    })
+
     it.each([
-      { activities: [], expected: { fished: false, hasCatches: false }, description: 'there are no activities' },
-      { activities: [{ count: 0 }], expected: { fished: true, hasCatches: false }, description: 'there are activities but no catches' },
-      { activities: [{ count: 2 }], expected: { fished: true, hasCatches: true }, description: 'there are activities with catches' }
-    ])('should set fished and hasCatches correctly when $description', async ({ activities, expected }) => {
+      { activities: [], expected: { hasFished: false, hasCatches: false }, description: 'there are no activities' },
+      { activities: [{ count: 0 }], expected: { hasFished: true, hasCatches: false }, description: 'there are activities but no catches' },
+      { activities: [{ count: 2 }], expected: { hasFished: true, hasCatches: true }, description: 'there are activities with catches' }
+    ])('should set hasFished and hasCatches correctly when $description', async ({ activities, expected }) => {
       const request = getMockRequest({ submissionId: 'submissions/1', year: 2025 })
       const h = getMockH()
       mockGetById.mockResolvedValueOnce({})
@@ -89,12 +137,12 @@ describe('review-handler.unit', () => {
       await handler.doGet(request, h)
 
       const viewData = BaseHandler.prototype.readCacheAndDisplayView.mock.calls[0][2]
-      expect({ fished: viewData.fished, hasCatches: viewData.hasCatches }).toEqual(expected)
+      expect({ hasFished: viewData.hasFished, hasCatches: viewData.hasCatches }).toEqual(expected)
     })
   })
 
   describe('doPost', () => {
-    it('should lock when continue is present and there are no errors', async () => {
+    it('should persist the cache with locked true when continue is present and there are no errors', async () => {
       const cacheObj = { submissionId: 'submissions/1', locked: false }
       const request = getMockRequest(cacheObj, { continue: true, confirm: 'yes' })
       const h = getMockH()
@@ -102,7 +150,18 @@ describe('review-handler.unit', () => {
 
       await handler.doPost(request, h, null)
 
-      expect(cacheObj.locked).toBe(true)
+      expect(request.cache().set).toHaveBeenCalledWith({ submissionId: 'submissions/1', locked: true })
+    })
+
+    it('should mark the submission as submitted when continue is present and there are no errors', async () => {
+      const cacheObj = { submissionId: 'submissions/1', locked: false }
+      const request = getMockRequest(cacheObj, { continue: true, confirm: 'yes' })
+      const h = getMockH()
+      const handler = new ReviewHandler('review')
+
+      await handler.doPost(request, h, null)
+
+      expect(mockSetSubmitted).toHaveBeenCalledWith(request, 'submissions/1')
     })
 
     it('should redirect to confirmation when continue is present and there are no errors', async () => {
@@ -116,7 +175,7 @@ describe('review-handler.unit', () => {
       expect(h.redirect).toHaveBeenCalledWith('/confirmation')
     })
 
-    it('should not lock when continue is present but there are errors', async () => {
+    it('should not persist locked true when continue is present but there are errors', async () => {
       const cacheObj = { submissionId: 'submissions/1', locked: false }
       const request = getMockRequest(cacheObj, { continue: true })
       const h = getMockH()
@@ -124,7 +183,18 @@ describe('review-handler.unit', () => {
 
       await handler.doPost(request, h, [{ confirm: 'EMPTY' }])
 
-      expect(cacheObj.locked).toBe(false)
+      expect(request.cache().set).not.toHaveBeenCalledWith(expect.objectContaining({ locked: true }))
+    })
+
+    it('should not mark the submission as submitted when continue is present but there are errors', async () => {
+      const cacheObj = { submissionId: 'submissions/1', locked: false }
+      const request = getMockRequest(cacheObj, { continue: true })
+      const h = getMockH()
+      const handler = new ReviewHandler('review')
+
+      await handler.doPost(request, h, [{ confirm: 'EMPTY' }])
+
+      expect(mockSetSubmitted).not.toHaveBeenCalled()
     })
 
     it('should cache the errors and payload when there are errors', async () => {
@@ -135,9 +205,13 @@ describe('review-handler.unit', () => {
 
       await handler.doPost(request, h, [{ confirm: 'EMPTY' }])
 
-      expect(cacheObj.defaultContext).toEqual({
-        errors: [{ confirm: 'EMPTY' }],
-        payload: { continue: true }
+      expect(request.cache().set).toHaveBeenCalledWith({
+        submissionId: 'submissions/1',
+        locked: false,
+        defaultContext: {
+          errors: [{ confirm: 'EMPTY' }],
+          payload: { continue: true }
+        }
       })
     })
 
@@ -152,7 +226,7 @@ describe('review-handler.unit', () => {
       expect(h.redirect).toHaveBeenCalledWith('/review')
     })
 
-    it('should unlock when unlock is present and CONTEXT=FMT', async () => {
+    it('should persist the cache with locked false when unlock is present and CONTEXT=FMT', async () => {
       process.env.CONTEXT = 'FMT'
       const cacheObj = { submissionId: 'submissions/1', locked: true }
       const request = getMockRequest(cacheObj, { unlock: true })
@@ -161,7 +235,19 @@ describe('review-handler.unit', () => {
 
       await handler.doPost(request, h)
 
-      expect(cacheObj.locked).toBe(false)
+      expect(request.cache().set).toHaveBeenCalledWith({ submissionId: 'submissions/1', locked: false })
+    })
+
+    it('should mark the submission as incomplete when unlock is present and CONTEXT=FMT', async () => {
+      process.env.CONTEXT = 'FMT'
+      const cacheObj = { submissionId: 'submissions/1', locked: true }
+      const request = getMockRequest(cacheObj, { unlock: true })
+      const h = getMockH()
+      const handler = new ReviewHandler('review')
+
+      await handler.doPost(request, h)
+
+      expect(mockSetIncomplete).toHaveBeenCalledWith(request, 'submissions/1')
     })
 
     it('should redirect to summary when unlock is present and CONTEXT=FMT', async () => {
