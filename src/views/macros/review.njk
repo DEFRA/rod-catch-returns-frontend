@@ -204,13 +204,6 @@
                   }]
                 })
             }}
-        {% endif %}
-
-    {% else %}
-        {% if not locked %}
-            <p class="govuk-body-m">I confirm that I did not fish for salmon or sea trout in {{ year }}.</p>
-        {% else %}
-            <p class="govuk-body-m">I did not fish for salmon or sea trout in {{ year }}.</p>
-        {% endif %}
+        {% endif %}  
     {% endif %}
 {% endmacro %}
