@@ -41,11 +41,41 @@ function conversion (payload, errors) {
   }
 }
 
+function weightIsInPoundsEmptyOunces (payload) {
+  return payload.system === 'IMPERIAL' && Number.parseInt(payload.pounds) >= 1 && !payload.ounces
+}
+
+function weightIsInOuncesOnly (payload) {
+  return payload.system === 'IMPERIAL' && !payload.pounds && Number.parseInt(payload.ounces) > 0
+}
+
+function weightIsLessThanOnePound (payload) {
+  return payload.system === 'IMPERIAL' && payload.pounds && Number.parseFloat(payload.pounds) < 1 
+}
+
+function weightInPoundsIsNotInteger (payload) {
+  const pounds = Number.parseFloat(payload.pounds)
+
+  return payload.system === 'IMPERIAL' && payload.pounds && !Number.isInteger(pounds)
+}
+
 module.exports = async (request) => {
   const payload = request.payload
 
-  if (payload.system === 'IMPERIAL' && Number.parseInt(payload.pounds) >= 1 && !payload.ounces) {
+  if (weightIsInPoundsEmptyOunces(payload)) {
     payload.ounces = '0'
+  }
+
+  if (weightIsInOuncesOnly(payload)) {
+    return [{ pounds: true }]
+  }
+
+  if (weightIsLessThanOnePound(payload)) {
+    return [{ pounds: true }]
+  }
+
+  if (weightInPoundsIsNotInteger(payload)) {
+    return [{ pounds: true }]
   }
 
   const errors = []

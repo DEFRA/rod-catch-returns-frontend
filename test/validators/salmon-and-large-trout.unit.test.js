@@ -104,7 +104,7 @@ describe('salmon-and-large-trout.unit', () => {
   })
 
   it('defaults ounces to 0 when pounds >= 1 and ounces is empty', async () => {
-      const payload = {
+    const payload = {
       system: 'IMPERIAL',
       pounds: '2',
       ounces: '',
@@ -123,6 +123,37 @@ describe('salmon-and-large-trout.unit', () => {
       kilograms: 0.907
     })
   })
+
+  it('returns a validation error when ounces are provided without pounds', async () => {
+    const payload = {
+      system: 'IMPERIAL',
+      pounds: '',
+      ounces: '3',
+      river: 'r1'
+    }
+    const request = getMockRequest(payload, { year: 2025, submissionId: 'sub1' })
+    setUpMocks()
+
+    const result = await validate(request)
+
+    expect(result).toStrictEqual([ { pounds: true } ])
+  }) 
+
+  
+  it('returns a validation error when pounds contain a fractional value', async () => {
+    const payload = {
+      system: 'IMPERIAL',
+      pounds: '0.75',
+      ounces: '1',
+      river: 'r1'
+    }
+    const request = getMockRequest(payload, { year: 2025, submissionId: 'sub1' })
+    setUpMocks()
+
+    const result = await validate(request)
+
+    expect(result).toStrictEqual([ { pounds: true } ])
+  }) 
 
   it('set released to true if it is true (string)', async () => {
     const payload = { river: 'r1', released: 'true' }
