@@ -49,14 +49,9 @@ function weightIsInOuncesOnly (payload) {
   return payload.system === 'IMPERIAL' && !payload.pounds && Number.parseInt(payload.ounces) > 0
 }
 
-function weightIsLessThanOnePound (payload) {
-  return payload.system === 'IMPERIAL' && payload.pounds && Number.parseFloat(payload.pounds) < 1 
-}
-
-function weightInPoundsIsNotInteger (payload) {
+function poundsIsInvalid (payload) {
   const pounds = Number.parseFloat(payload.pounds)
-
-  return payload.system === 'IMPERIAL' && payload.pounds && !Number.isInteger(pounds)
+  return payload.system === 'IMPERIAL' && payload.pounds && (pounds < 1 || !Number.isInteger(pounds))
 }
 
 module.exports = async (request) => {
@@ -66,15 +61,7 @@ module.exports = async (request) => {
     payload.ounces = '0'
   }
 
-  if (weightIsInOuncesOnly(payload)) {
-    return [{ pounds: true }]
-  }
-
-  if (weightIsLessThanOnePound(payload)) {
-    return [{ pounds: true }]
-  }
-
-  if (weightInPoundsIsNotInteger(payload)) {
+  if (weightIsInOuncesOnly(payload) || poundsIsInvalid(payload)) {
     return [{ pounds: true }]
   }
 
