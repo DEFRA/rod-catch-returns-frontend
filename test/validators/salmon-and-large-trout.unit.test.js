@@ -135,7 +135,7 @@ describe('salmon-and-large-trout.unit', () => {
 
     await validate(request)
 
-    expect(payload.ounces).not.toBe( '0' )
+    expect(payload.ounces).not.toBe('0')
   }) 
 
   
@@ -149,9 +149,9 @@ describe('salmon-and-large-trout.unit', () => {
     const request = getMockRequest(payload, { year: 2025, submissionId: 'sub1' })
     setUpMocks()
 
-    const result = await validate(request)
+    await validate(request)
 
-    expect(result).toStrictEqual([ { pounds: true } ])
+    expect(payload.ounces).toBe('')
   }) 
 
   it('does not overwrite ounces when ounces already has a value', async () => {
