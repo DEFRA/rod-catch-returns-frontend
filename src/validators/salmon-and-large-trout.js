@@ -41,8 +41,17 @@ function conversion (payload, errors) {
   }
 }
 
+function weightIsInPoundsEmptyOunces (payload) {
+  return payload.system === 'IMPERIAL' && Number.parseInt(payload.pounds) >= 1 && !payload.ounces
+}
+
 module.exports = async (request) => {
   const payload = request.payload
+
+  if (weightIsInPoundsEmptyOunces(payload)) {
+    payload.ounces = '0'
+  }
+
   const errors = []
   const cache = await request.cache().get()
 
