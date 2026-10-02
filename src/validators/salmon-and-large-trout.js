@@ -45,24 +45,11 @@ function weightIsInPoundsEmptyOunces (payload) {
   return payload.system === 'IMPERIAL' && Number.parseInt(payload.pounds) >= 1 && !payload.ounces
 }
 
-function weightIsInOuncesOnly (payload) {
-  return payload.system === 'IMPERIAL' && !payload.pounds && Number.parseInt(payload.ounces) > 0
-}
-
-function poundsIsInvalid (payload) {
-  const pounds = Number.parseFloat(payload.pounds)
-  return payload.system === 'IMPERIAL' && payload.pounds && (pounds < 1 || !Number.isInteger(pounds))
-}
-
 module.exports = async (request) => {
   const payload = request.payload
 
   if (weightIsInPoundsEmptyOunces(payload)) {
     payload.ounces = '0'
-  }
-
-  if (weightIsInOuncesOnly(payload) || poundsIsInvalid(payload)) {
-    return [{ pounds: true }]
   }
 
   const errors = []
