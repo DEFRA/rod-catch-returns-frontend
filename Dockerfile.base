@@ -1,4 +1,4 @@
-ARG PARENT_VERSION=3.0.5-node24.14.1
+ARG PARENT_VERSION=3.2.4-node24.22.1
 
 # https://github.com/DEFRA/defra-docker-node
 FROM defradigital/node:${PARENT_VERSION} AS base
