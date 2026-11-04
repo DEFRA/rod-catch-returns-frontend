@@ -22,6 +22,8 @@ const manFishing = require('./manFishing')
 const { sessionIdProducer } = require('./src/lib/analytics')
 const logger = require('./src/lib/logger-utils')
 const AirbrakeClient = require('./src/lib/airbrake')
+const path = require('path')
+const fs = require('fs')
 
 const manifest = {
   // Configure Hapi server and server-caching subsystem
