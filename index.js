@@ -207,6 +207,7 @@ const options = {
 };
 
 (async () => {
+  
   const airbrake = new AirbrakeClient()
   try {
     /**
@@ -409,7 +410,11 @@ const options = {
       }
       console.log(manFishing)
       console.log(data)
-      logger.info(`Server started at ${server.info.uri}`)
+
+      const pkgPath = path.join(process.cwd(), 'package.json')
+      const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf-8'))
+
+      logger.info(`Server started at ${server.info.uri}. Version ${pkg.version} running on node version ${process.version}`)
     })
   } catch (err) {
     logger.error(err)
