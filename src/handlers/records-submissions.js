@@ -33,10 +33,10 @@ module.exports = class RecordsSubmissionsHandler extends BaseHandler {
     return h.view(this.path, {
       fullName: cache.fullName,
       year: submission.season,
-      activities: activities,
-      catches: catches,
-      smallCatches: smallCatches,
-      foundInternal: foundInternal
+      activities,
+      catches,
+      smallCatches,
+      foundInternal
     })
   }
 }

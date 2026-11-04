@@ -1,4 +1,4 @@
-FROM rod_catch_returns/frontend-base AS fmt
+FROM frontend-base AS fmt
 
 USER root
 

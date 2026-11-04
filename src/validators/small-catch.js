@@ -68,7 +68,7 @@ function calculateCounts (methods, payload, apiCounts, apiIgnore, errors) {
           if (Number.parseInt(count) !== 0) {
             apiCounts.push({
               method: m.id,
-              count: count
+              count
             })
           }
         } else {

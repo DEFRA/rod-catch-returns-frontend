@@ -68,7 +68,7 @@ class ActivitiesHandler extends BaseHandler {
 
     return this.readCacheAndDisplayView(request, h, {
       rivers: filterRiversForChange(rivers, activities, activity),
-      payload: payload,
+      payload,
       details: {
         licenceNumber: cache.licenceNumber,
         postcode: cache.postcode,

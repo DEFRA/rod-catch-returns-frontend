@@ -3,9 +3,9 @@
 exports[`activities add should display the authentication page 1`] = `"/path/to/somewhere"`;
 
 exports[`activities change should change the days 1`] = `
-Object {
-  "_links": Object {
-    "self": Object {
+{
+  "_links": {
+    "self": {
       "href": "http://example.com/path/to/somewhere",
     },
   },
@@ -18,39 +18,39 @@ Object {
 `;
 
 exports[`activities mapper sets the _links attribute values id, name and internal 1`] = `
-Object {
-  "river": Object {
+{
+  "river": {
     "href": "http://example.com/path/to/somewhere",
     "internal": "internal",
     "name": "Tyne",
   },
-  "self": Object {
+  "self": {
     "href": "http://example.com/path/to/somewhere",
   },
 }
 `;
 
 exports[`activities mapper sets the _links attribute values id, name and internal 2`] = `
-Object {
-  "river": Object {
+{
+  "river": {
     "href": "http://example.com/unwise/path/to/the/dark/side",
     "internal": "internal",
     "name": "Tyne",
   },
-  "self": Object {
+  "self": {
     "href": "http://example.com/unwise/path/to/the/dark/side",
   },
 }
 `;
 
 exports[`activities mapper sets the _links attribute values id, name and internal 3`] = `
-Object {
-  "river": Object {
+{
+  "river": {
     "href": "http://example.com/unwise/path/to/the/dark/side/",
     "internal": "internal",
     "name": "Tyne",
   },
-  "self": Object {
+  "self": {
     "href": "http://example.com/unwise/path/to/the/dark/side/",
   },
 }

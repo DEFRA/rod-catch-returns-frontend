@@ -6,11 +6,40 @@ describe('angler', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
-    process.env = { ...OLD_ENV } // make a copy
+    process.env = { ...OLD_ENV }
   })
 
-  afterEach(() => {
-    process.env = OLD_ENV // restore old env
+  describe('angler routes configuration', () => {
+    it('exports an array of route definitions', () => {
+      expect(angler.length).toBe(23)
+    })
+
+    it.each([
+      '/',
+      '/licence-auth',
+      '/licence-auth-fail',
+      '/select-year',
+      '/did-you-fish',
+      '/summary',
+      '/activities/{id}',
+      '/activities/{id}/clear',
+      '/delete/activities/{id}',
+      '/catches/{id}',
+      '/catches/{id}/clear',
+      '/delete/catches/{id}',
+      '/small-catches/{id}',
+      '/small-catches/{id}/clear',
+      '/delete/small-catches/{id}',
+      '/review',
+      '/save',
+      '/confirmation',
+      '/cookies',
+      '/accessibility',
+      '/privacy'
+    ])('contains route path "%s"', (expectedPath) => {
+      const match = angler.find(r => r.path === expectedPath)
+      expect(match).toBeDefined()
+    })
   })
 
   describe('/', () => {

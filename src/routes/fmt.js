@@ -6,8 +6,6 @@ const id = Joi.string()
  * These routes are scanned automatically by the hapi-router
  */
 const LicenceHandler = require('../handlers/licence')
-const ReportsHandler = require('../handlers/reports')
-const ReportDownloadHandler = require('../handlers/report-download')
 const RecordsHandler = require('../handlers/records')
 const RecordsSearchResultsHandler = require('../handlers/records-search-results')
 const RecordsSubmissionsHandler = require('../handlers/records-submissions')
@@ -27,8 +25,6 @@ const ageWeightKeyValidator = require('../validators/age-weight-key')
 const ageWeightKeyConflictValidator = require('../validators/age-weight-key-conflict')
 
 // Define the handlers
-const reportsHandler = new ReportsHandler('reports')
-const reportDownloadHandler = new ReportDownloadHandler()
 const recordsHandler = new RecordsHandler('records', licenceFullValidator)
 const recordsSearchResultsHandler = new RecordsSearchResultsHandler('records-search-results')
 const recordsSubmissionsHandler = new RecordsSubmissionsHandler('records-submissions')
@@ -43,12 +39,6 @@ const ageWeightKeyErrorBreakdownHandler = new AgeWeightKeyErrorBreakdownHandler(
 const ageWeightKeyCancel = new AgeWeightKeyCancel(null, null, 'ageWeightContext')
 const exclusionsHandler = new ExclusionsHandler('exclusions')
 const adminLoginHandler = new AdminLoginHandler()
-
-const api = {
-  host: process.env.API_HOSTNAME || 'localhost',
-  port: Number.parseInt(process.env.API_PORT || 9580),
-  protocol: 'http'
-}
 
 const lookupQuerySchema = Joi.object({
   submissionId: id.required(),
@@ -143,20 +133,6 @@ module.exports = [
     path: '/records-submissions',
     method: ['GET'],
     handler: recordsSubmissionsHandler.handler
-  },
-
-  // Reports handler
-  {
-    path: '/reports',
-    method: 'GET',
-    handler: reportsHandler.handler
-  },
-
-  // Report download handler
-  {
-    path: '/reports/{file}',
-    method: 'GET',
-    handler: reportDownloadHandler.handler
   },
 
   // Age weight key upload handlers
@@ -254,7 +230,7 @@ module.exports = [
     }
   },
 
-  // Back to the catch return from the reports
+  // Back to the catch return
   {
     path: '/back',
     method: 'GET',
@@ -279,37 +255,6 @@ module.exports = [
     options: {
       plugins: {
         crumb: { restful: true }
-      }
-    }
-  },
-
-  {
-    method: ['GET', 'POST'],
-    path: '/reporting/{reports*}',
-    options: {
-      auth: false,
-      plugins: {
-        disinfect: {
-          disinfectQuery: true,
-          disinfectParams: true,
-          disinfectPayload: false
-        },
-        crumb: false
-      }
-    },
-    handler: {
-      proxy: {
-        mapUri: (request) => {
-          const mappedUri = new URL(`http://${api.host}:${api.port}/api/reporting/${request.params.reports}`)
-          if (request.query) {
-            mappedUri.search = new URLSearchParams(request.query)
-          }
-          return {
-            uri: mappedUri.href
-          }
-        },
-        passThrough: true,
-        acceptEncoding: true
       }
     }
   }

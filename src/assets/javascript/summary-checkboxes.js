@@ -1,4 +1,5 @@
 /* eslint-disable no-undef */
+/* eslint-disable prefer-const */
 (function () {
   // inter-exclusion check box behaviour
   'use strict'

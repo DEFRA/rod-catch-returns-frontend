@@ -1,9 +1,8 @@
 const msal = require('@azure/msal-node')
-const fetch = require('node-fetch')
-const { HttpsProxyAgent } = require('https-proxy-agent')
+const { ProxyAgent } = require('undici')
 
 const proxyUrl = process.env.https_proxy
-const proxyAgent = proxyUrl ? new HttpsProxyAgent(proxyUrl) : undefined
+const proxyAgent = proxyUrl ? new ProxyAgent(proxyUrl) : undefined
 
 /**
  * Sends an HTTP request using node-fetch, with optional proxy
@@ -20,7 +19,7 @@ const sendRequest = async (method, url, options) => {
     ...(options.body && {
       body: typeof options.body === 'string' ? options.body : JSON.stringify(options.body)
     }),
-    ...(proxyAgent && { agent: proxyAgent })
+    ...(proxyAgent && { dispatcher: proxyAgent })
   }
 
   const response = await fetch(url, requestOptions)

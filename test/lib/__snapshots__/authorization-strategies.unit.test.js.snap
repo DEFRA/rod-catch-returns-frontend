@@ -1,9 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`authorization-strategies adminCookie should have the correct config 1`] = `
-Object {
+{
   "appendNext": true,
-  "cookie": Object {
+  "cookie": {
     "isHttpOnly": false,
     "isSameSite": "Lax",
     "isSecure": false,
@@ -18,8 +18,8 @@ Object {
 `;
 
 exports[`authorization-strategies sessionCookie should have the correct config 1`] = `
-Object {
-  "cookie": Object {
+{
+  "cookie": {
     "clearInvalid": true,
     "isSecure": false,
     "name": "sid",

@@ -1,8 +1,10 @@
+// needed by undici for tests to pass
+const { ReadableStream } = require('node:stream/web')
+global.ReadableStream = ReadableStream
+
 process.env.AUTH_PW = '1234567890123456'
 process.env.COOKIE_PW = 'cookieabcdef1234'
 process.env.HTTPS = 'false'
-process.env.REPORTS_S3_LOCATION_BUCKET = 'test'
-process.env.REPORTS_S3_LOCATION_FOLDER = '/test'
 process.env.MSAL_CLIENT_ID = 'mock-client-id'
 process.env.MSAL_CLIENT_SECRET = 'mock-client-secret'
 process.env.MSAL_REDIRECT_URI = 'http://localhost/mock-redirect'

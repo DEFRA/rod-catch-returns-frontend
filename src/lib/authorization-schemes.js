@@ -16,7 +16,7 @@ module.exports = {
       },
 
       payload: async (request, h) => {
-        if (!request.payload.licence || !request.payload.postcode) {
+        if (!request?.payload?.licence || !request?.payload?.postcode) {
           return h.continue
         }
 

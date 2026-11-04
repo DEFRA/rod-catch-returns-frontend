@@ -57,26 +57,26 @@ module.exports = class CatchesApi extends EntityApi {
     return super.add(request, {
       submission: submissionId,
       activity: activityId,
-      dateCaught: dateCaught,
+      dateCaught,
       species: speciesId,
-      mass: mass,
+      mass,
       method: methodId,
-      released: released,
-      onlyMonthRecorded: onlyMonthRecorded,
-      noDateRecorded: noDateRecorded
+      released,
+      onlyMonthRecorded,
+      noDateRecorded
     })
   }
 
   async change (request, catchId, activityId, dateCaught, speciesId, mass, methodId, released,
     onlyMonthRecorded, noDateRecorded) {
     const result = await super.change(request, catchId, {
-      dateCaught: dateCaught,
-      mass: mass,
-      released: released,
+      dateCaught,
+      mass,
+      released,
       species: speciesId,
       method: methodId,
-      onlyMonthRecorded: onlyMonthRecorded,
-      noDateRecorded: noDateRecorded
+      onlyMonthRecorded,
+      noDateRecorded
     })
 
     if (Object.keys(result).includes('errors')) {
@@ -95,7 +95,7 @@ module.exports = class CatchesApi extends EntityApi {
 
   async changeExclusion (request, catchId, reportingExclude) {
     return super.change(request, catchId, {
-      reportingExclude: reportingExclude
+      reportingExclude
     })
   }
 

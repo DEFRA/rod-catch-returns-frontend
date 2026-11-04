@@ -2,6 +2,36 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.23.0](https://github.com/DEFRA/rod-catch-returns-frontend/compare/v1.22.0...v1.23.0) (2026-10-15)
+
+Version RCR Release 24 (River Mersey)
+[Release notes](https://eaflood.atlassian.net/wiki/spaces/IWTF/pages/6596985735/15+10+2026+RCR+River+Mersey+release)
+
+## [1.22.0](https://github.com/DEFRA/rod-catch-returns-frontend/compare/v1.21.0...v1.22.0) (2026-09-24)
+
+Version RCR Release 23 (River Lune)
+[Release notes](https://eaflood.atlassian.net/wiki/spaces/IWTF/pages/6581354954/24+09+2026+RCR+v1.22+River+Lune+release)
+
+## [1.21.0](https://github.com/DEFRA/rod-catch-returns-frontend/compare/v1.20.0...v1.21.0) (2026-06-08)
+
+Version RCR Release 22 (River Kinder)
+[Release notes](https://eaflood.atlassian.net/wiki/spaces/IWTF/pages/6480953955/08+06+2026+RCR+v1.21+River+Kinder+release)
+
+## [1.20.0](https://github.com/DEFRA/rod-catch-returns-frontend/compare/v1.19.0...v1.20.0) (2026-03-17)
+
+Version RCR Release 21 (River Jubilee)
+[Release notes](https://eaflood.atlassian.net/wiki/spaces/IWTF/pages/6436880406/17+03+2026+RCR+v1.20+Jubilee+River+release)
+
+## [1.19.0](https://github.com/DEFRA/rod-catch-returns-frontend/compare/v1.18.0...v1.19.0) (2026-02-05)
+
+Version RCR Release 20 (River Itchen)
+[Release notes](https://eaflood.atlassian.net/wiki/spaces/IWTF/pages/6380748804/05+02+2026+RCR+River+Itchen+release)
+
+## [1.18.0](https://github.com/DEFRA/rod-catch-returns-frontend/compare/v1.17.0...v1.18.0) (2026-01-21)
+
+Version RCR Release 19 (Hundred River)
+[Release notes](https://eaflood.atlassian.net/wiki/spaces/IWTF/pages/6277824543/21+01+2026+RCR+v1.18+Hundred+River)
+
 ## [1.17.0](https://github.com/DEFRA/rod-catch-returns-frontend/compare/v1.16.0...v1.17.0) (2025-11-12)
 
 Version RCR Release 18 (River Greta)

@@ -67,8 +67,8 @@ class SmallCatchHandler extends BaseHandler {
 
     // Add a new salmon and large trout
     return this.readCacheAndDisplayView(request, h, {
-      rivers: rivers,
-      methods: methods,
+      rivers,
+      methods,
       add: true,
       details: {
         licenceNumber: cache.licenceNumber,
@@ -122,9 +122,9 @@ class SmallCatchHandler extends BaseHandler {
     })
 
     return this.readCacheAndDisplayView(request, h, {
-      rivers: rivers,
-      methods: methods,
-      payload: payload,
+      rivers,
+      methods,
+      payload,
       details: {
         licenceNumber: cache.licenceNumber,
         postcode: cache.postcode,
