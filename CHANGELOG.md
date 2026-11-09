@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.24.0](https://github.com/DEFRA/rod-catch-returns-frontend/compare/v1.23.0...v1.24.0) (2026-11-12)
+
+Version RCR Release 25 (River Nene)
+[Release notes](https://eaflood.atlassian.net/wiki/spaces/IWTF/pages/6605734430/12+11+2026+RCR+River+Nene+release)
+
 ## [1.23.0](https://github.com/DEFRA/rod-catch-returns-frontend/compare/v1.22.0...v1.23.0) (2026-10-15)
 
 Version RCR Release 24 (River Mersey)
